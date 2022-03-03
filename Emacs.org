@@ -164,6 +164,23 @@ I am using the [[https://github.com/tonsky/FiraCode][Fira Code]] and [[https://f
 
 #+end_src
 
+* Yasnippet
+#+begin_src emacs-lisp 
+(unless (package-installed-p 'yasnippet)
+  (package-install 'yasnippet))
+(require 'yasnippet)
+
+(unless (package-installed-p 'yasnippet-snippets)
+  (package-install 'yasnippet-snippets))
+(require 'yasnippet-snippets)
+
+(setq yas-snippet-dirs
+      '("~/.emacs.d/snippets"                 ;; personal snippets
+        "~/.emacs.d/elpa/yasnippet-snippets-20210910.1959/snippets"
+        ))
+(yas-global-mode 1)
+#+end_src
+
 * Undo
 Enables the convinient undo-tree, which enables stepwise undo controlled by the arrow key's.
 #+begin_src emacs-lisp
@@ -315,6 +332,21 @@ This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil
 
 #+end_src
 
+*** Ivy Posframe
+#+begin_src emacs-lisp
+(use-package ivy-posframe
+  :custom
+  (ivy-posframe-width      115)
+  (ivy-posframe-min-width  115)
+  (ivy-posframe-height     10)
+  (ivy-posframe-min-height 10)
+  :config
+  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
+  (setq ivy-posframe-parameters '((parent-frame . nil)
+                                  (left-fringe . 8)
+                                  (right-fringe . 8)))
+  (ivy-posframe-mode 1))
+#+end_src
 *** Improved Candidate Sorting with prescient.el
 
 prescient.el provides some helpful behavior for sorting Ivy completion candidates based on how recently or frequently you select them.  This can be especially helpful when using =M-x= to run commands that you don't have bound to a key but still need to access occasionally.
@@ -457,12 +489,13 @@ This section contains the basic configuration for =org-mode= plus the configurat
             (setq org-directory "~/Nextcloud/Documents/org-mode")
             (setq org-default-notes-file "~/Nextcloud/Documents/org-mode/refile/refile.org")
 
-            (setq org-agenda-files (quote ("~/Nextcloud/Documents/org-mode/gnu-software"
-                                           "~/Nextcloud/Documents/org-mode/duagon/General"
-                                           "~/Nextcloud/Documents/org-mode/duagon/Projects/SBB"
-                                           "~/Nextcloud/Documents/org-mode/duagon/Projects/duagon"
-                                           "~/Nextcloud/Documents/org-mode/duagon/Projects/Alstom-CH"
-                                           "~/Nextcloud/Documents/org-mode/duagon/Projects/Alstom-NLD")))
+            (setq org-agenda-files (quote ("~/Nextcloud/Documents/org-mode/refile"
+                                       "~/Nextcloud/Documents/org-mode/gnu-software"
+                                       "~/Nextcloud/Documents/org-mode/duagon/General"
+                                       "~/Nextcloud/Documents/org-mode/duagon/Projects/SBB"
+                                       "~/Nextcloud/Documents/org-mode/duagon/Projects/duagon"
+                                       "~/Nextcloud/Documents/org-mode/duagon/Projects/Alstom-CH"
+                                       "~/Nextcloud/Documents/org-mode/duagon/Projects/Alstom-NLD")))
             ;; (require 'org-habit)
             ;; (add-to-list 'org-modules 'org-habit)
             ;; (setq org-habit-graph-column 60)
@@ -679,11 +712,11 @@ This section contains the basic configuration for =org-mode= plus the configurat
 
 #+end_src
 
-*** Center Org Buffers
+*** COMMENT Center Org Buffers
 
 We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]] to center =org-mode= buffers for a more pleasing writing experience as it centers the contents of the buffer horizontally to seem more like you are editing a document.  This is really a matter of personal preference so you can remove the block below if you don't like the behavior.
 
-#+begin_src emacs-lisp
+#+begin_src
 
   (defun efs/org-mode-visual-fill ()
     (setq visual-fill-column-width 100
@@ -944,7 +977,8 @@ The =which-key= integration adds helpful descriptions of the various keys so you
     :init
     (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
     :config
-    (lsp-enable-which-key-integration t))
+    (lsp-enable-which-key-integration t)
+    (setq read-process-output-max (* 1024 1024)))
 
 #+end_src
 
@@ -1000,7 +1034,7 @@ Try these commands with =M-x=:
 
 [[https://emacs-lsp.github.io/dap-mode/][dap-mode]] is an excellent package for bringing rich debugging capabilities to Emacs via the [[https://microsoft.github.io/debug-adapter-protocol/][Debug Adapter Protocol]].  You should check out the [[https://emacs-lsp.github.io/dap-mode/page/configuration/][configuration docs]] to learn how to configure the debugger for your language.  Also make sure to check out the documentation for the debug adapter to see what configuration parameters are available to use for your debug templates!
 
-#+begin_src emacs-lisp
+#+begin_src
 
   (use-package dap-mode
     ;; Uncomment the config below if you want all UI panes to be hidden by default!

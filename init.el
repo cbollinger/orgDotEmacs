@@ -98,6 +98,20 @@
 ;; Set the variable pitch face
 (set-face-attribute 'variable-pitch nil :font "Cantarell" :height efs/default-variable-font-size :weight 'regular)
 
+(unless (package-installed-p 'yasnippet)
+  (package-install 'yasnippet))
+(require 'yasnippet)
+
+(unless (package-installed-p 'yasnippet-snippets)
+  (package-install 'yasnippet-snippets))
+(require 'yasnippet-snippets)
+
+(setq yas-snippet-dirs
+      '("~/.emacs.d/snippets"                 ;; personal snippets
+        "~/.emacs.d/elpa/yasnippet-snippets-20210910.1959/snippets"
+        ))
+(yas-global-mode 1)
+
 (use-package undo-tree
   :init
   (global-undo-tree-mode 1))
@@ -152,6 +166,19 @@
   (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
   :config
   (counsel-mode 1))
+
+(use-package ivy-posframe
+  :custom
+  (ivy-posframe-width      115)
+  (ivy-posframe-min-width  115)
+  (ivy-posframe-height     10)
+  (ivy-posframe-min-height 10)
+  :config
+  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
+  (setq ivy-posframe-parameters '((parent-frame . nil)
+                                  (left-fringe . 8)
+                                  (right-fringe . 8)))
+  (ivy-posframe-mode 1))
 
 (use-package ivy-prescient
   :after counsel
@@ -246,12 +273,13 @@
         (setq org-directory "~/Nextcloud/Documents/org-mode")
         (setq org-default-notes-file "~/Nextcloud/Documents/org-mode/refile/refile.org")
 
-        (setq org-agenda-files (quote ("~/Nextcloud/Documents/org-mode/gnu-software"
-                                       "~/Nextcloud/Documents/org-mode/duagon/General"
-                                       "~/Nextcloud/Documents/org-mode/duagon/Projects/SBB"
-                                       "~/Nextcloud/Documents/org-mode/duagon/Projects/duagon"
-                                       "~/Nextcloud/Documents/org-mode/duagon/Projects/Alstom-CH"
-                                       "~/Nextcloud/Documents/org-mode/duagon/Projects/Alstom-NLD")))
+        (setq org-agenda-files (quote ("~/Nextcloud/Documents/org-mode/refile"
+                                   "~/Nextcloud/Documents/org-mode/gnu-software"
+                                   "~/Nextcloud/Documents/org-mode/duagon/General"
+                                   "~/Nextcloud/Documents/org-mode/duagon/Projects/SBB"
+                                   "~/Nextcloud/Documents/org-mode/duagon/Projects/duagon"
+                                   "~/Nextcloud/Documents/org-mode/duagon/Projects/Alstom-CH"
+                                   "~/Nextcloud/Documents/org-mode/duagon/Projects/Alstom-NLD")))
         ;; (require 'org-habit)
         ;; (add-to-list 'org-modules 'org-habit)
         ;; (setq org-habit-graph-column 60)
@@ -455,14 +483,6 @@
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-(defun efs/org-mode-visual-fill ()
-  (setq visual-fill-column-width 100
-        visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
-
-(use-package visual-fill-column
-  :hook (org-mode . efs/org-mode-visual-fill))
-
 (require 'ox-latex)
 (require 'ob-js)
 (require 'color)
@@ -656,7 +676,8 @@
   :init
   (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
   :config
-  (lsp-enable-which-key-integration t))
+  (lsp-enable-which-key-integration t)
+  (setq read-process-output-max (* 1024 1024)))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
@@ -668,24 +689,6 @@
 
 (use-package lsp-ivy
   :after lsp)
-
-(use-package dap-mode
-  ;; Uncomment the config below if you want all UI panes to be hidden by default!
-  ;; :custom
-  ;; (lsp-enable-dap-auto-configure nil)
-  ;; :config
-  ;; (dap-ui-mode 1)
-  :commands dap-debug
-  :config
-  ;; Set up Node debugging
-  (require 'dap-node)
-  (dap-node-setup) ;; Automatically installs Node debug adapter if needed
-
-  ;; Bind `C-c l d` to `dap-hydra` for easy access
-  (general-define-key
-    :keymaps 'lsp-mode-map
-    :prefix lsp-keymap-prefix
-    "d" '(dap-hydra t :wk "debugger")))
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
