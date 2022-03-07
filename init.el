@@ -2,8 +2,8 @@
 ;;       in Emacs and init.el will be generated automatically!
 
 ;; You will most likely need to adjust this font size for your system!
-(defvar efs/default-font-size 180)
-(defvar efs/default-variable-font-size 180)
+(defvar efs/default-font-size 120)
+(defvar efs/default-variable-font-size 120)
 
 ;; Make frame transparency overridable
 (defvar efs/frame-transparency '(90 . 90))
@@ -166,19 +166,6 @@
   (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
   :config
   (counsel-mode 1))
-
-(use-package ivy-posframe
-  :custom
-  (ivy-posframe-width      115)
-  (ivy-posframe-min-width  115)
-  (ivy-posframe-height     10)
-  (ivy-posframe-min-height 10)
-  :config
-  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
-  (setq ivy-posframe-parameters '((parent-frame . nil)
-                                  (left-fringe . 8)
-                                  (right-fringe . 8)))
-  (ivy-posframe-mode 1))
 
 (use-package ivy-prescient
   :after counsel
@@ -553,6 +540,37 @@
 (setq org-reveal-root "file:/home/christian/Daten/reveal.js/")
 (setq Org-Reveal-title-slide nil)
 
+(use-package hide-mode-line
+  :ensure t)
+
+(defun my/org-tree-slide-setup ()
+  (interactive)
+  (org-display-inline-images)
+  (hide-mode-line-mode 1)
+  (setq text-scale-mode-amount 3)
+  (text-scale-mode 1))
+
+(defun my/org-tree-slide-end ()
+  (interactive)
+  (org-display-inline-images)
+  (hide-mode-line-mode 0)
+  (text-scale-mode 0)
+  (org-tree-slide-mode 0))
+
+(use-package org-tree-slide
+  :ensure t
+  :defer t
+  :custom
+  (org-image-actual-width nil)
+  (org-tree-slide-activate-message "Presentation started!")
+  (org-tree-slide-deactivate-message "Presentation finished!")
+  :hook ((org-tree-slide-play . my/org-tree-slide-setup)
+         (org-tree-slide-stop . my/org-tree-slide-end))
+  :bind (:map org-tree-slide-mode-map
+              ("<f6>" . org-tree-slide-move-previous-tree)
+              ("<f7>" . org-tree-slide-move-next-tree)
+              ("<f8>" . org-tree-slide-content)))
+
 (with-eval-after-load 'org
   ;; This is needed as of Org 9.2
   (require 'org-tempo)
@@ -705,7 +723,7 @@
   ;; (dap-python-executable "python3")
   (dap-python-debugger 'debugpy)
   :config
-  (require 'dap-python))
+   (require 'dap-python))
 
 (use-package pyvenv
   :after python-mode
@@ -715,6 +733,48 @@
 (use-package ccls
   :hook ((c-mode c++-mode objc-mode cuda-mode) .
          (lambda () (require 'ccls) (lsp))))
+
+;; JavaScript
+;; JavaScript: MinorMode
+(unless (package-installed-p 'js2-mode)
+  (package-install 'js2-mode))
+(require 'js2-mode)
+;; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+;; ;; Better imenu
+;; (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
+
+;; JavaScript: Refactor Package
+(unless (package-installed-p 'js2-refactor)
+  (package-install 'js2-refactor))
+(require 'js2-refactor)
+(unless (package-installed-p 'xfef-js2)
+  (package-install 'xref-js2))
+
+;; JavaScript: Jumping to function definitions
+(require 'xref-js2)
+(add-hook 'js2-mode-hook #'js2-refactor-mode)
+(js2r-add-keybindings-with-prefix "C-c C-r")
+(define-key js2-mode-map (kbd "C-k") #'js2r-kill)
+;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so
+;; unbind it.
+(define-key js-mode-map (kbd "M-.") nil)
+
+(add-hook 'js2-mode-hook (lambda ()
+                           (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+
+;; JavaScript: Debugging aid
+(unless (package-installed-p 'sourcemap)
+  (package-install 'sourcemap))
+(require 'sourcemap)
+(setq coffee-args-compile '("-c" "-m")) ;; generating sourcemap file
+(add-hook 'coffee-after-compile-hook 'sourcemap-goto-corresponding-point)
+
+
+;; JavaScript: Debugging Mode and REPL
+(unless (package-installed-p 'indium)
+   (package-install 'indium))
+(require 'indium)
+(add-hook 'js-mode-hook #'indium-interaction-mode)
 
 (use-package company
   :after lsp-mode
@@ -848,5 +908,22 @@
   ;;   "H" 'dired-hide-dotfiles-mode)
   )
 
+(use-package request)
+(use-package json)
+
 ;; Make gc pauses faster by decreasing the threshold.
 (setq gc-cons-threshold (* 2 1000 1000))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(delete-selection-mode nil)
+ '(package-selected-packages
+   '(yasnippet-snippets xref-js2 which-key vterm visual-fill-column use-package undo-tree typescript-mode sourcemap request rainbow-delimiters pyvenv python-mode ox-reveal org-tree-slide org-bullets ob-ipython nodejs-repl no-littering lsp-ui lsp-ivy ivy-yasnippet ivy-rich ivy-prescient ivy-posframe indium hide-mode-line helpful gnuplot forge evil-nerd-commenter eterm-256color eshell-git-prompt doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles dap-mode counsel-projectile company-box command-log-mode ccls auto-package-update all-the-icons-dired)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
