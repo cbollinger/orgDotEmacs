@@ -648,13 +648,18 @@
                  :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
                  :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))))
 
-(with-eval-after-load "ox-latex"
-  (add-to-list 'org-latex-classes
-                ("beamer" "\\documentclass[presentation]{beamer}
-  "
-		 ("\\section{%s}" . "\\section*{%s}")
-		 ("\\subsection{%s}" . "\\subsection*{%s}")
-		 ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
+(eval-after-load "ox-latex"
+  ;; update the list of LaTeX classes and associated header (encoding, etc.)
+  ;; and structure
+  '(add-to-list 'org-latex-classes
+                `("beamer"
+                  ,(concat "\\documentclass[presentation]{beamer}\n"
+                           "[DEFAULT-PACKAGES]"
+                           "[PACKAGES]"
+                           "[EXTRA]\n")
+                  ("\\section{%s}" . "\\section*{%s}")
+                  ("\\subsection{%s}" . "\\subsection*{%s}")
+                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
 
 (with-eval-after-load "ox-latex"
   (add-to-list 'org-latex-classes
