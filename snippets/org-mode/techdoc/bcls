@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: bcls
+# key: bcls_
+# group: techdoc
+# --
+#+ATTR_LATEX: :options [couleur = brown!20, arrondi = 0.1, logo=\bcbook, ombre=true]{${0:BC-TITLE}}
+#+BEGIN_bclogo
+${02:BC-TEXT}
+#+END_bclogo

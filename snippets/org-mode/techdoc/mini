@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: minipage
+# key:  mini_
+# group: techdoc
+# --
+#+attr_latex: :options {0.4\textwidth} :float
+#+begin_minipage latex
+${0:Text Left}
+#+end_minipage
+#+attr_latex: :options [c]{0.6\textwidth} :float right
+#+begin_minipage latex
+${1:Text Right}
+#+end_minipage

@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: equation
+# key: eq_
+# group : techdoc
+# --
+#+BEGIN_LATEX
+\begin{equation*}
+${0: Write equation in Latex}
+\end{equation*}
+#+END_LATEX

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: gbar
+# key: gbar
+# group: techdoc
+# --
+#+LATEX_HEADER: \newenvironment{gbar}[2]{\def\FrameCommand{{\color{#1}\vrule width 3pt}\colorbox{#2}}\MakeFramed{\advance\hsize-\width\FrameRestore}}{\endMakeFramed}

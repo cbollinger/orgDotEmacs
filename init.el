@@ -971,17 +971,3 @@
 
 ;; Make gc pauses faster by decreasing the threshold.
 (setq gc-cons-threshold (* 2 1000 1000))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(delete-selection-mode nil)
- '(package-selected-packages
-   '(org-present yasnippet-snippets xref-js2 which-key vterm visual-fill-column use-package undo-tree typescript-mode sourcemap request rainbow-delimiters pyvenv python-mode ox-reveal org-tree-slide org-bullets ob-ipython nodejs-repl no-littering lsp-ui lsp-ivy ivy-yasnippet ivy-rich ivy-prescient ivy-posframe indium hide-mode-line helpful gnuplot forge evil-nerd-commenter eterm-256color eshell-git-prompt doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles dap-mode counsel-projectile company-box command-log-mode ccls auto-package-update all-the-icons-dired)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

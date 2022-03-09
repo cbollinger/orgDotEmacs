@@ -1,0 +1,10 @@
+vd# -*- mode: snippet -*-
+# name: oct
+# key: oct_
+# group: techdoc
+# --
+#+BEGIN_SRC $1 octave :exports none :results file
+$0
+# Org-Mode spezifsche Einstellungen
+print -dpng ./image/graphic.png;
+#+END_SRC

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: enum5
+# key: enum5_
+# group: techdoc
+# --
+#+ATTR_LATEX: :options [leftmargin=5cm,labelwidth=4.7cm,itemindent=-2pt]

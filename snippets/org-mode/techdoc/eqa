@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: eqalign
+# key: eqa_
+# group: techdoc
+# --
+\begin{gbar}{gray!15}{gray!15}
+  \begin{align*}
+     $0
+  \end{align*}
+\end{gbar}

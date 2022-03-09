@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: bcln
+# key: bcln_
+# group: techdoc
+# --
+#+ATTR_LATEX: :options [logo=\bcinfo,barre=none,noborder=true]{${0:BC-TITLE}}
+#+BEGIN_bclogo
+\begin{gbar}{yellow}{blue!10}
+${1:BC-TEXT}
+\end{gbar}
+#+END_bclogo
