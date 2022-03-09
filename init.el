@@ -571,6 +571,45 @@
               ("<f7>" . org-tree-slide-move-next-tree)
               ("<f8>" . org-tree-slide-content)))
 
+(defun dw/org-present-prepare-slide ()
+  (org-overview)
+  (org-show-entry)
+  (org-show-children))
+
+(defun dw/org-present-hook ()
+  (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
+                                     (header-line (:height 4.5) variable-pitch)
+                                     (org-code (:height 1.55) org-code)
+                                     (org-verbatim (:height 1.55) org-verbatim)
+                                     (org-block (:height 1.25) org-block)
+                                     (org-block-begin-line (:height 0.7) org-block)))
+  (setq header-line-format " ")
+  (org-display-inline-images)
+  (dw/org-present-prepare-slide))
+
+(defun dw/org-present-quit-hook ()
+  (setq-local face-remapping-alist '((default variable-pitch default)))
+  (setq header-line-format nil)
+  (org-present-small)
+  (org-remove-inline-images))
+
+(defun dw/org-present-prev ()
+  (interactive)
+  (org-present-prev)
+  (dw/org-present-prepare-slide))
+
+(defun dw/org-present-next ()
+  (interactive)
+  (org-present-next)
+  (dw/org-present-prepare-slide))
+
+(use-package org-present
+  :bind (:map org-present-mode-keymap
+         ("C-c C-j" . dw/org-present-next)
+         ("C-c C-k" . dw/org-present-prev))
+  :hook ((org-present-mode . dw/org-present-hook)
+         (org-present-mode-quit . dw/org-present-quit-hook)))
+
 (with-eval-after-load 'org
   ;; This is needed as of Org 9.2
   (require 'org-tempo)
@@ -590,67 +629,65 @@
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
 (require 'ox-latex)
-;; Latex search path
-(setq exec-path (append exec-path '("/usr/share/texmf")))
+    ;; Latex search path
+    (setq exec-path (append exec-path '("/usr/share/texmf")))
 
-(with-eval-after-load 'tex
-  (add-to-list 'safe-local-variable-values
-               '(TeX-command-extra-options . "-shell-escape")))
+    (with-eval-after-load 'tex
+      (add-to-list 'safe-local-variable-values
+                   '(TeX-command-extra-options . "-shell-escape")))
 
-;;Allow reference to figures e.g. [@fig:label]
-(setq org-latex-prefer-user-labels t)
+    ;;Allow reference to figures e.g. [@fig:label]
+    (setq org-latex-prefer-user-labels t)
 
-;; Make org aware of the tex enginge
-(setq org-latex-pdf-process
-      '("xelatex -shell-escape -interaction nonstopmode %f"
-        "xelatex -shell-escape -interaction nonstopmode %f"
-        "xelatex -shell-escape -interaction nonstopmode %f"))
+    ;; Make org aware of the tex enginge
+    (setq org-latex-pdf-process
+          '("xelatex -shell-escape -interaction nonstopmode %f"
+            "xelatex -shell-escape -interaction nonstopmode %f"
+            "xelatex -shell-escape -interaction nonstopmode %f"))
 
-;; (setq org-latex-pdf-process
-;;       '("lualatex -shell-escape -interaction nonstopmode %f"
-;;         "lualatex -shell-escape -interaction nonstopmode %f"))
+    ;; (setq org-latex-pdf-process
+    ;;       '("lualatex -shell-escape -interaction nonstopmode %f"
+    ;;         "lualatex -shell-escape -interaction nonstopmode %f"))
 
-;; (setq org-latex-pdf-process
-;;    '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-;;      "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-;;      "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+    ;; (setq org-latex-pdf-process
+    ;;    '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+    ;;      "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+    ;;      "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
 
-'(org-preview-latex-process-alist
-  (quote
-   (
-    (dvipng      :programs ("lualatex" "dvipng")
-                 :description "dvi > png"
-                 :message "you need to install the programs: latex and dvipng."
-                 :image-input-type "dvi"
-                 :image-output-type "png"
-                 :image-size-adjust (1.0 . 1.0)
-                 :latex-compiler ("lualatex -output-format dvi -interaction nonstopmode -output-directory %o %f")
-                 :image-converter ("dvipng -fg %F -bg %B -D %D -T tight -o %O %f"))
+    '(org-preview-latex-process-alist
+      (quote
+       (
+        (dvipng      :programs ("lualatex" "dvipng")
+                     :description "dvi > png"
+                     :message "you need to install the programs: latex and dvipng."
+                     :image-input-type "dvi"
+                     :image-output-type "png"
+                     :image-size-adjust (1.0 . 1.0)
+                     :latex-compiler ("lualatex -output-format dvi -interaction nonstopmode -output-directory %o %f")
+                     :image-converter ("dvipng -fg %F -bg %B -D %D -T tight -o %O %f"))
 
-    (dvisvgm     :programs ("latex" "dvisvgm")
-                 :description "dvi > svg"
-                 :message "you need to install the programs: latex and dvisvgm."
-                 :use-xcolor t
-                 :image-input-type "xdv"
-                 :image-output-type "svg"
-                 :image-size-adjust (1.7 . 1.5)
-                 :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
-                 :image-converter ("dvisvgm %f -n -b min -c %S -o %O"))
+        (dvisvgm     :programs ("latex" "dvisvgm")
+                     :description "dvi > svg"
+                     :message "you need to install the programs: latex and dvisvgm."
+                     :use-xcolor t
+                     :image-input-type "xdv"
+                     :image-output-type "svg"
+                     :image-size-adjust (1.7 . 1.5)
+                     :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
+                     :image-converter ("dvisvgm %f -n -b min -c %S -o %O"))
 
-    (imagemagick :programs ("latex" "convert")
-                 :description "pdf > png"
-                 :message "you need to install the programs: latex and imagemagick."
-                 :use-xcolor t
-                 :image-input-type "pdf"
-                 :image-output-type "png"
-                 :image-size-adjust (1.0 . 1.0)
-                 :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
-                 :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))))
+        (imagemagick :programs ("latex" "convert")
+                     :description "pdf > png"
+                     :message "you need to install the programs: latex and imagemagick."
+                     :use-xcolor t
+                     :image-input-type "pdf"
+                     :image-output-type "png"
+                     :image-size-adjust (1.0 . 1.0)
+                     :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
+                     :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))))
 
 (eval-after-load "ox-latex"
-  ;; update the list of LaTeX classes and associated header (encoding, etc.)
-  ;; and structure
   '(add-to-list 'org-latex-classes
                 `("beamer"
                   ,(concat "\\documentclass[presentation]{beamer}\n"
@@ -661,38 +698,49 @@
                   ("\\subsection{%s}" . "\\subsection*{%s}")
                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
 
-(with-eval-after-load "ox-latex"
-  (add-to-list 'org-latex-classes
-               '("koma-article" "\\documentclass{scrartcl}
-       "
-                 ("\\section{%s}"       . "\\section{%s}")
-                 ("\\subsection{%s}"    . "\\subsection{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection{%s}")
-                 ("\\paragraph{%s}"     . "\\paragraph{%s}")
-                 ("\\subparagraph{%s}"  . "\\subparagraph{%s}"))))
 
-(with-eval-after-load "ox-latex"
-  (add-to-list 'org-latex-classes
-               '("koma-report" "\\documentclass{scrreprt}
-       "
-                 ("\\part{%s}"          . "\\part{%s}")
-                 ("\\chapter{%s}"       . "\\chapter{%s}")
-                 ("\\section{%s}"       . "\\section{%s}")
-                 ("\\subsection{%s}"    . "\\subsection{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection{%s}")
-                 ("\\paragraph{%s}"     . "\\paragraph{%s}")
-                 ("\\subparagraph{%s}"  . "\\subparagraph{%s}"))))
+  (with-eval-after-load "ox-latex"
+    (add-to-list 'org-latex-classes
+              '("beamer" "\\documentclass[presentation]{beamer}
+    "
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
+
+    (with-eval-after-load "ox-latex"
+      (add-to-list 'org-latex-classes
+                   '("koma-article" "\\documentclass{scrartcl}
+           "
+                     ("\\section{%s}"       . "\\section{%s}")
+                     ("\\subsection{%s}"    . "\\subsection{%s}")
+                     ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                     ("\\paragraph{%s}"     . "\\paragraph{%s}")
+                     ("\\subparagraph{%s}"  . "\\subparagraph{%s}"))))
 
 
-(with-eval-after-load "ox-latex"
-  (add-to-list 'org-latex-classes
-               '("dg_public" "\\documentclass{duagon_public}
-       "
-                 ("\\section{%s}" . "\\section{%s}")
-                 ("\\subsection{%s}" . "\\subsection{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
+
+    (with-eval-after-load "ox-latex"
+      (add-to-list 'org-latex-classes
+                   '("koma-report" "\\documentclass{scrreprt}
+           "
+                     ("\\part{%s}"          . "\\part{%s}")
+                     ("\\chapter{%s}"       . "\\chapter{%s}")
+                     ("\\section{%s}"       . "\\section{%s}")
+                     ("\\subsection{%s}"    . "\\subsection{%s}")
+                     ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                     ("\\paragraph{%s}"     . "\\paragraph{%s}")
+                     ("\\subparagraph{%s}"  . "\\subparagraph{%s}"))))
+
+
+    (with-eval-after-load "ox-latex"
+      (add-to-list 'org-latex-classes
+                   '("dg_public" "\\documentclass{duagon_public}
+           "
+                     ("\\section{%s}" . "\\section{%s}")
+                     ("\\subsection{%s}" . "\\subsection{%s}")
+                     ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                     ("\\paragraph{%s}" . "\\paragraph{%s}")
+                     ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
 
 (defun efs/lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
@@ -930,7 +978,7 @@
  ;; If there is more than one, they won't work right.
  '(delete-selection-mode nil)
  '(package-selected-packages
-   '(yasnippet-snippets xref-js2 which-key vterm visual-fill-column use-package undo-tree typescript-mode sourcemap request rainbow-delimiters pyvenv python-mode ox-reveal org-tree-slide org-bullets ob-ipython nodejs-repl no-littering lsp-ui lsp-ivy ivy-yasnippet ivy-rich ivy-prescient ivy-posframe indium hide-mode-line helpful gnuplot forge evil-nerd-commenter eterm-256color eshell-git-prompt doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles dap-mode counsel-projectile company-box command-log-mode ccls auto-package-update all-the-icons-dired)))
+   '(org-present yasnippet-snippets xref-js2 which-key vterm visual-fill-column use-package undo-tree typescript-mode sourcemap request rainbow-delimiters pyvenv python-mode ox-reveal org-tree-slide org-bullets ob-ipython nodejs-repl no-littering lsp-ui lsp-ivy ivy-yasnippet ivy-rich ivy-prescient ivy-posframe indium hide-mode-line helpful gnuplot forge evil-nerd-commenter eterm-256color eshell-git-prompt doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles dap-mode counsel-projectile company-box command-log-mode ccls auto-package-update all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
