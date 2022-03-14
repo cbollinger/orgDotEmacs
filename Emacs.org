@@ -16,8 +16,8 @@ The following variables are used to tweak some of the configuration pieces for u
   ;;       in Emacs and init.el will be generated automatically!
 
   ;; You will most likely need to adjust this font size for your system!
-  (defvar efs/default-font-size 120)
-  (defvar efs/default-variable-font-size 120)
+  (defvar efs/default-font-size 140)
+  (defvar efs/default-variable-font-size 140)
 
   ;; Make frame transparency overridable
   (defvar efs/frame-transparency '(90 . 90))
@@ -37,7 +37,6 @@ mkdir -p git-submodules
 cd git-submodules
 git clone https://github.com/fniessen/org-html-themes.git
 #+END_SRC
-
 
 * Startup Performance
 
@@ -248,7 +247,6 @@ This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil
 #+end_src
 
 * UI Configuration
-
 ** Command Log Mode
 
 [[https://github.com/lewang/command-log-mode][command-log-mode]] is useful for displaying a panel showing each key binding you use in a panel on the right side of the frame.  Great for live streams and screencasts!
@@ -266,8 +264,14 @@ This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil
 
 #+begin_src emacs-lisp
 
-(use-package doom-themes
-  :init (load-theme 'doom-palenight t))
+  (use-package doom-themes
+    :init
+    ;; (load-theme 'doom-palenight t)
+    (load-theme 'doom-challenger-deep)
+    :config
+    (doom-themes-treemacs-config)
+    (doom-themes-org-config)
+    )
 
 #+end_src
 
@@ -373,9 +377,17 @@ This Prescient configuration is optimized for use in System Crafters videos and 
     (ivy-prescient-enable-filtering nil)
     :config
     ;; Uncomment the following line to have sorting remembered across sessions!
-    ;(prescient-persist-mode 1)
+    (prescient-persist-mode 1)
     (ivy-prescient-mode 1))
 
+#+end_src
+
+** COMMENT Vertico
+#+begin_src 
+(use-package vertico
+:ensure t
+:init
+(vertico-mode))
 #+end_src
 
 ** Helpful Help Commands
@@ -395,6 +407,120 @@ This Prescient configuration is optimized for use in System Crafters videos and 
     ([remap describe-variable] . counsel-describe-variable)
     ([remap describe-key] . helpful-key))
 
+#+end_src
+
+** Treemacs
+
+#+begin_src emacs-lisp
+  (use-package treemacs
+    :ensure t
+    :defer t
+    :init
+    (with-eval-after-load 'winum
+      (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+    :config
+    (progn
+      (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
+            treemacs-deferred-git-apply-delay        0.5
+            treemacs-directory-name-transformer      #'identity
+            treemacs-display-in-side-window          t
+            treemacs-eldoc-display                   'simple
+            treemacs-file-event-delay                5000
+            treemacs-file-extension-regex            treemacs-last-period-regex-value
+            treemacs-file-follow-delay               0.2
+            treemacs-file-name-transformer           #'identity
+            treemacs-follow-after-init               t
+            treemacs-expand-after-init               t
+            treemacs-find-workspace-method           'find-for-file-or-pick-first
+            treemacs-git-command-pipe                ""
+            treemacs-goto-tag-strategy               'refetch-index
+            treemacs-indentation                     2
+            treemacs-indentation-string              " "
+            treemacs-is-never-other-window           nil
+            treemacs-max-git-entries                 5000
+            treemacs-missing-project-action          'ask
+            treemacs-move-forward-on-expand          nil
+            treemacs-no-png-images                   nil
+            treemacs-no-delete-other-windows         t
+            treemacs-project-follow-cleanup          nil
+            treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+            treemacs-position                        'left
+            treemacs-read-string-input               'from-child-frame
+            treemacs-recenter-distance               0.1
+            treemacs-recenter-after-file-follow      nil
+            treemacs-recenter-after-tag-follow       nil
+            treemacs-recenter-after-project-jump     'always
+            treemacs-recenter-after-project-expand   'on-distance
+            treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
+            treemacs-show-cursor                     nil
+            treemacs-show-hidden-files               t
+            treemacs-silent-filewatch                nil
+            treemacs-silent-refresh                  nil
+            treemacs-sorting                         'alphabetic-asc
+            treemacs-select-when-already-in-treemacs 'move-back
+            treemacs-space-between-root-nodes        t
+            treemacs-tag-follow-cleanup              t
+            treemacs-tag-follow-delay                1.5
+            treemacs-text-scale                      nil
+            treemacs-user-mode-line-format           nil
+            treemacs-user-header-line-format         nil
+            treemacs-wide-toggle-width               70
+            treemacs-width                           35
+            treemacs-width-increment                 1
+            treemacs-width-is-initially-locked       t
+            treemacs-workspace-switch-cleanup        nil)
+
+      ;; The default width and height of the icons is 22 pixels. If you are
+      ;; using a Hi-DPI display, uncomment this to double the icon size.
+      ;;(treemacs-resize-icons 44)
+
+      (treemacs-follow-mode t)
+      (treemacs-filewatch-mode t)
+      (treemacs-fringe-indicator-mode 'always)
+
+      (pcase (cons (not (null (executable-find "git")))
+                   (not (null treemacs-python-executable)))
+        (`(t . t)
+         (treemacs-git-mode 'deferred))
+        (`(t . _)
+         (treemacs-git-mode 'simple)))
+
+      (treemacs-hide-gitignored-files-mode nil))
+    :bind
+    (:map global-map
+          ("M-0"       . treemacs-select-window)
+          ("C-x t 1"   . treemacs-delete-other-windows)
+          ("C-x t t"   . treemacs)
+          ("C-x t d"   . treemacs-select-directory)
+          ("C-x t B"   . treemacs-bookmark)
+          ("C-x t C-t" . treemacs-find-file)
+          ("C-x t M-t" . treemacs-find-tag)))
+
+  ;; (use-package treemacs-evil
+  ;;   :after (treemacs evil)
+  ;;   :ensure t)
+
+  (use-package treemacs-projectile
+    :after (treemacs projectile)
+    :ensure t)
+
+  (use-package treemacs-icons-dired
+    :hook (dired-mode . treemacs-icons-dired-enable-once)
+    :ensure t)
+
+  (use-package treemacs-magit
+    :after (treemacs magit)
+    :ensure t)
+
+  (use-package treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
+    :after (treemacs persp-mode) ;;or perspective vs. persp-mode
+    :ensure t
+    :config (treemacs-set-scope-type 'Perspectives))
+
+  (use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
+    :after (treemacs)
+    :ensure t
+    :config (treemacs-set-scope-type 'Tabs))
 #+end_src
 
 ** Text Scaling
@@ -418,8 +544,7 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 #+end_src
 
 * Org Mode
-
-[[https://orgmode.org/][Org Mode]] is one of the hallmark features of Emacs.  It is a rich document editor, project planner, task and time tracker, blogging engine, and literate coding utility all wrapped up in one package.
+ [[https://orgmode.org/][Org Mode]] is one of the hallmark features of Emacs.  It is a rich document editor, project planner, task and time tracker, blogging engine, and literate coding utility all wrapped up in one package.
 
 ** Better Font Faces
 
@@ -708,9 +833,6 @@ This section contains the basic configuration for =org-mode= plus the configurat
 
 #+end_src
 
-#+results:
-| #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | (lambda nil (add-hook 'after-save-hook #'efs/org-babel-tangle-config)) | org-tempo-setup | ob-ipython-auto-configure-kernels | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | efs/org-mode-visual-fill | org-bullets-mode | efs/org-mode-setup | (lambda nil (display-line-numbers-mode 0)) | turn-on-flyspell | (lambda nil (org-defkey org-mode-map [ 'undefined) (org-defkey org-mode-map ] 'undefined) (org-defkey org-mode-map ; 'undefined) (org-defkey org-mode-map  'undefined)) |
-
 *** Nicer Heading Bullets
 
 [[https://github.com/sabof/org-bullets][org-bullets]] replaces the heading stars in =org-mode= buffers with nicer looking characters that you can control.  Another option for this is [[https://github.com/integral-dw/org-superstar-mode][org-superstar-mode]] which we may cover in a later video.
@@ -816,7 +938,9 @@ To execute or export code in =org-mode= code blocks, you'll need to set up =org-
 #+end_src
 
 ** Presentation
+
 *** Reveal
+
 #+begin_src emacs-lisp
   (unless (package-installed-p 'ox-reveal)
     (package-install 'ox-reveal))
@@ -825,14 +949,17 @@ To execute or export code in =org-mode= code blocks, you'll need to set up =org-
   (setq org-reveal-root "file:/home/christian/Daten/reveal.js/")
   (setq Org-Reveal-title-slide nil)
 #+end_src
-*** Org-Tree Slides
 
+*** Org-Tree Slides
  hide-mode-line hide the modeline to allow to have a clean screen while using org-tree-slide-mode 
+
 #+begin_src emacs-lisp
 (use-package hide-mode-line
   :ensure t)
 #+end_src
+
 Some tweaks to have a better looking while presenting slides 
+
 #+begin_src emacs-lisp
       (defun my/org-tree-slide-setup ()
         (interactive)
@@ -863,7 +990,9 @@ Some tweaks to have a better looking while presenting slides
                     ("<f8>" . org-tree-slide-content)))
 
 #+end_src
+
 *** Org-Present
+
 #+begin_src emacs-lisp
 (defun dw/org-present-prepare-slide ()
   (org-overview)
@@ -904,13 +1033,17 @@ Some tweaks to have a better looking while presenting slides
   :hook ((org-present-mode . dw/org-present-hook)
          (org-present-mode-quit . dw/org-present-quit-hook)))
 #+end_src
+
 ** COMMENT Planing
+
 #+begin_src 
   (unless (package-installed-p 'ox-taskjuggler)
     (package-install 'ox-taskjuggler))
   (require 'ox-taskjuggler)
 #+end_src
+
 ** Structure Templates
+
 
 Org Mode's [[https://orgmode.org/manual/Structure-Templates.html][structure templates]] feature enables you to quickly insert code blocks into your Org files in combination with =org-tempo= by typing =<= followed by the template name like =el= or =py= and then press =TAB=.  For example, to insert an empty =emacs-lisp= block below, you can type =<el= and press =TAB= to expand into such a block.
 
@@ -947,6 +1080,7 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
 #+end_src
 
 ** Latex - preview and pdf-export
+
 #+begin_src emacs-lisp
       (require 'ox-latex)
       ;; Latex search path
@@ -1063,6 +1197,7 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
                        ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
 
 #+end_src
+
 * Development
 ** Languages
 *** IDE Features with lsp-mode
@@ -1607,12 +1742,39 @@ Dired is a built-in file manager for Emacs that does some pretty amazing things!
 #+end_src
 
 * Applications
+** Json-Mode
+
+#+begin_src emacs-lisp
+  (use-package json-mode
+    :ensure t
+  )
+#+end_src
+
+#+results:
+
 ** Rest API
 
 #+begin_src emacs-lisp
   (use-package request)
   (use-package json)
 #+end_src
+
+** RestClient
+
+[[https://github.com/pashky/restclient.el][restclient.el]] and [[https://erick.navarro.io/blog/testing-an-api-with-emacs-and-restclient/][Testing an API with emacs and restclient]]
+
+Here we're using use-package to install restclient.el and also we're configuring
+ restclient to use extension .http to enable its features. Now if we open a file
+ with .http extension restclient will be enabled automatically.
+ 
+#+begin_src emacs-lisp
+  (use-package restclient
+    :ensure t
+    :mode (("\\.http\\'" . restclient-mode))
+     :bind (:map restclient-mode-map
+                 ("C-c C-f" . json-mode-beautify)))
+#+end_src
+
 
 ** Some App
 
@@ -1643,3 +1805,82 @@ Dial the GC threshold back down so that garbage collection happens more frequent
   (setq gc-cons-threshold (* 2 1000 1000))
 
 #+end_src
+
+* Info Pages
+
+see also [[https://www.emacswiki.org/emacs/ExternalDocumentation][EmacsWiki]]
+
+
+#+begin_src emacs-lisp 
+;; To make this directory available to Emacs 
+(add-to-list 'Info-additional-directory-list "~/.local/share/info")
+#+end_src
+
+* Treemacs Workspace
+** ionia
+*** libhost
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/libraries/ionia-libhost
+*** uic-gw
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/uic-gw
+*** mvb_echo_server
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/mvb_echo_server
+*** mvb_tt
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/mvb_tt
+*** functional_test_cpu
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/functional_test_cpu
+*** i303_prod_ft
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/i303_prod_ft
+*** wtb_line_test
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/wtb_line_test
+*** tt-handlers
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/tt-handlers
+*** mvb-udp-gw
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/mvb-udp-gw
+*** mvb_astt_agent
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/mvb_astt_agent
+*** wtb_ll_test
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/wtb_ll_test
+*** mvb_emv_test
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/mvb_emv_test
+*** can_emc_test
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/can_emc_test
+*** led-cpu-set
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/led-cpu-set
+*** trdp_pd_demo
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/trdp_pd_demo
+*** i306_ft
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/i306_ft
+*** i214-ft
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/i214-ft
+*** i10x_dongle
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/i10x_dongle
+*** mop-handler
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/mop-handler
+*** i102-ft-echo-server
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/i102-ft-echo-server
+*** remoteiod
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/remoteiod
+*** eclr-app
+ - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/eclr-app
+** sp4comm
+*** sp4comm
+ - path :: ~/Daten/Sience/Digital-Signal-Processing/sp4comm/orgmode/sp4comm.pdf
+*** Module 1: Basics of Digital Signal Processing
+ - path :: ~/Daten/Sience/Digital-Signal-Processing/sp4comm/orgmode/week1
+*** Module 2: Vector Spaces
+ - path :: ~/Daten/Sience/Digital-Signal-Processing/sp4comm/orgmode/week2
+*** Module 3 Part 1: Introduction to Fourier Analysis
+ - path :: ~/Daten/Sience/Digital-Signal-Processing/sp4comm/orgmode/week3
+*** Module 3 Part 2: Advanced Fourier Analysis
+ - path :: ~/Daten/Sience/Digital-Signal-Processing/sp4comm/orgmode/week4
+*** Module 4 Part1: Introduction to Filtering
+ - path :: ~/Daten/Sience/Digital-Signal-Processing/sp4comm/orgmode/week5
+*** Module 4 Part 2: Filter Design
+ - path :: ~/Daten/Sience/Digital-Signal-Processing/sp4comm/orgmode/week6
+*** Module 5: Sampling and Quantization
+ - path :: ~/Daten/Sience/Digital-Signal-Processing/sp4comm/orgmode/week7
+*** Module 6: Digital Communication Systems
+ - path :: ~/Daten/Sience/Digital-Signal-Processing/sp4comm/orgmode/week8
+** Home
+*** christian
+  - path :: ~
