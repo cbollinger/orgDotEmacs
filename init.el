@@ -357,152 +357,151 @@
 (global-set-key "\C-cb" 'org-iswitchb)
 
 (defun efs/org-mode-setup ()
-        (org-indent-mode)
-        ;; (variable-pitch-mode 1)
-        ;; (visual-line-mode 1)
-        )
+  (org-indent-mode)
+  ;; (variable-pitch-mode 1)
+  ;; (visual-line-mode 1)
+  )
 
-      (use-package org
-        :pin org
-        :commands (org-capture org-agenda)
-        :hook (org-mode . efs/org-mode-setup)
-        :config
-        (setq org-ellipsis " ▾")
+(use-package org
+  :pin org
+  :commands (org-capture org-agenda)
+  :hook (org-mode . efs/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾")
 
-        (setq org-agenda-start-with-log-mode t)
-        (setq org-log-done 'time)
-        (setq org-log-into-drawer t)
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
 
-        (setq org-directory "~/Nextcloud/Documents/org-mode")
-        (setq org-default-notes-file "~/Nextcloud/Documents/org-mode/refile/refile.org")
+  (setq org-directory "~/Nextcloud/Documents/org-mode")
+  (setq org-default-notes-file "~/Nextcloud/Documents/org-mode/refile/refile.org")
 
-        (setq org-agenda-files (quote ("~/Nextcloud/Documents/org-mode/refile"
-                                   "~/Nextcloud/Documents/org-mode/gnu-software"
-                                   "~/Nextcloud/Documents/org-mode/duagon/General"
-                                   "~/Nextcloud/Documents/org-mode/duagon/Projects/SBB"
-                                   "~/Nextcloud/Documents/org-mode/duagon/Projects/duagon"
-                                   "~/Nextcloud/Documents/org-mode/duagon/Projects/Alstom-CH"
-                                   "~/Nextcloud/Documents/org-mode/duagon/Projects/Alstom-NLD")))
-        ;; (require 'org-habit)
-        ;; (add-to-list 'org-modules 'org-habit)
-        ;; (setq org-habit-graph-column 60)
+  (setq org-agenda-files (quote ("~/Nextcloud/Documents/org-mode/refile"
+                                 "~/Nextcloud/Documents/org-mode/gnu-software"
+                                 "~/Nextcloud/Documents/org-mode/duagon/General"
+                                 "~/Nextcloud/Documents/org-mode/duagon/Projects/SBB"
+                                 "~/Nextcloud/Documents/org-mode/duagon/Projects/duagon"
+                                 "~/Nextcloud/Documents/org-mode/duagon/Projects/Alstom-CH"
+                                 "~/Nextcloud/Documents/org-mode/duagon/Projects/Alstom-NLD")))
+  ;; (require 'org-habit)
+  ;; (add-to-list 'org-modules 'org-habit)
+  ;; (setq org-habit-graph-column 60)
 
-        (setq org-todo-keywords
+  (setq org-todo-keywords
         '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
           (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
 
-      (setq org-todo-keyword-faces
-            (quote (("TODO"      :foreground "red"          :weight bold)
-                    ("NEXT"      :foreground "OrangeRed"    :weight bold)
-                    ("REQUEST"   :foreground "blue"         :weight bold)
-                    ("DEFINED"   :foreground "SlateBlue"    :weight bold)
-                    ("ONGOING"   :foreground "Green2"       :weight bold)
-                    ("FIXED"     :foreground "SeaGreen"     :weight bold)
-                    ("DONE"      :foreground "forest green" :weight bold)
-                    ("WAITING"   :foreground "orange"       :weight bold)
-                    ("PAUSED"    :foreground "magenta"      :weight bold)
-                    ("CANCELLED" :foreground "forest green" :weight bold)
-                    ("MEETING"   :foreground "forest green" :weight bold)
-                    ("PHONE"     :foreground "forest green" :weight bold))))
+  (setq org-todo-keyword-faces
+        (quote (("TODO"      :foreground "red"          :weight bold)
+                ("NEXT"      :foreground "OrangeRed"    :weight bold)
+                ("REQUEST"   :foreground "blue"         :weight bold)
+                ("DEFINED"   :foreground "SlateBlue"    :weight bold)
+                ("ONGOING"   :foreground "Green2"       :weight bold)
+                ("FIXED"     :foreground "SeaGreen"     :weight bold)
+                ("DONE"      :foreground "forest green" :weight bold)
+                ("WAITING"   :foreground "orange"       :weight bold)
+                ("PAUSED"    :foreground "magenta"      :weight bold)
+                ("CANCELLED" :foreground "forest green" :weight bold)
+                ("MEETING"   :foreground "forest green" :weight bold)
+                ("PHONE"     :foreground "forest green" :weight bold))))
 
+  ;; Targets include this file and any file contributing to the agenda - up to 9 levels deep
+  (setq org-refile-targets (quote ((nil :maxlevel . 9)
+                                   (org-agenda-files :maxlevel . 9))))
 
-      ;; (setq org-refile-targets
-      ;;       '(("Archive.org" :maxlevel . 1)
-      ;;         ("Tasks.org" :maxlevel . 1)))
+  ;; Save Org buffers after refiling!
+  (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
-      ;; Save Org buffers after refiling!
-      (advice-add 'org-refile :after 'org-save-all-org-buffers)
+  (setq org-tag-alist (quote ((:startgroup)
+                              ("Projekte" . ?P)
+                              (:grouptags)
+                              ("D521_PDM" . ?a)
+                              ("D522_BT" . ?b)
+                              ("D522_NLD" . ?c)
+                              ("RemoteIO" . ?c)
+                              (:endgroup)
+                              (:startgroup)
+                              ("Private" . ?V)
+                              (:grouptags)
+                              ("Training" . ?t)
+                              ("DSP" . ?d)
+                              ("NOTE" . ?n)
+                              ("ORG" . ?o)
+                              ("PERSONAL" . ?p)
+                              (:endgroup)
+                              ("FLAGGED" . ??))))
 
-      (setq org-tag-alist (quote ((:startgroup)
-                                  ("Projekte" . ?P)
-                                  (:grouptags)
-                                  ("D521_PDM" . ?a)
-                                  ("D522_BT" . ?b)
-                                  ("D522_NLD" . ?c)
-                                  ("RemoteIO" . ?c)
-                                  (:endgroup)
-                                  (:startgroup)
-                                  ("Private" . ?V)
-                                  (:grouptags)
-                                  ("Training" . ?t)
-                                  ("DSP" . ?d)
-                                  ("NOTE" . ?n)
-                                  ("ORG" . ?o)
-                                  ("PERSONAL" . ?p)
-                                  (:endgroup)
-                                  ("FLAGGED" . ??))))
+  ;; Configure custom agenda views
+  (setq org-agenda-custom-commands
+        '(("d" "Dashboard"
+           ((agenda "" ((org-deadline-warning-days 7)))
+            (todo "NEXT"
+                  ((org-agenda-overriding-header "Next Tasks")))
+            (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
 
-      ;; Configure custom agenda views
-      (setq org-agenda-custom-commands
-            '(("d" "Dashboard"
-               ((agenda "" ((org-deadline-warning-days 7)))
-                (todo "NEXT"
-                      ((org-agenda-overriding-header "Next Tasks")))
-                (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+          ("n" "Agenda and all TODOs"
+           ((agenda "")
+            (alltodo "")))
 
-              ("n" "Agenda and all TODOs"
-                ((agenda "")
-                 (alltodo "")))
+          ("x" "Next Tasks"
+           ((todo "NEXT"
+                  ((org-agenda-overriding-header "Next Tasks")))))
 
-              ("x" "Next Tasks"
-               ((todo "NEXT"
-                      ((org-agenda-overriding-header "Next Tasks")))))
+          ("W" "Work Tasks" tags-todo "+work-email")
 
-              ("W" "Work Tasks" tags-todo "+work-email")
+          ;; Low-effort next actions
+          ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
+           ((org-agenda-overriding-header "Low Effort Tasks")
+            (org-agenda-max-todos 20)
+            (org-agenda-files org-agenda-files)))
 
-              ;; Low-effort next actions
-              ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-               ((org-agenda-overriding-header "Low Effort Tasks")
-                (org-agenda-max-todos 20)
-                (org-agenda-files org-agenda-files)))
+          ("w" "Workflow Status"
+           ((todo "WAIT"
+                  ((org-agenda-overriding-header "Waiting on External")
+                   (org-agenda-files org-agenda-files)))
+            (todo "REVIEW"
+                  ((org-agenda-overriding-header "In Review")
+                   (org-agenda-files org-agenda-files)))
+            (todo "PLAN"
+                  ((org-agenda-overriding-header "In Planning")
+                   (org-agenda-todo-list-sublevels nil)
+                   (org-agenda-files org-agenda-files)))
+            (todo "BACKLOG"
+                  ((org-agenda-overriding-header "Project Backlog")
+                   (org-agenda-todo-list-sublevels nil)
+                   (org-agenda-files org-agenda-files)))
+            (todo "READY"
+                  ((org-agenda-overriding-header "Ready for Work")
+                   (org-agenda-files org-agenda-files)))
+            (todo "ACTIVE"
+                  ((org-agenda-overriding-header "Active Projects")
+                   (org-agenda-files org-agenda-files)))
+            (todo "COMPLETED"
+                  ((org-agenda-overriding-header "Completed Projects")
+                   (org-agenda-files org-agenda-files)))
+            (todo "CANC"
+                  ((org-agenda-overriding-header "Cancelled Projects")
+                   (org-agenda-files org-agenda-files)))))))
 
-              ("w" "Workflow Status"
-               ((todo "WAIT"
-                      ((org-agenda-overriding-header "Waiting on External")
-                       (org-agenda-files org-agenda-files)))
-                (todo "REVIEW"
-                      ((org-agenda-overriding-header "In Review")
-                       (org-agenda-files org-agenda-files)))
-                (todo "PLAN"
-                      ((org-agenda-overriding-header "In Planning")
-                       (org-agenda-todo-list-sublevels nil)
-                       (org-agenda-files org-agenda-files)))
-                (todo "BACKLOG"
-                      ((org-agenda-overriding-header "Project Backlog")
-                       (org-agenda-todo-list-sublevels nil)
-                       (org-agenda-files org-agenda-files)))
-                (todo "READY"
-                      ((org-agenda-overriding-header "Ready for Work")
-                       (org-agenda-files org-agenda-files)))
-                (todo "ACTIVE"
-                      ((org-agenda-overriding-header "Active Projects")
-                       (org-agenda-files org-agenda-files)))
-                (todo "COMPLETED"
-                      ((org-agenda-overriding-header "Completed Projects")
-                       (org-agenda-files org-agenda-files)))
-                (todo "CANC"
-                      ((org-agenda-overriding-header "Cancelled Projects")
-                       (org-agenda-files org-agenda-files)))))))
-
-      ;;I use C-c c to start capture mode
-      (global-set-key (kbd "C-c c") 'org-capture)
-      (setq org-capture-templates
-            (quote (("t" "todo" entry (file "~/Nextcloud/Documents/org-mode/duagon/General/todo.org")
-                     "* TODO [#A] %?\n%U\n%a\n" :clock-in t :clock-resume t)
-                    ("r" "respond" entry (file "~/Nextcloud/Documents/org-mode/refile/refile.org")
-                     "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-                    ("n" "note" entry (file "~/Nextcloud/Documents/org-mode/refile/refile.org")
-                     "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-                    ("j" "Journal" entry (file+datetree "~/git/org/diary.org")
-                     "* %?\n%U\n" :clock-in t :clock-resume t)
-                    ("w" "org-protocol" entry (file "~/Nextcloud/Documents/org-mode/refile/refile.org")
-                     "* TODO Review %c\n%U\n" :immediate-finish t)
-                    ("m" "Meeting" entry (file "~/Nextcloud/Documents/org-mode/refile/refile.org")
-                     "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
-                    ("p" "Phone call" entry (file "~/Nextcloud/Documents/org-mode/refile/refile.org")
-                     "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-                    ("h" "Habit" entry (file "~/Nextcloud/Documents/org-mode/refile/refile.org")
-                     "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+  ;;I use C-c c to start capture mode
+  (global-set-key (kbd "C-c c") 'org-capture)
+  (setq org-capture-templates
+        (quote (("t" "todo" entry (file "~/Nextcloud/Documents/org-mode/duagon/General/todo.org")
+                 "* TODO [#A] %?\n%U\n%a\n" :clock-in t :clock-resume t)
+                ("r" "respond" entry (file "~/Nextcloud/Documents/org-mode/refile/refile.org")
+                 "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
+                ("n" "note" entry (file "~/Nextcloud/Documents/org-mode/refile/refile.org")
+                 "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+                ("j" "Journal" entry (file+datetree "~/git/org/diary.org")
+                 "* %?\n%U\n" :clock-in t :clock-resume t)
+                ("w" "org-protocol" entry (file "~/Nextcloud/Documents/org-mode/refile/refile.org")
+                 "* TODO Review %c\n%U\n" :immediate-finish t)
+                ("m" "Meeting" entry (file "~/Nextcloud/Documents/org-mode/refile/refile.org")
+                 "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
+                ("p" "Phone call" entry (file "~/Nextcloud/Documents/org-mode/refile/refile.org")
+                 "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
+                ("h" "Habit" entry (file "~/Nextcloud/Documents/org-mode/refile/refile.org")
+                 "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 
   ;; Allow setting single tags without the menu
   (setq org-fast-tag-selection-single-key (quote expert))
@@ -513,73 +512,73 @@
   (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
 
 
-      ;; call this manually to copy the meeting notes into an email
-      (defun chb/prepare-meeting-notes ()
-        "Prepare meeting notes for email
+  ;; call this manually to copy the meeting notes into an email
+  (defun chb/prepare-meeting-notes ()
+    "Prepare meeting notes for email
          Take selected region and convert tabs to spaces, mark TODOs with leading >>>, and copy to kill ring for pasting"
-        (interactive)
-        (let (prefix)
-          (save-excursion
-            (save-restriction
-              (narrow-to-region (region-beginning) (region-end))
-              (untabify (point-min) (point-max))
-              (goto-char (point-min))
-              (while (re-search-forward "^\\( *-\\\) \\(TODO\\|DONE\\): " (point-max) t)
-                (replace-match (concat (make-string (length (match-string 1)) ?>) " " (match-string 2) ": ")))
-              (goto-char (point-min))
-              (kill-ring-save (point-min) (point-max))))))
+    (interactive)
+    (let (prefix)
+      (save-excursion
+        (save-restriction
+          (narrow-to-region (region-beginning) (region-end))
+          (untabify (point-min) (point-max))
+          (goto-char (point-min))
+          (while (re-search-forward "^\\( *-\\\) \\(TODO\\|DONE\\): " (point-max) t)
+            (replace-match (concat (make-string (length (match-string 1)) ?>) " " (match-string 2) ": ")))
+          (goto-char (point-min))
+          (kill-ring-save (point-min) (point-max))))))
 
-      ;; Place tags close to the right-hand side of the window
-      (add-hook 'org-finalize-agenda-hook 'place-agenda-tags)
-      (defun place-agenda-tags ()
-        "Put the agenda tags by the right border of the agenda window."
-        (setq org-agenda-tags-column (- 4 (window-width)))
-        (org-agenda-align-tags))
+  ;; Place tags close to the right-hand side of the window
+  (add-hook 'org-finalize-agenda-hook 'place-agenda-tags)
+  (defun place-agenda-tags ()
+    "Put the agenda tags by the right border of the agenda window."
+    (setq org-agenda-tags-column (- 4 (window-width)))
+    (org-agenda-align-tags))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; org-mode agenda options                                                ;;
+  ;; org-mode agenda options                                                ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;open agenda in current window
-(setq org-agenda-window-setup (quote current-window))
-;;warn me of any deadlines in next 7 days
-(setq org-deadline-warning-days 7)
-;;show me tasks scheduled or due in next fortnight
-(setq org-agenda-span (quote fortnight))
-;;don't show tasks as scheduled if they are already shown as a deadline
-(setq org-agenda-skip-scheduled-if-deadline-is-shown t)
-;;don't give awarning colour to tasks with impending deadlines
-;;if they are scheduled to be done
-(setq org-agenda-skip-deadline-prewarning-if-scheduled (quote pre-scheduled))
-;;don't show tasks that are scheduled or have deadlines in the
-;;normal todo list
-(setq org-agenda-todo-ignore-deadlines (quote all))
-(setq org-agenda-todo-ignore-scheduled (quote all))
-;;sort tasks in order of when they are due and then by priority
-(setq org-agenda-sorting-strategy
-  (quote
-   ((agenda deadline-up priority-down)
-    (todo priority-down category-keep)
-    (tags priority-down category-keep)
-    (search category-keep))))
+  ;;open agenda in current window
+  (setq org-agenda-window-setup (quote current-window))
+  ;;warn me of any deadlines in next 7 days
+  (setq org-deadline-warning-days 7)
+  ;;show me tasks scheduled or due in next fortnight
+  (setq org-agenda-span (quote fortnight))
+  ;;don't show tasks as scheduled if they are already shown as a deadline
+  (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
+  ;;don't give awarning colour to tasks with impending deadlines
+  ;;if they are scheduled to be done
+  (setq org-agenda-skip-deadline-prewarning-if-scheduled (quote pre-scheduled))
+  ;;don't show tasks that are scheduled or have deadlines in the
+  ;;normal todo list
+  (setq org-agenda-todo-ignore-deadlines (quote all))
+  (setq org-agenda-todo-ignore-scheduled (quote all))
+  ;;sort tasks in order of when they are due and then by priority
+  (setq org-agenda-sorting-strategy
+        (quote
+         ((agenda deadline-up priority-down)
+          (todo priority-down category-keep)
+          (tags priority-down category-keep)
+          (search category-keep))))
 
-    ;; Disable keys in org-mode
-    ;;    C-c [
-    ;;    C-c ]
-    ;;    C-c ;
-    ;;    C-c C-x C-q  cancelling the clock (we never want this)
-    (add-hook 'org-mode-hook
-              '(lambda ()
-                 ;; Undefine C-c [ and C-c ] since this breaks my
-                 ;; org-agenda files when directories are include It
-                 ;; expands the files in the directories individually
-                 (org-defkey org-mode-map "\C-c[" 'undefined)
-                 (org-defkey org-mode-map "\C-c]" 'undefined)
-                 (org-defkey org-mode-map "\C-c;" 'undefined)
-                 (org-defkey org-mode-map "\C-c\C-x\C-q" 'undefined))
-              'append)
+  ;; Disable keys in org-mode
+  ;;    C-c [
+  ;;    C-c ]
+  ;;    C-c ;
+  ;;    C-c C-x C-q  cancelling the clock (we never want this)
+  (add-hook 'org-mode-hook
+            '(lambda ()
+               ;; Undefine C-c [ and C-c ] since this breaks my
+               ;; org-agenda files when directories are include It
+               ;; expands the files in the directories individually
+               (org-defkey org-mode-map "\C-c[" 'undefined)
+               (org-defkey org-mode-map "\C-c]" 'undefined)
+               (org-defkey org-mode-map "\C-c;" 'undefined)
+               (org-defkey org-mode-map "\C-c\C-x\C-q" 'undefined))
+            'append)
 
 
-      (efs/org-font-setup))
+  (efs/org-font-setup))
 
 (use-package org-bullets
   :hook (org-mode . org-bullets-mode)
@@ -1100,3 +1099,19 @@
 
 ;; To make this directory available to Emacs 
 (add-to-list 'Info-additional-directory-list "~/.local/share/info")
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("cbdf8c2e1b2b5c15b34ddb5063f1b21514c7169ff20e081d39cf57ffee89bc1e" default))
+ '(delete-selection-mode nil)
+ '(package-selected-packages
+   '(yasnippet-snippets xref-js2 which-key vterm visual-fill-column vertico use-package undo-tree typescript-mode treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-all-the-icons sourcemap request rainbow-delimiters pyvenv python-mode ox-reveal org-tree-slide org-present org-bullets ob-ipython nodejs-repl no-littering lsp-ui lsp-ivy json-mode ivy-yasnippet ivy-rich ivy-prescient ivy-posframe indium hide-mode-line helpful gnuplot forge evil-nerd-commenter eterm-256color eshell-git-prompt doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles dap-mode counsel-projectile consult-company company-restclient company-box command-log-mode ccls auto-package-update all-the-icons-dired)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
