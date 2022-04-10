@@ -6,7 +6,7 @@
 (defvar efs/default-variable-font-size 140)
 
 ;; Make frame transparency overridable
-(defvar efs/frame-transparency '(90 . 90))
+(defvar efs/frame-transparency '(100 . 100))
 
 ;; The default is 800 kilobytes.  Measured in bytes.
 (setq gc-cons-threshold (* 50 1000 1000))
@@ -121,8 +121,8 @@
 
 (use-package doom-themes
   :init
-  ;; (load-theme 'doom-palenight t)
-  (load-theme 'doom-challenger-deep)
+  (load-theme 'doom-palenight t)
+  ;; (load-theme 'doom-challenger-deep)
   :config
   (doom-themes-treemacs-config)
   (doom-themes-org-config)
@@ -321,12 +321,13 @@
                             '(("^ *\\([-]\\) "
                                (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-    ;; Set faces for heading levels
-    (set-face-attribute 'org-document-title nil :font "Iosevka Etoile" :weight 'bold :height 1.3)
-    (dolist (face '((org-level-1 . 1.2)
-                    (org-level-2 . 1.1)
-                    (org-level-3 . 1.05)
-                    (org-level-4 . 1.0)
+  ;; Set face for org
+   (set-face-attribute 'org-document-title nil :font "Iosevka Etoile" :weight 'bold :height 2.0)
+   ;; Set faces for heading levels
+    (dolist (face '((org-level-1 . 1.4)
+                    (org-level-2 . 1.3)
+                    (org-level-3 . 1.2)
+                    (org-level-4 . 1.1)
                     (org-level-5 . 1.1)
                     (org-level-6 . 1.1)
                     (org-level-7 . 1.1)
@@ -351,11 +352,6 @@
 ;; (set-face-attribute 'org-column face nil :height 180 :width normal)
 ;; (set-face-attribute 'org-column nil :background "light gray" :foreground "dark red")
 
-;; Standard key bindings
-(global-set-key "\C-cl" 'org-store-link)
-(global-set-key "\C-ca" 'org-agenda)
-(global-set-key "\C-cb" 'org-iswitchb)
-
 (defun efs/org-mode-setup ()
     (org-indent-mode)
     ;; (variable-pitch-mode 1)
@@ -363,10 +359,14 @@
     )
 
   (use-package org
+    :bind (("\C-cl" . org-store-link)
+           ("\C-ca" . org-agenda)
+           ("\C-cb" . org-iswitchb))
     :pin org
     :commands (org-capture org-agenda)
     :hook (org-mode . efs/org-mode-setup)
     :config
+    (efs/org-font-setup)
     (setq org-ellipsis " ▾")
 
     (setq org-agenda-start-with-log-mode t)
@@ -381,11 +381,14 @@
                                    "~/Nextcloud/Documents/org-mode/gnu-software"
                                    "~/Nextcloud/Documents/org-mode/duagon/General"
 ;;                                   "~/Nextcloud/Documents/org-mode/duagon/Clients/SBB"
+                                   "~/Nextcloud/Documents/org-mode/duagon/Clients/Alstom-DE"
                                    "~/Nextcloud/Documents/org-mode/duagon/Clients/Alstom-CH"
                                    "~/Nextcloud/Documents/org-mode/duagon/Clients/Alstom-NLD")))
     (require 'org-habit)
     (add-to-list 'org-modules 'org-habit)
     (setq org-habit-graph-column 60)
+    ;; This turns the habit display on again at 6AM each morning. 
+    (run-at-time "06:00" 86400 '(lambda () (setq org-habit-show-habits t)))
 
     (setq org-todo-keywords
       (quote ((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
@@ -532,6 +535,8 @@
                   ("h" "Habit" entry (file "~/Nextcloud/Documents/org-mode/refile/habit.org")
                    "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 
+
+
     ;; Allow setting single tags without the menu
     (setq org-fast-tag-selection-single-key (quote expert))
     ;; For tag searches ignore tasks with scheduled and deadline dates
@@ -610,7 +615,7 @@
     ;; Download the sound at https://freesound.org/people/.Andre_Onate/sounds/484665/
     (setq org-clock-sound "~/.emacs.d/wav/mixkit-slot-machine-win-siren-1929.wav")
 
-    (efs/org-font-setup))
+)
 
 (use-package org-bullets
   :hook (org-mode . org-bullets-mode)
@@ -774,6 +779,125 @@
       (org-babel-tangle))))
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
+
+; Clocking Functions
+
+(setq bh/keep-clock-running nil)
+
+(defun bh/clock-in-to-next (kw)
+  "Switch a task from TODO to NEXT when clocking in. Skips capture tasks, projects, and subprojects. Switch projects and subprojects from NEXT back to TODO"
+  (when (not (and (boundp 'org-capture-mode) org-capture-mode))
+    (cond
+     ((and (member (org-get-todo-state) (list "TODO"))
+           (bh/is-task-p))
+      "NEXT")
+     ((and (member (org-get-todo-state) (list "NEXT"))
+           (bh/is-project-p))
+      "TODO"))))
+
+(defun bh/find-project-task ()
+  "Move point to the parent (project) task if any"
+  (save-restriction
+    (widen)
+    (let ((parent-task (save-excursion (org-back-to-heading 'invisible-ok) (point))))
+      (while (org-up-heading-safe)
+        (when (member (nth 2 (org-heading-components)) org-todo-keywords-1)
+          (setq parent-task (point))))
+      (goto-char parent-task)
+      parent-task)))
+
+(defun bh/punch-in (arg)
+  "Start continuous clocking and set the default task to the selected task. If no task is selected set the Organization task as the default task."
+  (interactive "p")
+  (setq bh/keep-clock-running t)
+  (if (equal major-mode 'org-agenda-mode)
+      ;;
+      ;; We're in the agenda
+      ;;
+      (let* ((marker (org-get-at-bol 'org-hd-marker))
+             (tags (org-with-point-at marker (org-get-tags-at))))
+        (if (and (eq arg 4) tags)
+            (org-agenda-clock-in '(16))
+          (bh/clock-in-organization-task-as-default)))
+    ;;
+    ;; We are not in the agenda
+    ;;
+    (save-restriction
+      (widen)
+                                        ; Find the tags on the current task
+      (if (and (equal major-mode 'org-mode) (not (org-before-first-heading-p)) (eq arg 4))
+          (org-clock-in '(16))
+        (bh/clock-in-organization-task-as-default)))))
+
+(defun bh/punch-out ()
+  (interactive)
+  (setq bh/keep-clock-running nil)
+  (when (org-clock-is-active)
+    (org-clock-out))
+  (org-agenda-remove-restriction-lock))
+
+(defun bh/clock-in-default-task ()
+  (save-excursion
+    (org-with-point-at org-clock-default-task
+      (org-clock-in))))
+
+(defun bh/clock-in-parent-task ()
+  "Move point to the parent (project) task if any and clock in"
+  (let ((parent-task))
+    (save-excursion
+      (save-restriction
+        (widen)
+        (while (and (not parent-task) (org-up-heading-safe))
+          (when (member (nth 2 (org-heading-components)) org-todo-keywords-1)
+            (setq parent-task (point))))
+        (if parent-task
+            (org-with-point-at parent-task
+              (org-clock-in))
+          (when bh/keep-clock-running
+            (bh/clock-in-default-task)))))))
+
+(defvar bh/organization-task-id "2cbef41d-71da-4e1f-b161-e827513fa0ae")
+
+(defun bh/clock-in-organization-task-as-default ()
+  (interactive)
+  (org-with-point-at (org-id-find bh/organization-task-id 'marker)
+    (org-clock-in '(16))))
+
+(defun bh/clock-out-maybe ()
+  (when (and bh/keep-clock-running
+             (not org-clock-clocking-in)
+             (marker-buffer org-clock-default-task)
+             (not org-clock-resolving-clocks-due-to-idleness))
+    (bh/clock-in-parent-task)))
+
+
+(add-hook 'org-clock-out-hook 'bh/clock-out-maybe 'append)
+
+(setq org-archive-mark-done nil)
+(setq org-archive-location "%s_archive::* Archived Tasks")
+
+(defun bh/skip-non-archivable-tasks ()
+  "Skip trees that are not available for archiving"
+  (save-restriction
+    (widen)
+    ;; Consider only tasks with done todo headings as archivable candidates
+    (let ((next-headline (save-excursion (or (outline-next-heading) (point-max))))
+          (subtree-end (save-excursion (org-end-of-subtree t))))
+      (if (member (org-get-todo-state) org-todo-keywords-1)
+          (if (member (org-get-todo-state) org-done-keywords)
+              (let* ((daynr (string-to-int (format-time-string "%d" (current-time))))
+                     (a-month-ago (* 60 60 24 (+ daynr 1)))
+                     (last-month (format-time-string "%Y-%m-" (time-subtract (current-time) (seconds-to-time a-month-ago))))
+                     (this-month (format-time-string "%Y-%m-" (current-time)))
+                     (subtree-is-current (save-excursion
+                                           (forward-line 1)
+                                           (and (< (point) subtree-end)
+                                                (re-search-forward (concat last-month "\\|" this-month) subtree-end t)))))
+                (if subtree-is-current
+                    subtree-end ; Has a date in this month or last month, skip it
+                  nil))  ; available to archive
+            (or subtree-end (point-max)))
+        next-headline))))
 
 (require 'ox-latex)
     ;; Latex search path
@@ -1136,25 +1260,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("cbdf8c2e1b2b5c15b34ddb5063f1b21514c7169ff20e081d39cf57ffee89bc1e" default))
  '(delete-selection-mode nil)
- '(org-latex-default-packages-alist
-   '(("AUTO" "inputenc" t
-      ("pdflatex"))
-     ("" "graphicx" t nil)
-     ("" "grffile" t nil)
-     ("" "longtable" nil nil)
-     ("" "wrapfig" nil nil)
-     ("" "rotating" nil nil)
-     ("normalem" "ulem" t nil)
-     ("" "amsmath" t nil)
-     ("" "textcomp" t nil)
-     ("" "amssymb" t nil)
-     ("" "capt-of" nil nil)
-     ("" "hyperref" nil nil)))
  '(package-selected-packages
-   '(yasnippet-snippets xref-js2 which-key vterm visual-fill-column vertico use-package undo-tree typescript-mode treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-all-the-icons sourcemap request rainbow-delimiters pyvenv python-mode ox-reveal org-tree-slide org-present org-bullets ob-ipython nodejs-repl no-littering lsp-ui lsp-ivy json-mode ivy-yasnippet ivy-rich ivy-prescient ivy-posframe indium hide-mode-line helpful gnuplot forge evil-nerd-commenter eterm-256color eshell-git-prompt doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles dap-mode counsel-projectile consult-company company-restclient company-box command-log-mode ccls auto-package-update all-the-icons-dired)))
+   '(yasnippet-snippets xref-js2 which-key vterm use-package undo-tree typescript-mode treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired sourcemap restclient request rainbow-delimiters pyvenv python-mode ox-reveal org-tree-slide org-present org-bullets ob-ipython no-littering lsp-ui lsp-treemacs lsp-ivy json-mode ivy-rich ivy-prescient indium hide-mode-line helpful gnuplot forge evil-nerd-commenter eterm-256color eshell-git-prompt epresent doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles counsel-projectile company-box command-log-mode ccls auto-package-update all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
