@@ -29,15 +29,12 @@ The following variables are used to tweak some of the configuration pieces for u
 In this document I've added links in many places that lead you to documentation for the various packages we use.  If you're looking at this file in Emacs, you can put your cursor on a link and press =C-c C-o= or run =M-x org-open-at-point= to open the link in your web browser.
 
 * Extra Git-Modules
-
-
 #+NAME: checkout-submodules
 #+BEGIN_SRC shell :results none
 mkdir -p git-submodules
 cd git-submodules
 git clone https://github.com/fniessen/org-html-themes.git
 #+END_SRC
-
 * Startup Performance
 
 #+begin_src emacs-lisp
@@ -625,10 +622,13 @@ This section contains the basic configuration for =org-mode= plus the configurat
                                          "~/Nextcloud/Documents/org-mode/private"
                                          "~/Nextcloud/Documents/org-mode/gnu-software"
                                          "~/Nextcloud/Documents/org-mode/duagon/General"
-      ;;                                   "~/Nextcloud/Documents/org-mode/duagon/Clients/SBB"
-                                         "~/Nextcloud/Documents/org-mode/duagon/Clients/Alstom-DE"
-                                         "~/Nextcloud/Documents/org-mode/duagon/Clients/Alstom-CH"
-                                         "~/Nextcloud/Documents/org-mode/duagon/Clients/Alstom-NLD")))
+                                         ;;"~/Nextcloud/Documents/org-mode/duagon/Clients/SBB"
+                                         ;; "~/Nextcloud/Documents/org-mode/duagon/Clients/Alstom-DE"
+                                         ;; "~/Nextcloud/Documents/org-mode/duagon/Clients/Alstom-CH"
+                                         ;; "~/Nextcloud/Documents/org-mode/duagon/Clients/Alstom-NLD"
+                                         "~/Nextcloud/Documents/org-mode/duagon/Clients"
+                                         "~/Nextcloud/Documents/org-mode/duagon/Products"
+                                         "~/Nextcloud/Documents/org-mode/duagon/Repair")))
           (require 'org-habit)
           (add-to-list 'org-modules 'org-habit)
           (setq org-habit-graph-column 60)
@@ -636,19 +636,19 @@ This section contains the basic configuration for =org-mode= plus the configurat
           (run-at-time "06:00" 86400 '(lambda () (setq org-habit-show-habits t)))
 
           (setq org-todo-keywords
-            (quote ((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
-                    (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
+                (quote ((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
+                        (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
 
           (setq org-todo-keyword-faces
-            (quote (("TODO" :foreground "red" :weight bold)
-                    ("NEXT" :foreground "blue" :weight bold)
-                    ("ONGOING" :foreground "yellow" :weight bold)
-                    ("DONE" :foreground "forest green" :weight bold)
-                    ("WAITING" :foreground "orange" :weight bold)
-                    ("HOLD" :foreground "magenta" :weight bold)
-                    ("CANCELLED" :foreground "forest green" :weight bold)
-                    ("MEETING" :foreground "forest green" :weight bold)
-                    ("PHONE" :foreground "forest green" :weight bold))))
+                (quote (("TODO" :foreground "red" :weight bold)
+                        ("NEXT" :foreground "blue" :weight bold)
+                        ("ONGOING" :foreground "yellow" :weight bold)
+                        ("DONE" :foreground "forest green" :weight bold)
+                        ("WAITING" :foreground "orange" :weight bold)
+                        ("HOLD" :foreground "magenta" :weight bold)
+                        ("CANCELLED" :foreground "forest green" :weight bold)
+                        ("MEETING" :foreground "forest green" :weight bold)
+                        ("PHONE" :foreground "forest green" :weight bold))))
 
 
           (setq org-todo-state-tags-triggers
@@ -751,14 +751,14 @@ This section contains the basic configuration for =org-mode= plus the configurat
                           ((org-agenda-overriding-header "Cancelled Projects")
                            (org-agenda-files org-agenda-files)))))
 
-                   ("N" "Notes" tags "NOTE"
-                    ( (org-agenda-overriding-header "Notes") (org-tags-match-list-sublevels t)))
+                  ("N" "Notes" tags "NOTE"
+                   ( (org-agenda-overriding-header "Notes") (org-tags-match-list-sublevels t)))
 
-                   ("h" "Habits" tags-todo "STYLE=\"habit\""
-                    ((org-agenda-overriding-header "Habits")
-                     (org-agenda-sorting-strategy
-                      '(todo-state-down effort-up category-keep))))
-                   ))
+                  ("h" "Habits" tags-todo "STYLE=\"habit\""
+                   ((org-agenda-overriding-header "Habits")
+                    (org-agenda-sorting-strategy
+                     '(todo-state-down effort-up category-keep))))
+                  ))
 
           ;;I use C-c c to start capture mode
           (global-set-key (kbd "C-c c") 'org-capture)
@@ -790,11 +790,32 @@ This section contains the basic configuration for =org-mode= plus the configurat
           ;; flyspell mode for spell checking everywhere
           (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
 
+          ;; Setting up spell checking with multiple dictionaries
+          (with-eval-after-load "ispell"
+            ;; Configure `LANG`, otherwise ispell.el cannot find a 'default
+            ;; dictionary' even though multiple dictionaries will be configured
+            ;; in next line.
+            (setenv "LANG" "en_US.UTF-8")
+            (setq ispell-program-name "hunspell")
+            ;; Configure German, Swiss German, and two variants of English.
+            (setq ispell-dictionary "de_DE,de_CH,en_GB,en_US")
+            ;; ispell-set-spellchecker-params has to be called
+            ;; before ispell-hunspell-add-multi-dic will work
+            (ispell-set-spellchecker-params)
+            (ispell-hunspell-add-multi-dic "de_DE,de_CH,en_GB,en_US")
+            ;; For saving words to the personal dictionary, don't infer it from
+            ;; the locale, otherwise it would save to ~/.hunspell_de_DE.
+            (setq ispell-personal-dictionary "~/.hunspell_personal"))
+
+          ;; The personal dictionary file has to exist, otherwise hunspell will
+          ;; silently not use it.
+          (unless (file-exists-p ispell-personal-dictionary)
+            (write-region "" nil ispell-personal-dictionary nil 0))
 
           ;; call this manually to copy the meeting notes into an email
           (defun chb/prepare-meeting-notes ()
             "Prepare meeting notes for email
-                 Take selected region and convert tabs to spaces, mark TODOs with leading >>>, and copy to kill ring for pasting"
+                     Take selected region and convert tabs to spaces, mark TODOs with leading >>>, and copy to kill ring for pasting"
             (interactive)
             (let (prefix)
               (save-excursion
@@ -1069,11 +1090,11 @@ Some tweaks to have a better looking while presenting slides
          (org-present-mode-quit . dw/org-present-quit-hook)))
 #+end_src
 
-** COMMENT Planing
+** Planing
 
-#+begin_src 
-  (unless (package-installed-p 'ox-taskjuggler)
-    (package-install 'ox-taskjuggler))
+#+begin_src emacs-lisp
+  (unless (package-installed-p 'org-contrib)
+    (package-install 'org-contrib))
   (require 'ox-taskjuggler)
 #+end_src
 
@@ -1257,10 +1278,11 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
       (setq org-latex-prefer-user-labels t)
 
       ;; Make org aware of the tex enginge
+      ;; -8bit option avoids undifined white space characters in minted code blocks
       (setq org-latex-pdf-process
-            '("xelatex -shell-escape -interaction nonstopmode %f"
-              "xelatex -shell-escape -interaction nonstopmode %f"
-              "xelatex -shell-escape -interaction nonstopmode %f"))
+            '("xelatex -8bit -shell-escape -interaction nonstopmode %f"
+              "xelatex -8bit -shell-escape -interaction nonstopmode %f"
+              "xelatex -8bit -shell-escape -interaction nonstopmode %f"))
 
       ;; (setq org-latex-pdf-process
       ;;       '("lualatex -shell-escape -interaction nonstopmode %f"
@@ -1361,6 +1383,23 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
 
 #+end_src
 
+* Backward-Forward
+
+#+begin_src emacs-lisp
+  (use-package backward-forward
+  :demand
+  :config
+  (backward-forward-mode t)
+  :bind (:map backward-forward-mode-map
+              ("<C-left>" . nil)
+              ("<C-right>" . nil)
+              ("<M-left>" . backward-forward-previous-location)
+              ("<M-right>" . backward-forward-next-location)
+              ("<mouse-8>" . backward-forward-previous-location)
+              ("<mouse-9>" . backward-forward-next-location)
+              )
+  )
+#+end_src
 * Development
 ** Languages
 *** IDE Features with lsp-mode
@@ -1374,20 +1413,18 @@ The =lsp-keymap-prefix= setting enables you to define a prefix for where =lsp-mo
 The =which-key= integration adds helpful descriptions of the various keys so you should be able to learn a lot just by pressing =C-c l= in a =lsp-mode= buffer and trying different things that you find there.
 
 #+begin_src emacs-lisp
-
-  (defun efs/lsp-mode-setup ()
-    (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-    (lsp-headerline-breadcrumb-mode))
-
   (use-package lsp-mode
+    :diminish "L"
     :commands (lsp lsp-deferred)
-    :hook (lsp-mode . efs/lsp-mode-setup)
-    :init
-    (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+    :hook (c-mode-common . lsp-deferred)
+    :init (setq lsp-keymap-prefix "C-l"
+                lsp-enable-file-watchers nil
+                lsp-enable-on-type-formatting nil
+                lsp-enable-snippet nil
+                lsp-lens-enable nil)
     :config
     (lsp-enable-which-key-integration t)
     (setq read-process-output-max (* 1024 1024)))
-
 #+end_src
 
 **** lsp-ui
@@ -1527,11 +1564,18 @@ You can use the pyvenv package to use =virtualenv= environments in Emacs.  The =
 
 #+end_src
 
-*** C++
+*** C++ + Language Server
+
 #+begin_src emacs-lisp
-(use-package ccls
-  :hook ((c-mode c++-mode objc-mode cuda-mode) .
-         (lambda () (require 'ccls) (lsp))))
+  (setq c-default-style "linux")
+  (setq c-basic-offset 4)
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package ccls
+      :init (setq ccls-sem-highlight-method 'font-lock)
+      :hook ((c-mode c++-mode objc-mode cuda-mode) . (lambda () (require 'ccls) (lsp-deferred)))
+  )
 #+end_src
 *** NodeJs
 
@@ -1803,7 +1847,6 @@ For more thoughts on Eshell, check out these articles by Pierre Neidhardt:
 #+end_src
 
 * File Management
-
 ** Dired
 
 Dired is a built-in file manager for Emacs that does some pretty amazing things!  Here are some key bindings you should try out:
@@ -1937,7 +1980,6 @@ Here we're using use-package to install restclient.el and also we're configuring
      :bind (:map restclient-mode-map
                  ("C-c C-f" . json-mode-beautify)))
 #+end_src
-
 
 ** Some App
 
