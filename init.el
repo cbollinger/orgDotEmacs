@@ -395,6 +395,7 @@
 
   (setq org-todo-keywords
         (quote ((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
+                (sequence "EC(c)" "RFEW(0)" "RFEX(1)" "G2(2)" "G2.1(3)" "G2.2(4)" "G3(5)" "|" "Abnahme(6)")
                 (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
 
   (setq org-todo-keyword-faces
@@ -402,6 +403,16 @@
                 ("NEXT" :foreground "blue" :weight bold)
                 ("ONGOING" :foreground "yellow" :weight bold)
                 ("DONE" :foreground "forest green" :weight bold)
+
+                ("EC" :foreground "red" :weight bold)
+                ("RFEW" :foreground "blue" :weight bold)
+                ("RFEX" :foreground "magenta" :weight bold)
+                ("G2" :foreground "magenta" :weight bold)
+                ("G2.1" :foreground "yellow" :weight bold)
+                ("G2.2" :foreground "brown" :weight bold)
+                ("G3" :foreground "forest green" :weight bold)
+                ("Abnahme" :foreground "green" :weight bold)
+
                 ("WAITING" :foreground "orange" :weight bold)
                 ("HOLD" :foreground "magenta" :weight bold)
                 ("CANCELLED" :foreground "forest green" :weight bold)
@@ -463,8 +474,28 @@
                   ((org-agenda-overriding-header "All Todo Tasks")))
             (todo "CANCELLED"
                   ((org-agenda-overriding-header "Project CANCELLED")))
-
             (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+
+            ("e" "EC-Overview"
+             ((agenda "" ((org-deadline-warning-days 7)))
+              (todo "EC"
+                    ((org-agenda-overriding-header "EC Planned")))
+              (todo "RFEW"
+                    ((org-agenda-overriding-header "RFEW: Request for Work signed")))
+              (todo "RFEX"
+                    ((org-agenda-overriding-header "RFEX: Request for Execution signed")))
+              (todo "G2"
+                    ((org-agenda-overriding-header "G2: Planning done")))
+              (todo "G2.1"
+                    ((org-agenda-overriding-header "G2.1: Development done")))
+              (todo "G2.2"
+                    ((org-agenda-overriding-header "G2.2: G2 Validation done")))
+              (todo "G3"
+                    ((org-agenda-overriding-header "G3: G3 Validation done")))
+              (todo "Abnahme"
+                    ((org-agenda-overriding-header "Abnahmeprotokoll unterschrieben")))
+
+              (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
 
           ("n" "Agenda and all TODOs"
            ((agenda "") (alltodo "")) )
@@ -473,13 +504,7 @@
            ((todo "NEXT"
                   ((org-agenda-overriding-header "Next Tasks")))))
 
-          ("W" "Work Tasks" tags-todo "+work-email")
 
-          ;; Low-effort next actions
-          ("e" tags-todo "+TODO=\"NEXT\"+Effort<15&+Effort>0"
-           ((org-agenda-overriding-header "Low Effort Tasks")
-            (org-agenda-max-todos 20)
-            (org-agenda-files org-agenda-files)))
 
           ("w" "Workflow Status"
            ((todo "WAIT"
@@ -713,7 +738,7 @@
   (package-install 'ox-reveal))
 (require 'ox-reveal)
 (setq ox-reveal-always-ensure t)
-(setq org-reveal-root "file:/home/christian/Daten/reveal.js/")
+(setq org-reveal-root "file:///home/christian/Daten/reveal.js")
 (setq Org-Reveal-title-slide nil)
 
 (use-package hide-mode-line
@@ -1042,25 +1067,11 @@
                      ("\\paragraph{%s}" . "\\paragraph{%s}")
                      ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
 
-(use-package backward-forward
-:demand
-:config
-(backward-forward-mode t)
-:bind (:map backward-forward-mode-map
-            ("<C-left>" . nil)
-            ("<C-right>" . nil)
-            ("<M-left>" . backward-forward-previous-location)
-            ("<M-right>" . backward-forward-next-location)
-            ("<mouse-8>" . backward-forward-previous-location)
-            ("<mouse-9>" . backward-forward-next-location)
-            )
-)
-
 (use-package lsp-mode
   :diminish "L"
   :commands (lsp lsp-deferred)
   :hook (c-mode-common . lsp-deferred)
-  :init (setq lsp-keymap-prefix "C-l"
+  :init (setq lsp-keymap-prefix "C-L P"
               lsp-enable-file-watchers nil
               lsp-enable-on-type-formatting nil
               lsp-enable-snippet nil
@@ -1307,42 +1318,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-taskjuggler-default-project-duration 3500)
- '(org-taskjuggler-default-reports
-   '("textreport report \"Plan\" {
-  formats html
-  header '== %title =='
-
-  center -8<-
-    [#Plan Plan] | [#Resource_Allocation Resource Allocation]
-    ----
-    === Plan ===
-    <[report id=\"plan\"]>
-    ----
-    === Resource Allocation ===
-    <[report id=\"resourceGraph\"]>
-  ->8-
-}
-
-# A traditional Gantt chart with a project overview.
-taskreport plan \"\" {
-  headline \"Project Plan\"
-  columns bsi, name, start, end, effort, chart { width 1500 }
-  loadunit shortauto
-  hideresource 1
-}
-
-# A graph showing resource allocation. It identifies whether each
-# resource is under- or over-allocated for.
-resourcereport resourceGraph \"\" {
-  headline \"Resource Allocation Graph\"
-  columns no, name, effort, weekly {width 1500}
-  loadunit shortauto
-  hidetask ~(isleaf() & isleaf_())
-  sorttasks plan.start.up
-}"))
  '(package-selected-packages
-   '(c++-mode yasnippet-snippets xref-js2 which-key vterm use-package undo-tree typescript-mode treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired sourcemap restclient request rainbow-delimiters pyvenv python-mode ox-reveal org-tree-slide org-present org-contrib org-bullets ob-ipython no-littering lsp-ui lsp-ivy json-mode ivy-rich ivy-prescient indium hide-mode-line helpful helm-xref helm-lsp gnuplot forge flycheck evil-nerd-commenter eterm-256color eshell-git-prompt doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles dap-mode counsel-projectile company-box command-log-mode ccls backward-forward auto-package-update all-the-icons-dired)))
+   '(yasnippet-snippets xref-js2 which-key vterm use-package undo-tree typescript-mode treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired sourcemap restclient request rainbow-delimiters pyvenv python-mode ox-reveal org-tree-slide org-present org-contrib org-bullets ob-ipython no-littering lsp-ui lsp-ivy json-mode ivy-rich ivy-prescient indium htmlize hide-mode-line helpful helm-xref helm-lsp gnuplot forge flycheck evil-nerd-commenter eterm-256color eshell-git-prompt doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles dap-mode counsel-projectile company-box command-log-mode ccls backward-forward auto-package-update all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
