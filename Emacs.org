@@ -626,9 +626,7 @@ This section contains the basic configuration for =org-mode= plus the configurat
                                          "~/Nextcloud/Documents/org-mode/gnu-software"
                                          "~/Nextcloud/Documents/org-mode/duagon/General"
       ;;                                   "~/Nextcloud/Documents/org-mode/duagon/Clients/SBB"
-                                         "~/Nextcloud/Documents/org-mode/duagon/Clients/Alstom-DE"
-                                         "~/Nextcloud/Documents/org-mode/duagon/Clients/Alstom-CH"
-                                         "~/Nextcloud/Documents/org-mode/duagon/Clients/Alstom-NLD")))
+                                         "~/Nextcloud/Documents/org-mode/duagon/Clients")))
           (require 'org-habit)
           (add-to-list 'org-modules 'org-habit)
           (setq org-habit-graph-column 60)
@@ -1214,34 +1212,6 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
 
 ** Archiving Setup
 
-#+begin_src emacs-lisp
-(setq org-archive-mark-done nil)
-(setq org-archive-location "%s_archive::* Archived Tasks")
-
-(defun bh/skip-non-archivable-tasks ()
-  "Skip trees that are not available for archiving"
-  (save-restriction
-    (widen)
-    ;; Consider only tasks with done todo headings as archivable candidates
-    (let ((next-headline (save-excursion (or (outline-next-heading) (point-max))))
-          (subtree-end (save-excursion (org-end-of-subtree t))))
-      (if (member (org-get-todo-state) org-todo-keywords-1)
-          (if (member (org-get-todo-state) org-done-keywords)
-              (let* ((daynr (string-to-int (format-time-string "%d" (current-time))))
-                     (a-month-ago (* 60 60 24 (+ daynr 1)))
-                     (last-month (format-time-string "%Y-%m-" (time-subtract (current-time) (seconds-to-time a-month-ago))))
-                     (this-month (format-time-string "%Y-%m-" (current-time)))
-                     (subtree-is-current (save-excursion
-                                           (forward-line 1)
-                                           (and (< (point) subtree-end)
-                                                (re-search-forward (concat last-month "\\|" this-month) subtree-end t)))))
-                (if subtree-is-current
-                    subtree-end ; Has a date in this month or last month, skip it
-                  nil))  ; available to archive
-            (or subtree-end (point-max)))
-        next-headline))))
-#+end_src
-
 ** Latex - preview and pdf-export
 
 #+begin_src emacs-lisp
@@ -1258,9 +1228,9 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
 
       ;; Make org aware of the tex enginge
       (setq org-latex-pdf-process
-            '("xelatex -shell-escape -interaction nonstopmode %f"
-              "xelatex -shell-escape -interaction nonstopmode %f"
-              "xelatex -shell-escape -interaction nonstopmode %f"))
+            '("xelatex -8bit -shell-escape -interaction nonstopmode %f"
+              "xelatex -8bit -shell-escape -interaction nonstopmode %f"
+              "xelatex -8bit -shell-escape -interaction nonstopmode %f"))
 
       ;; (setq org-latex-pdf-process
       ;;       '("lualatex -shell-escape -interaction nonstopmode %f"
@@ -1360,6 +1330,17 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
                        ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
 
 #+end_src
+
+#+results:
+| dg_public                      | \documentclass{duagon_public}        |                                            |                                     |                                           |                                   |                                         |
+| (\section{%s} . \section{%s})  | (\subsection{%s} . \subsection{%s})  | (\subsubsection{%s} . \subsubsection{%s})  | (\paragraph{%s} . \paragraph{%s})   | (\subparagraph{%s} . \subparagraph{%s})   |                                   |                                         |
+| koma-report                    | \documentclass{scrreprt}             |                                            |                                     |                                           |                                   |                                         |
+| (\part{%s} . \part{%s})        | (\chapter{%s} . \chapter{%s})        | (\section{%s} . \section{%s})              | (\subsection{%s} . \subsection{%s}) | (\subsubsection{%s} . \subsubsection{%s}) | (\paragraph{%s} . \paragraph{%s}) | (\subparagraph{%s} . \subparagraph{%s}) |
+| koma-article                   | \documentclass{scrartcl}             |                                            |                                     |                                           |                                   |                                         |
+| (\section{%s} . \section{%s})  | (\subsection{%s} . \subsection{%s})  | (\subsubsection{%s} . \subsubsection{%s})  | (\paragraph{%s} . \paragraph{%s})   | (\subparagraph{%s} . \subparagraph{%s})   |                                   |                                         |
+| beamer                         | \documentclass[presentation]{beamer} |                                            |                                     |                                           |                                   |                                         |
+| (\section{%s} . \section*{%s}) | (\subsection{%s} . \subsection*{%s}) | (\subsubsection{%s} . \subsubsection*{%s}) |                                     |                                           |                                   |                                         |
+| beamer                         | \documentclass[presentation]{beamer} |                                            |                                     |                                           |                                   |                                         |
 
 * Development
 ** Languages
