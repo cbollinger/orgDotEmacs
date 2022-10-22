@@ -381,9 +381,7 @@
                                    "~/Nextcloud/Documents/org-mode/gnu-software"
                                    "~/Nextcloud/Documents/org-mode/duagon/General"
 ;;                                   "~/Nextcloud/Documents/org-mode/duagon/Clients/SBB"
-                                   "~/Nextcloud/Documents/org-mode/duagon/Clients/Alstom-DE"
-                                   "~/Nextcloud/Documents/org-mode/duagon/Clients/Alstom-CH"
-                                   "~/Nextcloud/Documents/org-mode/duagon/Clients/Alstom-NLD")))
+                                   "~/Nextcloud/Documents/org-mode/duagon/Clients")))
     (require 'org-habit)
     (add-to-list 'org-modules 'org-habit)
     (setq org-habit-graph-column 60)
@@ -873,32 +871,6 @@
 
 (add-hook 'org-clock-out-hook 'bh/clock-out-maybe 'append)
 
-(setq org-archive-mark-done nil)
-(setq org-archive-location "%s_archive::* Archived Tasks")
-
-(defun bh/skip-non-archivable-tasks ()
-  "Skip trees that are not available for archiving"
-  (save-restriction
-    (widen)
-    ;; Consider only tasks with done todo headings as archivable candidates
-    (let ((next-headline (save-excursion (or (outline-next-heading) (point-max))))
-          (subtree-end (save-excursion (org-end-of-subtree t))))
-      (if (member (org-get-todo-state) org-todo-keywords-1)
-          (if (member (org-get-todo-state) org-done-keywords)
-              (let* ((daynr (string-to-int (format-time-string "%d" (current-time))))
-                     (a-month-ago (* 60 60 24 (+ daynr 1)))
-                     (last-month (format-time-string "%Y-%m-" (time-subtract (current-time) (seconds-to-time a-month-ago))))
-                     (this-month (format-time-string "%Y-%m-" (current-time)))
-                     (subtree-is-current (save-excursion
-                                           (forward-line 1)
-                                           (and (< (point) subtree-end)
-                                                (re-search-forward (concat last-month "\\|" this-month) subtree-end t)))))
-                (if subtree-is-current
-                    subtree-end ; Has a date in this month or last month, skip it
-                  nil))  ; available to archive
-            (or subtree-end (point-max)))
-        next-headline))))
-
 (require 'ox-latex)
     ;; Latex search path
     (setq exec-path (append exec-path '("/usr/share/texmf")))
@@ -912,9 +884,9 @@
 
     ;; Make org aware of the tex enginge
     (setq org-latex-pdf-process
-          '("xelatex -shell-escape -interaction nonstopmode %f"
-            "xelatex -shell-escape -interaction nonstopmode %f"
-            "xelatex -shell-escape -interaction nonstopmode %f"))
+          '("xelatex -8bit -shell-escape -interaction nonstopmode %f"
+            "xelatex -8bit -shell-escape -interaction nonstopmode %f"
+            "xelatex -8bit -shell-escape -interaction nonstopmode %f"))
 
     ;; (setq org-latex-pdf-process
     ;;       '("lualatex -shell-escape -interaction nonstopmode %f"
@@ -1262,7 +1234,7 @@
  ;; If there is more than one, they won't work right.
  '(delete-selection-mode nil)
  '(package-selected-packages
-   '(yasnippet-snippets xref-js2 which-key vterm use-package undo-tree typescript-mode treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired sourcemap restclient request rainbow-delimiters pyvenv python-mode ox-reveal org-tree-slide org-present org-bullets ob-ipython no-littering lsp-ui lsp-treemacs lsp-ivy json-mode ivy-rich ivy-prescient indium hide-mode-line helpful gnuplot forge evil-nerd-commenter eterm-256color eshell-git-prompt epresent doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles counsel-projectile company-box command-log-mode ccls auto-package-update all-the-icons-dired)))
+   '(yasnippet-snippets xref-js2 which-key vterm use-package undo-tree typescript-mode treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired sourcemap restclient request rainbow-delimiters pyvenv python-mode ox-reveal org-tree-slide org-present org-bullets ob-ipython no-littering lsp-ui lsp-treemacs lsp-ivy json-mode ivy-rich ivy-prescient indium hide-mode-line helpful gnuplot forge evil-nerd-commenter eterm-256color eshell-git-prompt epresent ecb doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles counsel-projectile company-box command-log-mode ccls auto-package-update all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
