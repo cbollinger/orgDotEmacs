@@ -1,3 +1,4 @@
+
 #+title: Emacs From Scratch Configuration
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 #+CALL: checkout-submodules()
@@ -566,6 +567,8 @@ The =efs/org-font-setup= function configures various text faces to tweak the siz
                       (org-level-8 . 1.1)))
         (set-face-attribute (car face) nil :font "Iosevka Etoile" :weight 'medium :height (cdr face)))
 
+
+  
       ;; Ensure that anything that should be fixed-pitch in Org files appears that way
       (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
       (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
@@ -635,25 +638,25 @@ This section contains the basic configuration for =org-mode= plus the configurat
                   (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
 
     (setq org-todo-keyword-faces
-          (quote (("TODO" :foreground "red" :weight bold)
-                  ("NEXT" :foreground "blue" :weight bold)
-                  ("ONGOING" :foreground "yellow" :weight bold)
-                  ("DONE" :foreground "forest green" :weight bold)
+          (quote (("TODO"      :foreground "red"          :weight bold)
+                  ("NEXT"      :foreground "blue"         :weight bold)
+                  ("ONGOING"   :foreground "yellow"       :weight bold)
+                  ("DONE"      :foreground "forest green" :weight bold)
 
-                  ("EC" :foreground "red" :weight bold)
-                  ("RFEW" :foreground "blue" :weight bold)
-                  ("RFEX" :foreground "magenta" :weight bold)
-                  ("G2" :foreground "magenta" :weight bold)
-                  ("G2.1" :foreground "yellow" :weight bold)
-                  ("G2.2" :foreground "brown" :weight bold)
-                  ("G3" :foreground "forest green" :weight bold)
-                  ("Abnahme" :foreground "green" :weight bold)
+                  ("EC"        :foreground "red"          :weight bold)
+                  ("RFEW"      :foreground "blue"         :weight bold)
+                  ("RFEX"      :foreground "magenta"      :weight bold)
+                  ("G2"        :foreground "magenta"      :weight bold)
+                  ("G2.1"      :foreground "yellow"       :weight bold)
+                  ("G2.2"      :foreground "brown"        :weight bold)
+                  ("G3"        :foreground "forest green" :weight bold)
+                  ("Abnahme"   :foreground "green"        :weight bold)
 
-                  ("WAITING" :foreground "orange" :weight bold)
-                  ("HOLD" :foreground "magenta" :weight bold)
+                  ("WAITING"   :foreground "orange"       :weight bold)
+                  ("HOLD"      :foreground "magenta"      :weight bold)
                   ("CANCELLED" :foreground "forest green" :weight bold)
-                  ("MEETING" :foreground "forest green" :weight bold)
-                  ("PHONE" :foreground "forest green" :weight bold))))
+                  ("MEETING"   :foreground "forest green" :weight bold)
+                  ("PHONE"     :foreground "forest green" :weight bold))))
 
 
     (setq org-todo-state-tags-triggers
@@ -712,7 +715,7 @@ This section contains the basic configuration for =org-mode= plus the configurat
                     ((org-agenda-overriding-header "Project CANCELLED")))
               (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
 
-              ("e" "EC-Overview"
+              ("c" "EC-Overview"
                ((agenda "" ((org-deadline-warning-days 7)))
                 (todo "EC"
                       ((org-agenda-overriding-header "EC Planned")))
@@ -982,33 +985,34 @@ We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]
 To execute or export code in =org-mode= code blocks, you'll need to set up =org-babel-load-languages= for each language you'd like to use.  [[https://orgmode.org/worg/org-contrib/babel/languages.html][This page]] documents all of the languages that you can use with =org-babel=.
 
 #+begin_src emacs-lisp
-    (with-eval-after-load 'org
-      (org-babel-do-load-languages
-       'org-babel-load-languages
-       '((emacs-lisp . t)    ; 
-         (C          . t)    ; C, C++, D
-         (js         . t)    ; JavaScript
-         (ditaa      . t)    ; ditaa
-         (shell      . t)    ; shell, bash
-         (lisp       . t)    ; lisp
-         (latex      . t)    ; latex
-         (octave     . t)    ; octave
-         (gnuplot    . t)    ; gnuplot
-         (python     . t)    ; pyhon
-         (ipython    . t)    ; iron python notebook
-         (plantuml   . t)))  ; this line activate plantuml
+      (with-eval-after-load 'org
+        (org-babel-do-load-languages
+         'org-babel-load-languages
+         '((emacs-lisp . t)    ; 
+           (C          . t)    ; C, C++, D
+           (js         . t)    ; JavaScript
+           (org        , t)    ;
+           (ditaa      . t)    ; ditaa
+           (shell      . t)    ; shell, bash
+           (lisp       . t)    ; lisp
+           (latex      . t)    ; latex
+           (octave     . t)    ; octave
+           (gnuplot    . t)    ; gnuplot
+           (python     . t)    ; pyhon
+           (ipython     . t)   ; pyhon
+           (plantuml   . t)))  ; this line activate plantuml
 
-      (push '("conf-unix" . conf-unix) org-src-lang-modes))
+        (push '("conf-unix" . conf-unix) org-src-lang-modes))
 
-    ;; Use python lexer for ipython blocks
+      ;; Use python lexer for ipython blocks
 
-  (setq python-shell-interpreter "python3")
-  (add-to-list 'org-latex-minted-langs '(ipython "python"))  
+    (setq python-shell-interpreter "python3")
+    (add-to-list 'org-latex-minted-langs '(ipython "python"))  
 
-  ;; Do not prompt to confirm evaluation
-  ;; This may be dangerous - make sure you understand the consequences
-  ;; of setting this -- see the docstring for details
-  (setq org-confirm-babel-evaluate nil)
+    ;; Do not prompt to confirm evaluation
+    ;; This may be dangerous - make sure you understand the consequences
+    ;; of setting this -- see the docstring for details
+    (setq org-confirm-babel-evaluate nil)
 #+end_src
 
 ** Presentation
@@ -1350,7 +1354,6 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
         (add-to-list 'org-latex-classes
                      '("koma-report" "\\documentclass{scrreprt}
              "
-                       ("\\part{%s}"          . "\\part{%s}")
                        ("\\chapter{%s}"       . "\\chapter{%s}")
                        ("\\section{%s}"       . "\\section{%s}")
                        ("\\subsection{%s}"    . "\\subsection{%s}")
@@ -1370,7 +1373,6 @@ This snippet adds a hook to =org-mode= buffers so that =efs/org-babel-tangle-con
                        ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
 
 #+end_src
-
 
 * COMMENT Backward-Forward
 
@@ -1405,7 +1407,6 @@ The =which-key= integration adds helpful descriptions of the various keys so you
   (use-package lsp-mode
     :diminish "L"
     :commands (lsp lsp-deferred)
-    :hook (c-mode-common . lsp-deferred)
     :init (setq lsp-keymap-prefix "C-L P"
                 lsp-enable-file-watchers nil
                 lsp-enable-on-type-formatting nil
@@ -1443,8 +1444,9 @@ This package is built on the [[https://github.com/Alexander-Miller/treemacs][tre
 
 #+begin_src emacs-lisp
 
-  (use-package lsp-treemacs
-    :after lsp)
+    (use-package lsp-treemacs
+      :after lsp
+      :commands lsp-treemacs-references)
 
 #+end_src
 
@@ -1528,12 +1530,14 @@ pip install --user "python-language-server[all]"
 
 #+end_src
 
-There are a number of other language servers for Python so if you find that =pyls= doesn't work for you, consult the =lsp-mode= [[https://emacs-lsp.github.io/lsp-mode/page/languages/][language configuration documentation]] to try the others!
+There are a number of other language servers for Python so if you find that
+=pyls= doesn't work for you, consult the =lsp-mode= [[https://emacs-lsp.github.io/lsp-mode/page/languages/][language configuration
+documentation]] to try the others!
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp 
 
   (use-package python-mode
-    :ensure t
+    :ensure nil
     :hook (python-mode . lsp-deferred)
     :custom
     ;; NOTE: Set these if Python 3 is called "python3" on your system!
@@ -1544,9 +1548,13 @@ There are a number of other language servers for Python so if you find that =pyl
      (require 'dap-python))
 #+end_src
 
-You can use the pyvenv package to use =virtualenv= environments in Emacs.  The =pyvenv-activate= command should configure Emacs to cause =lsp-mode= and =dap-mode= to use the virtual environment when they are loaded, just select the path to your virtual environment before loading your project.
 
-#+begin_src emacs-lisp
+You can use the pyvenv package to use =virtualenv= environments in Emacs.  The
+=pyvenv-activate= command should configure Emacs to cause =lsp-mode= and
+=dap-mode= to use the virtual environment when they are loaded, just select the
+path to your virtual environment before loading your project.
+
+#+begin_src 
 
   (use-package pyvenv
     :after python-mode
@@ -2011,6 +2019,30 @@ see also [[https://www.emacswiki.org/emacs/ExternalDocumentation][EmacsWiki]]
 ;; To make this directory available to Emacs 
 (add-to-list 'Info-additional-directory-list "~/.local/share/info")
 #+end_src
+
+* RSS Feeds
+
+#+begin_src emacs-lisp 
+  ;; Configure Elfeed
+  (use-package elfeed
+    :ensure t
+    :config
+    (setq elfeed-db-directory (expand-file-name "elfeed" user-emacs-directory)
+          elfeed-show-entry-switch 'display-buffer)
+    :bind
+    ("C-x w" . elfeed ))
+#+end_src
+
+
+#+begin_src emacs-lisp
+  (use-package elfeed-org
+    :ensure t
+    :config
+    (elfeed-org)
+    (setq rmh-elfeed-org-files (list "~/Nextcloud/Documents/org-mode/refile/elfeed.org"))
+  )
+#+end_src
+
 
 * Treemacs Workspace
 ** ionia
