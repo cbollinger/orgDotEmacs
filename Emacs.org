@@ -541,7 +541,7 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 
 #+end_src
 * Org Mode
- [[https://orgmode.org/][Org Mode]] is one of the hallmark features of Emacs.  It is a rich document editor, project planner, task and time tracker, blogging engine, and literate coding utility all wrapped up in one package.
+[[https://orgmode.org/][Org Mode]] is one of the hallmark features of Emacs.  It is a rich document editor, project planner, task and time tracker, blogging engine, and literate coding utility all wrapped up in one package.
 ** Better Font Faces
 
 The =efs/org-font-setup= function configures various text faces to tweak the sizes of headings and use variable width fonts in most cases so that it looks more like we're editing a document in =org-mode=.  We switch back to fixed width (monospace) fonts for code blocks and tables so that they display correctly.
@@ -590,12 +590,21 @@ The =efs/org-font-setup= function configures various text faces to tweak the siz
 
 #+end_src
 
+** Org Habit
+#+begin_src emacs-lisp
+     (require 'org-habit)
+     (add-to-list 'org-modules 'org-habit)
+     (setq org-habit-graph-column 60)
+     ;; This turns the habit display on again at 6AM each morning. 
+     (run-at-time "06:00" 86400 '(lambda () (setq org-habit-show-habits t)))
+#+end_src
+
+
 ** Basic Config
 
 This section contains the basic configuration for =org-mode= plus the configuration for Org agendas and capture templates.  There's a lot to unpack in here so I'd recommend watching the videos for [[https://youtu.be/VcgjTEa0kU4][Part 5]] and [[https://youtu.be/PNE-mgkZ6HM][Part 6]] for a full explanation.
 
 #+begin_src emacs-lisp
-
   (defun efs/org-mode-setup ()
     (org-indent-mode)
     ;; (variable-pitch-mode 1)
@@ -603,35 +612,29 @@ This section contains the basic configuration for =org-mode= plus the configurat
     )
 
   (use-package org
-    :bind (("\C-cl" . org-store-link)
-           ("\C-ca" . org-agenda)
-           ("\C-cb" . org-iswitchb))
+    :bind
+    ("\C-cl" . org-store-link)
+    ("\C-ca" . org-agenda)
+    ("\C-cb" . org-iswitchb)
     :pin org
-    :commands (org-capture org-agenda)
-    :hook (org-mode . efs/org-mode-setup)
+    :commands
+    (org-capture org-agenda)
+    :hook
+    (org-mode . efs/org-mode-setup)
     :config
     (efs/org-font-setup)
     (setq org-ellipsis " ▾")
-
     (setq org-agenda-start-with-log-mode t)
     (setq org-log-done 'time)
     (setq org-log-into-drawer t)
-
     (setq org-directory "~/Nextcloud/Documents/org-mode")
     (setq org-default-notes-file "~/Nextcloud/Documents/org-mode/refile/refile.org")
-
-          (setq org-agenda-files (quote ("~/Nextcloud/Documents/org-mode/refile"
-                                         "~/Nextcloud/Documents/org-mode/private"
-                                         "~/Nextcloud/Documents/org-mode/gnu-software"
-                                         "~/Nextcloud/Documents/org-mode/duagon/General"
-      ;;                                   "~/Nextcloud/Documents/org-mode/duagon/Clients/SBB"
-                                         "~/Nextcloud/Documents/org-mode/duagon/Clients")))
-          (require 'org-habit)
-          (add-to-list 'org-modules 'org-habit)
-          (setq org-habit-graph-column 60)
-          ;; This turns the habit display on again at 6AM each morning. 
-          (run-at-time "06:00" 86400 '(lambda () (setq org-habit-show-habits t)))
-
+    (setq org-agenda-files (quote ("~/Nextcloud/Documents/org-mode/refile"
+                                   "~/Nextcloud/Documents/org-mode/private"
+                                   "~/Nextcloud/Documents/org-mode/gnu-software"
+                                   "~/Nextcloud/Documents/org-mode/duagon/General"
+                                   "~/Nextcloud/Documents/org-mode/duagon/Clients"
+                                   "~/Nextcloud/Documents/org-mode/duagon/Products")))
     (setq org-todo-keywords
           (quote ((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
                   (sequence "EC(c)" "RFEW(0)" "RFEX(1)" "G2(2)" "G2.1(3)" "G2.2(4)" "G3(5)" "|" "Abnahme(6)")
@@ -658,7 +661,6 @@ This section contains the basic configuration for =org-mode= plus the configurat
                   ("MEETING"   :foreground "forest green" :weight bold)
                   ("PHONE"     :foreground "forest green" :weight bold))))
 
-
     (setq org-todo-state-tags-triggers
           (quote (("CANCELLED" ("CANCELLED" . t))
                   ("WAITING" ("WAITING" . t))
@@ -669,12 +671,11 @@ This section contains the basic configuration for =org-mode= plus the configurat
                   ("ONGOING" ("WAITING") ("CANCELLED") ("HOLD"))
                   ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
 
-
-    ;; Targets include this file and any file contributing to the agenda - up to 9 levels deep
+    ;Targets include this file and any file contributing to the agenda - up to 9 levels deep
     (setq org-refile-targets (quote ((nil :maxlevel . 9)
                                      (org-agenda-files :maxlevel . 9))))
 
-    ;; Save Org buffers after refiling!
+    ;Save Org buffers after refiling!
     (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
     (setq org-tag-alist (quote ((:startgroup)
@@ -696,54 +697,33 @@ This section contains the basic configuration for =org-mode= plus the configurat
                                 (:endgroup)
                                 ("FLAGGED" . ??))))
 
-    ;; Configure custom agenda views
+                                          ;Configure custom agenda views
     (setq org-agenda-custom-commands
           '(
-            ("d" "Dashboard"
-             ((agenda "" ((org-deadline-warning-days 7)))
-              (todo "NEXT"
-                    ((org-agenda-overriding-header "Next Tasks")))
-              (todo "ONGOING"
-                    ((org-agenda-overriding-header "All ongoing Tasks")))
-              (todo "WAITING"
-                    ((org-agenda-overriding-header "All Tasks external waiting")))
-              (todo "HOLD"
-                    ((org-agenda-overriding-header "All Tasks on hold")))
-              (todo "TODO"
-                    ((org-agenda-overriding-header "All Todo Tasks")))
-              (todo "CANCELLED"
-                    ((org-agenda-overriding-header "Project CANCELLED")))
+            ("d" "Dashboard" ((agenda "" ((org-deadline-warning-days 7)))
+              (todo "NEXT"               ((org-agenda-overriding-header "Next Tasks")))
+              (todo "ONGOING"            ((org-agenda-overriding-header "All ongoing Tasks")))
+              (todo "WAITING"            ((org-agenda-overriding-header "All Tasks external waiting")))
+              (todo "HOLD"               ((org-agenda-overriding-header "All Tasks on hold")))
+              (todo "TODO"               ((org-agenda-overriding-header "All Todo Tasks")))
+              (todo "CANCELLED"          ((org-agenda-overriding-header "Project CANCELLED")))
               (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
 
-              ("c" "EC-Overview"
-               ((agenda "" ((org-deadline-warning-days 7)))
-                (todo "EC"
-                      ((org-agenda-overriding-header "EC Planned")))
-                (todo "RFEW"
-                      ((org-agenda-overriding-header "RFEW: Request for Work signed")))
-                (todo "RFEX"
-                      ((org-agenda-overriding-header "RFEX: Request for Execution signed")))
-                (todo "G2"
-                      ((org-agenda-overriding-header "G2: Planning done")))
-                (todo "G2.1"
-                      ((org-agenda-overriding-header "G2.1: Development done")))
-                (todo "G2.2"
-                      ((org-agenda-overriding-header "G2.2: G2 Validation done")))
-                (todo "G3"
-                      ((org-agenda-overriding-header "G3: G3 Validation done")))
-                (todo "Abnahme"
-                      ((org-agenda-overriding-header "Abnahmeprotokoll unterschrieben")))
+            ("c" "EC-Overview" ((agenda "" ((org-deadline-warning-days 7)))
+              (todo "EC"                   ((org-agenda-overriding-header "EC Planned")))
+              (todo "RFEW"                 ((org-agenda-overriding-header "RFEW: Request for Work signed")))
+              (todo "RFEX"                 ((org-agenda-overriding-header "RFEX: Request for Execution signed")))
+              (todo "G2"                   ((org-agenda-overriding-header "G2: Planning done")))
+              (todo "G2.1"                 ((org-agenda-overriding-header "G2.1: Development done")))
+              (todo "G2.2"                 ((org-agenda-overriding-header "G2.2: G2 Validation done")))
+              (todo "G3"                   ((org-agenda-overriding-header "G3: G3 Validation done")))
+              (todo "Abnahme"              ((org-agenda-overriding-header "Abnahmeprotokoll unterschrieben")))
+              (tags-todo "agenda/ACTIVE"   ((org-agenda-overriding-header "Active Projects")))))
 
-                (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
-
-            ("n" "Agenda and all TODOs"
-             ((agenda "") (alltodo "")) )
+            ("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))
 
             ("x" "Next Tasks"
-             ((todo "NEXT"
-                    ((org-agenda-overriding-header "Next Tasks")))))
-
-
+             ((todo "NEXT" ((org-agenda-overriding-header "Next Tasks")))))
 
             ("w" "Workflow Status"
              ((todo "WAIT"
@@ -782,7 +762,7 @@ This section contains the basic configuration for =org-mode= plus the configurat
                '(todo-state-down effort-up category-keep))))
             ))
 
-    ;;I use C-c c to start capture mode
+    ;I use C-c c to start capture mode
     (global-set-key (kbd "C-c c") 'org-capture)
     (setq org-capture-templates
           (quote (("t" "todo" entry (file "~/Nextcloud/Documents/org-mode/refile/todo.org")
@@ -802,65 +782,42 @@ This section contains the basic configuration for =org-mode= plus the configurat
                   ("h" "Habit" entry (file "~/Nextcloud/Documents/org-mode/refile/habit.org")
                    "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 
-
-
-    ;; Allow setting single tags without the menu
+    ;Allow setting single tags without the menu
     (setq org-fast-tag-selection-single-key (quote expert))
-    ;; For tag searches ignore tasks with scheduled and deadline dates
+    ;For tag searches ignore tasks with scheduled and deadline dates
     (setq org-agenda-tags-todo-honor-ignore-options t)
-    ;; Spell checker
-    ;; flyspell mode for spell checking everywhere
+    ;Spell checker
+    ;flyspell mode for spell checking everywhere
     (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
 
-    ;; Setting up spell checking with multiple dictionaries
+    ;Setting up spell checking with multiple dictionaries
     (with-eval-after-load "ispell"
-      ;; Configure `LANG`, otherwise ispell.el cannot find a 'default
-      ;; dictionary' even though multiple dictionaries will be configured
-      ;; in next line.
-      (setenv "LANG" "en_US.UTF-8")
-      (setq ispell-program-name "hunspell")
-      ;; Configure German, Swiss German, and two variants of English.
-      (setq ispell-dictionary "de_DE,de_CH,en_GB,en_US")
-      ;; ispell-set-spellchecker-params has to be called
-      ;; before ispell-hunspell-add-multi-dic will work
-      (ispell-set-spellchecker-params)
-      (ispell-hunspell-add-multi-dic "de_DE,de_CH,en_GB,en_US")
-      ;; For saving words to the personal dictionary, don't infer it from
-      ;; the locale, otherwise it would save to ~/.hunspell_de_DE.
-      (setq ispell-personal-dictionary "~/.hunspell_personal"))
+    ;;Configure `LANG`, otherwise ispell.el cannot find a 'default
+    ;;dictionary' even though multiple dictionaries will be configured
+    ;;in next line.
+    (setenv "LANG" "en_US.UTF-8")
+    (setq ispell-program-name "hunspell")
+    ;;Configure German, Swiss German, and two variants of English.
+    (setq ispell-dictionary "de_DE,de_CH,en_GB,en_US")
+    ;;ispell-set-spellchecker-params has to be called
+    ;;before ispell-hunspell-add-multi-dic will work
+    (ispell-set-spellchecker-params)
+    (ispell-hunspell-add-multi-dic "de_DE,de_CH,en_GB,en_US")
+    ;;For saving words to the personal dictionary, don't infer it from
+    ;;the locale, otherwise it would save to ~/.hunspell_de_DE.
+    (setq ispell-personal-dictionary "~/.hunspell_personal"))
 
-    ;; The personal dictionary file has to exist, otherwise hunspell will
-    ;; silently not use it.
-    (unless (file-exists-p ispell-personal-dictionary)
-      (write-region "" nil ispell-personal-dictionary nil 0))
-
-    ;; call this manually to copy the meeting notes into an email
-    (defun chb/prepare-meeting-notes ()
-      "Prepare meeting notes for email
-               Take selected region and convert tabs to spaces, mark TODOs with leading >>>, and copy to kill ring for pasting"
-      (interactive)
-      (let (prefix)
-        (save-excursion
-          (save-restriction
-            (narrow-to-region (region-beginning) (region-end))
-            (untabify (point-min) (point-max))
-            (goto-char (point-min))
-            (while (re-search-forward "^\\( *-\\\) \\(TODO\\|DONE\\): " (point-max) t)
-              (replace-match (concat (make-string (length (match-string 1)) ?>) " " (match-string 2) ": ")))
-            (goto-char (point-min))
-            (kill-ring-save (point-min) (point-max))))))
-
-    ;; Place tags close to the right-hand side of the window
+    ;Place tags close to the right-hand side of the window
     (add-hook 'org-finalize-agenda-hook 'place-agenda-tags)
     (defun place-agenda-tags ()
-      "Put the agenda tags by the right border of the agenda window."
-      (setq org-agenda-tags-column (- 4 (window-width)))
-      (org-agenda-align-tags))
+     "Put the agenda tags by the right border of the agenda window."
+     (setq org-agenda-tags-column (- 4 (window-width)))
+     (org-agenda-align-tags))
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; org-mode agenda options                                                ;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;;open agenda in current window
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;; org-mode agenda options                                                ;;
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;;open agenda in current window
     (setq org-agenda-window-setup (quote current-window))
     ;;warn me of any deadlines in next 7 days
     (setq org-deadline-warning-days 7)
@@ -902,15 +859,10 @@ This section contains the basic configuration for =org-mode= plus the configurat
 
     ;; Download the sound at https://freesound.org/people/.Andre_Onate/sounds/484665/
     (setq org-clock-sound "~/.emacs.d/wav/mixkit-slot-machine-win-siren-1929.wav")
+    )
 #+end_src
 
-** END USE-PACKAGE ORG
-
-#+begin_src emacs-lisp
-)
-#+end_src
-
-** Nicer Heading Bullets
+* Nicer Heading Bullets
 
 [[https://github.com/sabof/org-bullets][org-bullets]] replaces the heading stars in =org-mode= buffers with nicer looking characters that you can control.  Another option for this is [[https://github.com/integral-dw/org-superstar-mode][org-superstar-mode]] which we may cover in a later video.
 
@@ -946,9 +898,9 @@ We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]
   (require 'ob-js)
   (require 'color)
 
-  (unless (package-installed-p 'ob-ipython)
-    (package-install 'ob-ipython))
-  (require 'ob-ipython)
+  ;; (unless (package-installed-p 'ob-ipython)
+  ;;   (package-install 'ob-ipython))
+  ;; (require 'ob-ipython)
 
   (setq org-startup-shrink-all-tables t)
   (setq org-startup-folded t)
@@ -985,34 +937,33 @@ We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]
 To execute or export code in =org-mode= code blocks, you'll need to set up =org-babel-load-languages= for each language you'd like to use.  [[https://orgmode.org/worg/org-contrib/babel/languages.html][This page]] documents all of the languages that you can use with =org-babel=.
 
 #+begin_src emacs-lisp
-      (with-eval-after-load 'org
-        (org-babel-do-load-languages
-         'org-babel-load-languages
-         '((emacs-lisp . t)    ; 
-           (C          . t)    ; C, C++, D
-           (js         . t)    ; JavaScript
-           (org        , t)    ;
-           (ditaa      . t)    ; ditaa
-           (shell      . t)    ; shell, bash
-           (lisp       . t)    ; lisp
-           (latex      . t)    ; latex
-           (octave     . t)    ; octave
-           (gnuplot    . t)    ; gnuplot
-           (python     . t)    ; pyhon
-           (ipython     . t)   ; pyhon
-           (plantuml   . t)))  ; this line activate plantuml
+    (with-eval-after-load 'org
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       '((emacs-lisp . t)    ; 
+         (C          . t)    ; C, C++, D
+         (js         . t)    ; JavaScript
+         (org        , t)    ;
+         (ditaa      . t)    ; ditaa
+         (shell      . t)    ; shell, bash
+         (lisp       . t)    ; lisp
+         (latex      . t)    ; latex
+         (octave     . t)    ; octave
+         (gnuplot    . t)    ; gnuplot
+         (python     . t)    ; pyhon
+         (plantuml   . t)))  ; this line activate plantuml
 
-        (push '("conf-unix" . conf-unix) org-src-lang-modes))
+      (push '("conf-unix" . conf-unix) org-src-lang-modes))
 
-      ;; Use python lexer for ipython blocks
+    ;; Use python lexer for ipython blocks
+;;  (ipython     . t)   ; pyhon
+;;  (setq python-shell-interpreter "python3")
+;;  (add-to-list 'org-latex-minted-langs '(ipython "python"))  
 
-    (setq python-shell-interpreter "python3")
-    (add-to-list 'org-latex-minted-langs '(ipython "python"))  
-
-    ;; Do not prompt to confirm evaluation
-    ;; This may be dangerous - make sure you understand the consequences
-    ;; of setting this -- see the docstring for details
-    (setq org-confirm-babel-evaluate nil)
+  ;; Do not prompt to confirm evaluation
+  ;; This may be dangerous - make sure you understand the consequences
+  ;; of setting this -- see the docstring for details
+  (setq org-confirm-babel-evaluate nil)
 #+end_src
 
 ** Presentation
@@ -1536,16 +1487,17 @@ documentation]] to try the others!
 
 #+begin_src emacs-lisp 
 
-  (use-package python-mode
-    :ensure nil
-    :hook (python-mode . lsp-deferred)
-    :custom
-    ;; NOTE: Set these if Python 3 is called "python3" on your system!
-    ;; (python-shell-interpreter "python3")
-    ;; (dap-python-executable "python3")
-    (dap-python-debugger 'debugpy)
-    :config
-     (require 'dap-python))
+    (use-package python-mode
+      :ensure nil
+      :hook (python-mode . lsp-deferred)
+      :custom
+      ;; NOTE: Set these if Python 3 is called "python3" on your system!
+      (python-shell-interpreter "python")
+      (dap-python-executable "python")
+      (dap-python-debugger 'debugpy)
+      :config
+       (require 'dap-python)
+  )
 #+end_src
 
 
@@ -1555,12 +1507,10 @@ You can use the pyvenv package to use =virtualenv= environments in Emacs.  The
 path to your virtual environment before loading your project.
 
 #+begin_src 
-
   (use-package pyvenv
     :after python-mode
     :config
     (pyvenv-mode 1))
-
 #+end_src
 
 *** C++ + Language Server
