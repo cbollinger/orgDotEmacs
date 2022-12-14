@@ -22,19 +22,15 @@
 
 ;; Initialize package sources
 (require 'package)
-
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")
-			 ("org-contrib" . "https://elpa.nongnu.org/nongnu/")
-                         ("elpa" . "https://elpa.gnu.org/packages/")))
-
+(setq package-archives '(("melpa"       . "https://melpa.org/packages/")
+                         ("org"         . "https://orgmode.org/elpa/")
+                         ("org-contrib" . "https://elpa.nongnu.org/nongnu/")
+                         ("elpa"        . "https://elpa.gnu.org/packages/")))
 (package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
+(unless package-archive-contents (package-refresh-contents))
 
-  ;; Initialize use-package on non-Linux platforms
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
+;; Initialize use-package on non-Linux platforms
+(unless (package-installed-p 'use-package) (package-install 'use-package))
 
 (require 'use-package)
 (setq use-package-always-ensure t)
@@ -91,10 +87,8 @@
 (setq-default fill-column 80)
 
 (set-face-attribute 'default nil :font "Fira Code Retina" :height efs/default-font-size)
-
 ;; Set the fixed pitch face
 (set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height efs/default-font-size)
-
 ;; Set the variable pitch face
 (set-face-attribute 'variable-pitch nil :font "Cantarell" :height efs/default-variable-font-size :weight 'regular)
 
@@ -108,7 +102,6 @@
 
 (setq yas-snippet-dirs
       '("~/.emacs.d/snippets"                 ;; personal snippets
-        "~/.emacs.d/elpa/yasnippet-snippets-20210910.1959/snippets"
         ))
 (yas-global-mode 1)
 
@@ -780,7 +773,6 @@
     ;; Dynamic scoping to the rescue
     (let ((org-confirm-babel-evaluate nil))
       (org-babel-tangle))))
-
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
 ; Clocking Functions
@@ -993,7 +985,7 @@
 (use-package lsp-mode
   :diminish "L"
   :commands (lsp lsp-deferred)
-  :init (setq lsp-keymap-prefix "C-L P"
+  :init (setq lsp-keymap-prefix "C-p p"
               lsp-enable-file-watchers nil
               lsp-enable-on-type-formatting nil
               lsp-enable-snippet nil
@@ -1053,7 +1045,7 @@
 (unless (package-installed-p 'js2-refactor)
   (package-install 'js2-refactor))
 (require 'js2-refactor)
-(unless (package-installed-p 'xfef-js2)
+(unless (package-installed-p 'xref-js2)
   (package-install 'xref-js2))
 
 ;; JavaScript: Jumping to function definitions
@@ -1248,16 +1240,3 @@
   (elfeed-org)
   (setq rmh-elfeed-org-files (list "~/Nextcloud/Documents/org-mode/refile/elfeed.org"))
 )
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(yasnippet-snippets xref-js2 which-key vterm use-package undo-tree typescript-mode treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired sourcemap restclient request rainbow-delimiters pyvenv python-mode ox-reveal org-tree-slide org-present org-contrib org-bullets ob-ipython no-littering lsp-ui lsp-ivy json-mode ivy-rich ivy-prescient indium htmlize hide-mode-line helpful helm-xref helm-lsp gnuplot forge flycheck evil-nerd-commenter eterm-256color eshell-git-prompt elfeed-org doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles dap-mode counsel-projectile company-box command-log-mode ccls backward-forward auto-package-update all-the-icons-dired)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
