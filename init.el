@@ -984,16 +984,17 @@
                      ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
 
 (use-package lsp-mode
-  :diminish "L"
-  :commands (lsp lsp-deferred)
-  :init (setq lsp-keymap-prefix "C-p p"
-              lsp-enable-file-watchers nil
-              lsp-enable-on-type-formatting nil
-              lsp-enable-snippet nil
-              lsp-lens-enable nil)
-  :config
-  (lsp-enable-which-key-integration t)
-  (setq read-process-output-max (* 1024 1024)))
+    :diminish "L"
+    :commands (lsp lsp-deferred)
+    :init (setq lsp-keymap-prefix "C-p p"
+                lsp-enable-file-watchers nil
+                lsp-enable-on-type-formatting nil
+                lsp-enable-snippet nil
+                lsp-lens-enable nil)
+    :config
+    (lsp-enable-which-key-integration t)
+    (setq read-process-output-max (* 1024 1024))
+)
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
@@ -1086,8 +1087,8 @@
   (company-minimum-prefix-length 1)
   (company-idle-delay 0.0))
 
-(use-package company-box
-  :hook (company-mode . company-box-mode))
+;; (use-package company-box
+;;   :hook (company-mode . company-box-mode))
 
 (use-package projectile
   :diminish projectile-mode

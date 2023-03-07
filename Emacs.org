@@ -1410,7 +1410,6 @@ the associated output files.
 * Development
 ** Languages
 *** IDE Features with lsp-mode
-
 **** lsp-mode
 
 We use the excellent [[https://emacs-lsp.github.io/lsp-mode/][lsp-mode]] to enable IDE-like functionality for many
@@ -1438,7 +1437,8 @@ and trying different things that you find there.
                 lsp-lens-enable nil)
     :config
     (lsp-enable-which-key-integration t)
-    (setq read-process-output-max (* 1024 1024)))
+    (setq read-process-output-max (* 1024 1024))
+)
 #+end_src
 
 **** lsp-ui
@@ -1475,11 +1475,9 @@ you if you like to have a file browser at the left side of your screen in your
 editor.
 
 #+begin_src emacs-lisp
-
-    (use-package lsp-treemacs
-      :after lsp
-      :commands lsp-treemacs-references)
-
+  (use-package lsp-treemacs
+    :after lsp
+    :commands lsp-treemacs-references)
 #+end_src
 
 **** lsp-ivy
@@ -1616,6 +1614,7 @@ path to your virtual environment before loading your project.
   (setq c-basic-offset 4)
 #+end_src
 
+*** CCLS 
 #+begin_src emacs-lisp
   (use-package ccls
       :init (setq ccls-sem-highlight-method 'font-lock)
@@ -1693,8 +1692,8 @@ icons and better overall presentation.
     (company-minimum-prefix-length 1)
     (company-idle-delay 0.0))
 
-  (use-package company-box
-    :hook (company-mode . company-box-mode))
+  ;; (use-package company-box
+  ;;   :hook (company-mode . company-box-mode))
 
 #+end_src
 
