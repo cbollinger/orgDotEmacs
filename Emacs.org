@@ -4,6 +4,26 @@
 
 * Welcome!
 
+- sudo apt update && sudo apt upgrade -y
+- sudo apt install python3-pip
+- sudo apt install python3.10-venv
+- sudo apt install git
+- (sudo apt install build-essential)
+- sudo apt install fonts-firacode
+- sudo apt-get install -y fonts-cantarell
+- sudo apt-get install -y ispell
+- sudo apt-get install -y hunspell
+- sudo apt install hunspell-tools
+- sudo apt install texlive-latex-base
+- sudo apt install texlive-xetex 
+- sudo apt install default-jre
+- sudo apt install texlive-pstricks
+- sudo apt install inkscape
+- https://gitlab2.duagon.com/tools/docker/latex/-/tree/master/files/fonts
+- pip3 install pygments
+- sudo apt install graphviz
+
+
 This is the configuration we've been building in the *Emacs From Scratch*
 series, now written as an Org Mode document.  This file generates [[file:init.el][init.el]] which
 can be loaded by Emacs at startup.
