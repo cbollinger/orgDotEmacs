@@ -36,8 +36,10 @@ sudo apt install texlive-pstricks -y
 sudo apt install inkscape -y 
 sudo apt install graphviz -y
 sudo apt-get install hunspell-en-gb -y
+sudo apt install iswiss -y
+sudo apt install ingerma -y
 sudo apt install build-essential -y
-
+sudo apt nsf-common -y
 #+end_src
 
 ** Call this shell script to install the iosevka-fonts
