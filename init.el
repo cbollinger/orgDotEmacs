@@ -2,8 +2,8 @@
 ;;       in Emacs and init.el will be generated automatically!
 
 ;; You will most likely need to adjust this font size for your system!
-(defvar efs/default-font-size 140)
-(defvar efs/default-variable-font-size 140)
+(defvar efs/default-font-size 120)
+(defvar efs/default-variable-font-size 100)
 
 ;; Make frame transparency overridable
 (defvar efs/frame-transparency '(100 . 100))
@@ -314,51 +314,6 @@
 ;; (efs/leader-keys
 ;;  "ts" '(hydra-text-scale/body :which-key "scale text"))
 
-(defun efs/org-font-setup ()
-    ;; Replace list hyphen with dot
-    (font-lock-add-keywords 'org-mode
-                            '(("^ *\\([-]\\) "
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-
-  ;; Set face for org
-   (set-face-attribute 'org-document-title nil :font "Iosevka Etoile" :weight 'bold :height 2.0)
-   ;; Set faces for heading levels
-    (dolist (face '((org-level-1 . 1.4)
-                    (org-level-2 . 1.3)
-                    (org-level-3 . 1.2)
-                    (org-level-4 . 1.1)
-                    (org-level-5 . 1.1)
-                    (org-level-6 . 1.1)
-                    (org-level-7 . 1.1)
-                    (org-level-8 . 1.1)))
-      (set-face-attribute (car face) nil :font "Iosevka Etoile" :weight 'medium :height (cdr face)))
-
-
-
-    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-    (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
-    (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
-    (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-    (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
-    (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
-    (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch))
-
-;; Get rid of the background on column views
-;; (set-face-attribute 'org-column-title nil :background "light gray")
-;; (set-face-attribute 'org-column face nil :height 180 :width normal)
-;; (set-face-attribute 'org-column nil :background "light gray" :foreground "dark red")
-
-(require 'org-habit)
-(add-to-list 'org-modules 'org-habit)
-(setq org-habit-graph-column 60)
-;; This turns the habit display on again at 6AM each morning. 
-(run-at-time "06:00" 86400 '(lambda () (setq org-habit-show-habits t)))
-
 (defun efs/org-mode-setup ()
   (org-indent-mode)
   ;; (variable-pitch-mode 1)
@@ -379,17 +334,18 @@
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
-  (setq org-directory "~/cloud.duagon.com/Documents/org-mode")
-  (setq org-default-notes-file "~/cloud.duagon.com/Documents/org-mode/refile/refile.org")
-  (setq org-agenda-files (quote ("~/cloud.duagon.com/Documents/org-mode/refile"
-				 "~/cloud.duagon.com/Documents/org-mode/private"
-				 "~/cloud.duagon.com/Documents/org-mode/gnu-software"
-				 "~/cloud.duagon.com/Documents/org-mode/duagon/General"
-				 "~/cloud.duagon.com/Documents/org-mode/duagon/Clients"
-				 "~/cloud.duagon.com/Documents/org-mode/duagon/Products")))
+
+  (setq org-directory "/mnt/c/Users/cbollinger/Daten/org-system/org-mode")
+  (setq org-default-notes-file "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/refile.org")
+  (setq org-agenda-files (quote ("/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile"
+				 "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/private"
+				 "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/gnu-software"
+				 "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/duagon/General"
+				 "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/duagon/Clients"
+				 "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/duagon/Products")))
   (setq org-todo-keywords
 	(quote ((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
-		(sequence "EC(c)" "RFEW(0)" "RFEX(1)" "G2(2)" "G2.1(3)" "G2.2(4)" "G3(5)" "|" "Abnahme(6)")
+		(sequence "EC(C)" "RFEW(0)" "RFEX(1)" "G2(2)" "G2.1(3)" "G2.2(4)" "G3(5)" "|" "Abnahme(6)")
 		(sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
 
   (setq org-todo-keyword-faces
@@ -517,21 +473,21 @@
 					;I use C-c c to start capture mode
   (global-set-key (kbd "C-c c") 'org-capture)
   (setq org-capture-templates
-	(quote (("t" "todo" entry (file "~/cloud.duagon.com/Documents/org-mode/refile/todo.org")
+	(quote (("t" "todo" entry (file "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/todo.org")
 		 "* TODO [#A] %?\n%U\n%a\n" :clock-in t :clock-resume t)
-		("r" "respond" entry (file "~/cloud.duagon.com/Documents/org-mode/refile/refile.org")
+		("r" "respond" entry (file "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/refile.org")
 		 "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-		("n" "note" entry (file "~/cloud.duagon.com/Documents/org-mode/refile/note.org")
+		("n" "note" entry (file "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/note.org")
 		 "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-		("j" "Journal" entry (file+datetree "~/cloud.duagon.com/Documents/org-mode/refile/journal.org")
+		("j" "Journal" entry (file+datetree "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/journal.org")
 		 "* %?\n%U\n" :clock-in t :clock-resume t :tree-type month)
-		("w" "org-protocol" entry (file "~/cloud.duagon.com/Documents/org-mode/refile/refile.org")
+		("w" "org-protocol" entry (file "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/refile.org")
 		 "* TODO Review %c\n%U\n" :immediate-finish t)
-		("m" "Meeting" entry (file "~/cloud.duagon.com/Documents/org-mode/refile/meeting.org")
+		("m" "Meeting" entry (file "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/meeting.org")
 		 "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
-		("p" "Phone call" entry (file "~/cloud.duagon.com/Documents/org-mode/refile/phone.org")
+		("p" "Phone call" entry (file "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/phone.org")
 		 "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-		("h" "Habit" entry (file "~/cloud.duagon.com/Documents/org-mode/refile/habit.org")
+		("h" "Habit" entry (file "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/habit.org")
 		 "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 
 					;Allow setting single tags without the menu
@@ -550,11 +506,11 @@
     (setenv "LANG" "en_US.UTF-8")
     (setq ispell-program-name "hunspell")
     ;;Configure German, Swiss German, and two variants of English.
-    (setq ispell-dictionary "de_DE,de_CH,en_GB,en_US")
+    (setq ispell-dictionary "de_CH,en_GB,en_US")
     ;;ispell-set-spellchecker-params has to be called
     ;;before ispell-hunspell-add-multi-dic will work
     (ispell-set-spellchecker-params)
-    (ispell-hunspell-add-multi-dic "de_DE,de_CH,en_US")
+    (ispell-hunspell-add-multi-dic "de_CH,en_GB,en_US")
     ;;For saving words to the personal dictionary, don't infer it from
     ;;the locale, otherwise it would save to ~/.hunspell_de_DE.
     (setq ispell-personal-dictionary "~/.hunspell_personal"))
@@ -613,6 +569,60 @@
   (setq org-clock-sound "~/.emacs.d/wav/mixkit-slot-machine-win-siren-1929.wav")
   )
 
+(defun efs/org-font-setup ()
+    ;; Replace list hyphen with dot
+    (font-lock-add-keywords 'org-mode
+                            '(("^ *\\([-]\\) "
+                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+  ;; Set face for org
+   (set-face-attribute 'org-document-title nil :font "Iosevka Etoile" :weight 'bold :height 2.0)
+   ;; Set faces for heading levels
+    (dolist (face '((org-level-1 . 1.4)
+                    (org-level-2 . 1.3)
+                    (org-level-3 . 1.2)
+                    (org-level-4 . 1.1)
+                    (org-level-5 . 1.1)
+                    (org-level-6 . 1.1)
+                    (org-level-7 . 1.1)
+                    (org-level-8 . 1.1)))
+      (set-face-attribute (car face) nil :font "Iosevka Etoile" :weight 'medium :height (cdr face)))
+
+
+
+    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+    (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
+    (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
+    (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch))
+
+;; Get rid of the background on column views
+;; (set-face-attribute 'org-column-title nil :background "light gray")
+;; (set-face-attribute 'org-column face nil :height 180 :width normal)
+;; (set-face-attribute 'org-column nil :background "light gray" :foreground "dark red")
+
+(require 'org-habit)
+(add-to-list 'org-modules 'org-habit)
+(setq org-habit-graph-column 60)
+;; This turns the habit display on again at 6AM each morning. 
+(run-at-time "06:00" 86400 '(lambda () (setq org-habit-show-habits t)))
+
+(use-package org-attach-screenshot
+  :bind ("<f6> s" . org-attach-screenshot)
+  :config (setq org-attach-screenshot-dirfunction
+		(lambda () 
+		  (progn (cl-assert (buffer-file-name))
+			 (concat (file-name-sans-extension (buffer-file-name))
+				 "-att")))
+		org-attach-screenshot-command-line "gnome-screenshot -a -f %f"))
+
 (use-package org-bullets
   :hook (org-mode . org-bullets-mode)
   :custom
@@ -644,8 +654,8 @@
 (setq org-latex-listings 'minted)
 (setq org-src-fontify-natively t)
 
-(setq org-ditaa-jar-path "~/java/ditaa.jar")
-(setq org-plantuml-jar-path "~/java/plantuml.jar")
+(setq org-ditaa-jar-path "~/usr/share/ditaa/ditaa.jar")
+(setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
 ;; Use fundamental mode when editing plantuml blocks with C-c '
 (add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
 (add-to-list 'exec-path "/usr/bin/magick")
@@ -1240,5 +1250,5 @@
   :ensure t
   :config
   (elfeed-org)
-  (setq rmh-elfeed-org-files (list "~/cloud.duagon.com/Documents/org-mode/refile/elfeed.org"))
+  (setq rmh-elfeed-org-files (list "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/elfeed.org"))
 )
