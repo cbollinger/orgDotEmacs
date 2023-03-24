@@ -3,7 +3,7 @@
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 #+CALL: checkout-submodules()
 
-* Before you start - Prerequisite
+* Prerequisite - Before you start
 
 Issue the following the steps before =emacs= loads =init.el= tangled from this file. 
 ** Company related fonts from
@@ -25,19 +25,18 @@ sudo apt install python3.10-venv -y
 pip3 install pygments -y
 sudo apt install git -y
 sudo apt install fonts-firacode -y
-sudo apt-get install fonts-cantarell -y
-sudo apt-get install ispell -y 
-sudo apt-get install hunspell -y
+sudo apt install fonts-cantarell -y
+sudo apt install ispell -y 
+sudo apt install hunspell -y
 sudo apt install hunspell-tools -y 
+sudo apt install hunspell-de-ch -y
+sudo apt install hunspell-en-gb -y
 sudo apt install texlive-latex-base -y 
 sudo apt install texlive-xetex -y 
 sudo apt install default-jre -y 
 sudo apt install texlive-pstricks -y 
 sudo apt install inkscape -y 
 sudo apt install graphviz -y
-sudo apt-get install hunspell-en-gb -y
-sudo apt install iswiss -y
-sudo apt install ingerma -y
 sudo apt install build-essential -y
 sudo apt nsf-common -y
 #+end_src
@@ -200,7 +199,8 @@ sudo fc-cache -fv
 
 #+end_src
 
-* Welcome!
+
+* Default appearance
 
 The following variables are used to tweak some of the configuration pieces for
 use in the live streams so you might need to adjust them for your local machine
@@ -212,13 +212,14 @@ if you try to use this configuration directly.
   ;;       in Emacs and init.el will be generated automatically!
 
   ;; You will most likely need to adjust this font size for your system!
-  (defvar efs/default-font-size 140)
-  (defvar efs/default-variable-font-size 140)
+  (defvar efs/default-font-size 120)
+  (defvar efs/default-variable-font-size 100)
 
   ;; Make frame transparency overridable
   (defvar efs/frame-transparency '(100 . 100))
 
 #+end_src
+
 
 * Tips for Use
 
@@ -227,6 +228,7 @@ for the various packages we use.  If you're looking at this file in Emacs, you
 can put your cursor on a link and press =C-c C-o= or run =M-x org-open-at-point=
 to open the link in your web browser.
 
+
 * Extra Git-Modules
 #+NAME: checkout-submodules
 #+BEGIN_SRC shell :results none
@@ -234,6 +236,8 @@ mkdir -p git-submodules
 cd git-submodules
 git clone https://github.com/fniessen/org-html-themes.git
 #+END_SRC
+
+
 * Startup Performance
 
 #+begin_src emacs-lisp
@@ -251,6 +255,7 @@ git clone https://github.com/fniessen/org-html-themes.git
   (add-hook 'emacs-startup-hook #'efs/display-startup-time)
 
 #+end_src
+
 
 * Package System Setup
 
@@ -273,10 +278,10 @@ configuration of everything else we use.
             ("Melpa Stable" .  10)
             ))
 ;;  (package-initialize)
-  (unless package-archive-contents (package-refresh-contents))
+;;  (unless package-archive-contents (package-refresh-contents))
 
 ;; Initialize use-package on non-Linux platforms
-  (unless (package-installed-p 'use-package) (package-install 'use-package))
+;;  (unless (package-installed-p 'use-package) (package-install 'use-package))
 
   (require 'use-package)
   (setq use-package-always-ensure t)
@@ -304,6 +309,7 @@ You can also use =M-x auto-package-update-now= to update right now!
     (auto-package-update-at-time "09:00"))
 #+end_src
 
+
 * Keep Folders Clean
 
 We use the [[https://github.com/emacscollective/no-littering/blob/master/no-littering.el][no-littering]] package to keep folders where we edit files and the
@@ -323,6 +329,7 @@ be much easier than finding and setting these variables yourself.
   (setq auto-save-file-name-transforms
         `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
 #+end_src
+
 
 * Basic UI Configuration
 
@@ -383,6 +390,7 @@ above.
 (set-face-attribute 'variable-pitch nil :font "Cantarell" :height efs/default-variable-font-size :weight 'regular)
 #+end_src
 
+
 * Yasnippet
 #+begin_src emacs-lisp 
 (unless (package-installed-p 'yasnippet)
@@ -399,6 +407,7 @@ above.
 (yas-global-mode 1)
 #+end_src
 
+
 * Undo
 Enables the convinient undo-tree, which enables stepwise undo controlled by the
 arrow key's.
@@ -407,6 +416,7 @@ arrow key's.
   :init
   (global-undo-tree-mode 1))
 #+end_src
+
 * COMMENT Keybinding Configuration
 
 This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil-mode]] for a Vi-like modal editing experience.
@@ -456,6 +466,7 @@ modes with Vi-like keybindings for evil-mode.
     (evil-collection-init))
 
 #+end_src
+
 
 * UI Configuration
 ** Command Log Mode
@@ -782,6 +793,8 @@ You can press any other key (or =f= specifically) to exit the transient key map.
   ;;  "ts" '(hydra-text-scale/body :which-key "scale text"))
 
 #+end_src
+
+
 * Org Mode
 
 [[https://orgmode.org/][Org Mode]] is one of the hallmark features of Emacs.  It is a rich document
@@ -817,17 +830,18 @@ explanation.
      (setq org-agenda-start-with-log-mode t)
      (setq org-log-done 'time)
      (setq org-log-into-drawer t)
-     (setq org-directory "~/Nextcloud/Documents/org-mode")
-     (setq org-default-notes-file "~/Nextcloud/Documents/org-mode/refile/refile.org")
-     (setq org-agenda-files (quote ("~/Nextcloud/Documents/org-mode/refile"
-				    "~/Nextcloud/Documents/org-mode/private"
-				    "~/Nextcloud/Documents/org-mode/gnu-software"
-				    "~/Nextcloud/Documents/org-mode/duagon/General"
-				    "~/Nextcloud/Documents/org-mode/duagon/Clients"
-				    "~/Nextcloud/Documents/org-mode/duagon/Products")))
+
+     (setq org-directory "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode")
+     (setq org-default-notes-file "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/refile.org")
+     (setq org-agenda-files (quote ("/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile"
+				    "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/private"
+				    "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/gnu-software"
+				    "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/duagon/General"
+				    "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/duagon/Clients"
+				    "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/duagon/Products")))
      (setq org-todo-keywords
 	   (quote ((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
-		   (sequence "EC(c)" "RFEW(0)" "RFEX(1)" "G2(2)" "G2.1(3)" "G2.2(4)" "G3(5)" "|" "Abnahme(6)")
+		   (sequence "EC(C)" "RFEW(0)" "RFEX(1)" "G2(2)" "G2.1(3)" "G2.2(4)" "G3(5)" "|" "Abnahme(6)")
 		   (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
 
      (setq org-todo-keyword-faces
@@ -955,21 +969,21 @@ explanation.
 					   ;I use C-c c to start capture mode
      (global-set-key (kbd "C-c c") 'org-capture)
      (setq org-capture-templates
-	   (quote (("t" "todo" entry (file "~/Nextcloud/Documents/org-mode/refile/todo.org")
+	   (quote (("t" "todo" entry (file "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/todo.org")
 		    "* TODO [#A] %?\n%U\n%a\n" :clock-in t :clock-resume t)
-		   ("r" "respond" entry (file "~/Nextcloud/Documents/org-mode/refile/refile.org")
+		   ("r" "respond" entry (file "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/refile.org")
 		    "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-		   ("n" "note" entry (file "~/Nextcloud/Documents/org-mode/refile/note.org")
+		   ("n" "note" entry (file "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/note.org")
 		    "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-		   ("j" "Journal" entry (file+datetree "~/Nextcloud/Documents/org-mode/refile/journal.org")
+		   ("j" "Journal" entry (file+datetree "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/journal.org")
 		    "* %?\n%U\n" :clock-in t :clock-resume t :tree-type month)
-		   ("w" "org-protocol" entry (file "~/Nextcloud/Documents/org-mode/refile/refile.org")
+		   ("w" "org-protocol" entry (file "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/refile.org")
 		    "* TODO Review %c\n%U\n" :immediate-finish t)
-		   ("m" "Meeting" entry (file "~/Nextcloud/Documents/org-mode/refile/meeting.org")
+		   ("m" "Meeting" entry (file "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/meeting.org")
 		    "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
-		   ("p" "Phone call" entry (file "~/Nextcloud/Documents/org-mode/refile/phone.org")
+		   ("p" "Phone call" entry (file "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/phone.org")
 		    "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-		   ("h" "Habit" entry (file "~/Nextcloud/Documents/org-mode/refile/habit.org")
+		   ("h" "Habit" entry (file "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/habit.org")
 		    "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 
 					   ;Allow setting single tags without the menu
@@ -988,11 +1002,11 @@ explanation.
        (setenv "LANG" "en_US.UTF-8")
        (setq ispell-program-name "hunspell")
        ;;Configure German, Swiss German, and two variants of English.
-       (setq ispell-dictionary "de_DE,de_CH,en_GB,en_US")
+       (setq ispell-dictionary "de_CH,en_GB,en_US")
        ;;ispell-set-spellchecker-params has to be called
        ;;before ispell-hunspell-add-multi-dic will work
        (ispell-set-spellchecker-params)
-       (ispell-hunspell-add-multi-dic "de_DE,de_CH,en_GB,en_US")
+       (ispell-hunspell-add-multi-dic "de_CH,en_GB,en_US")
        ;;For saving words to the personal dictionary, don't infer it from
        ;;the locale, otherwise it would save to ~/.hunspell_de_DE.
        (setq ispell-personal-dictionary "~/.hunspell_personal"))
@@ -1133,6 +1147,7 @@ more like we're editing a document in =org-mode=.  We switch back to fixed width
 				 "-att")))
 		org-attach-screenshot-command-line "gnome-screenshot -a -f %f"))
 #+end_src
+
 
 * Nicer Heading Bullets
 
@@ -1622,6 +1637,7 @@ the associated output files.
   )
 #+end_src
 
+
 * Development
 
 ** LSP Mode: Languages
@@ -2000,6 +2016,7 @@ them yourself.
   :hook (prog-mode . rainbow-delimiters-mode))
 
 #+end_src
+
 
 * Terminals
 ** term-mode
@@ -2380,7 +2397,7 @@ see also [[https://www.emacswiki.org/emacs/ExternalDocumentation][EmacsWiki]]
     :ensure t
     :config
     (elfeed-org)
-    (setq rmh-elfeed-org-files (list "~/Nextcloud/Documents/org-mode/refile/elfeed.org"))
+    (setq rmh-elfeed-org-files (list "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/elfeed.org"))
   )
 #+end_src
 

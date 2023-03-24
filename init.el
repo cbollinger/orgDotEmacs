@@ -2,8 +2,8 @@
 ;;       in Emacs and init.el will be generated automatically!
 
 ;; You will most likely need to adjust this font size for your system!
-(defvar efs/default-font-size 140)
-(defvar efs/default-variable-font-size 140)
+(defvar efs/default-font-size 120)
+(defvar efs/default-variable-font-size 100)
 
 ;; Make frame transparency overridable
 (defvar efs/frame-transparency '(100 . 100))
@@ -32,10 +32,10 @@
             ("Melpa Stable" .  10)
             ))
 ;;  (package-initialize)
-  (unless package-archive-contents (package-refresh-contents))
+;;  (unless package-archive-contents (package-refresh-contents))
 
 ;; Initialize use-package on non-Linux platforms
-  (unless (package-installed-p 'use-package) (package-install 'use-package))
+;;  (unless (package-installed-p 'use-package) (package-install 'use-package))
 
   (require 'use-package)
   (setq use-package-always-ensure t)
@@ -334,17 +334,18 @@
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
-  (setq org-directory "~/Nextcloud/Documents/org-mode")
-  (setq org-default-notes-file "~/Nextcloud/Documents/org-mode/refile/refile.org")
-  (setq org-agenda-files (quote ("~/Nextcloud/Documents/org-mode/refile"
-				 "~/Nextcloud/Documents/org-mode/private"
-				 "~/Nextcloud/Documents/org-mode/gnu-software"
-				 "~/Nextcloud/Documents/org-mode/duagon/General"
-				 "~/Nextcloud/Documents/org-mode/duagon/Clients"
-				 "~/Nextcloud/Documents/org-mode/duagon/Products")))
+
+  (setq org-directory "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode")
+  (setq org-default-notes-file "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/refile.org")
+  (setq org-agenda-files (quote ("/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile"
+				 "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/private"
+				 "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/gnu-software"
+				 "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/duagon/General"
+				 "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/duagon/Clients"
+				 "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/duagon/Products")))
   (setq org-todo-keywords
 	(quote ((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
-		(sequence "EC(c)" "RFEW(0)" "RFEX(1)" "G2(2)" "G2.1(3)" "G2.2(4)" "G3(5)" "|" "Abnahme(6)")
+		(sequence "EC(C)" "RFEW(0)" "RFEX(1)" "G2(2)" "G2.1(3)" "G2.2(4)" "G3(5)" "|" "Abnahme(6)")
 		(sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
 
   (setq org-todo-keyword-faces
@@ -472,21 +473,21 @@
 					;I use C-c c to start capture mode
   (global-set-key (kbd "C-c c") 'org-capture)
   (setq org-capture-templates
-	(quote (("t" "todo" entry (file "~/Nextcloud/Documents/org-mode/refile/todo.org")
+	(quote (("t" "todo" entry (file "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/todo.org")
 		 "* TODO [#A] %?\n%U\n%a\n" :clock-in t :clock-resume t)
-		("r" "respond" entry (file "~/Nextcloud/Documents/org-mode/refile/refile.org")
+		("r" "respond" entry (file "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/refile.org")
 		 "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-		("n" "note" entry (file "~/Nextcloud/Documents/org-mode/refile/note.org")
+		("n" "note" entry (file "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/note.org")
 		 "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-		("j" "Journal" entry (file+datetree "~/Nextcloud/Documents/org-mode/refile/journal.org")
+		("j" "Journal" entry (file+datetree "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/journal.org")
 		 "* %?\n%U\n" :clock-in t :clock-resume t :tree-type month)
-		("w" "org-protocol" entry (file "~/Nextcloud/Documents/org-mode/refile/refile.org")
+		("w" "org-protocol" entry (file "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/refile.org")
 		 "* TODO Review %c\n%U\n" :immediate-finish t)
-		("m" "Meeting" entry (file "~/Nextcloud/Documents/org-mode/refile/meeting.org")
+		("m" "Meeting" entry (file "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/meeting.org")
 		 "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
-		("p" "Phone call" entry (file "~/Nextcloud/Documents/org-mode/refile/phone.org")
+		("p" "Phone call" entry (file "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/phone.org")
 		 "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-		("h" "Habit" entry (file "~/Nextcloud/Documents/org-mode/refile/habit.org")
+		("h" "Habit" entry (file "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/habit.org")
 		 "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 
 					;Allow setting single tags without the menu
@@ -505,11 +506,11 @@
     (setenv "LANG" "en_US.UTF-8")
     (setq ispell-program-name "hunspell")
     ;;Configure German, Swiss German, and two variants of English.
-    (setq ispell-dictionary "de_DE,de_CH,en_GB,en_US")
+    (setq ispell-dictionary "de_CH,en_GB,en_US")
     ;;ispell-set-spellchecker-params has to be called
     ;;before ispell-hunspell-add-multi-dic will work
     (ispell-set-spellchecker-params)
-    (ispell-hunspell-add-multi-dic "de_DE,de_CH,en_GB,en_US")
+    (ispell-hunspell-add-multi-dic "de_CH,en_GB,en_US")
     ;;For saving words to the personal dictionary, don't infer it from
     ;;the locale, otherwise it would save to ~/.hunspell_de_DE.
     (setq ispell-personal-dictionary "~/.hunspell_personal"))
@@ -1249,5 +1250,5 @@
   :ensure t
   :config
   (elfeed-org)
-  (setq rmh-elfeed-org-files (list "~/Nextcloud/Documents/org-mode/refile/elfeed.org"))
+  (setq rmh-elfeed-org-files (list "/mnt/c/Users/cbollinger/cloud.duagon.com/Documents/org-mode/refile/elfeed.org"))
 )
