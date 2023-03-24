@@ -202,6 +202,17 @@ sudo fc-cache -fv
 #+end_src
 
 
+** WSL display settings 
+- add this snipped to =bashrc=
+#+begin_src sh 
+# Display settings for VxSrc - X-Server
+alias ema="
+export DISPLAY=$(ip route | awk '/^default/{print $3; exit}'):0.0
+export LIBGL_ALWAYS_INDIRECT=1
+setsid emacs
+"
+#+end_src
+
 * Default appearance
 
 The following variables are used to tweak some of the configuration pieces for
