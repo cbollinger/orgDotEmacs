@@ -852,14 +852,14 @@ explanation.
      (setq org-log-done 'time)
      (setq org-log-into-drawer t)
 
-     (setq org-directory "/mnt/c/Users/cbollinger/Daten/org-system/org-mode")
-     (setq org-default-notes-file "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/refile.org")
-     (setq org-agenda-files (quote ("/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile"
-				    "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/private"
-				    "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/gnu-software"
-				    "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/duagon/General"
-				    "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/duagon/Clients"
-				    "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/duagon/Products")))
+     (setq org-directory "/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode")
+     (setq org-default-notes-file "/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode/refile/refile.org")
+     (setq org-agenda-files (quote ("/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode/refile"
+				    "/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode/private"
+				    "/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode/gnu-software"
+				    "/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode/duagon/General"
+				    "/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode/duagon/Clients"
+				    "/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode/duagon/Products")))
      (setq org-todo-keywords
 	   (quote ((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
 		   (sequence "EC(C)" "RFEW(0)" "RFEX(1)" "G2(2)" "G2.1(3)" "G2.2(4)" "G3(5)" "|" "Abnahme(6)")
@@ -990,21 +990,21 @@ explanation.
 					   ;I use C-c c to start capture mode
      (global-set-key (kbd "C-c c") 'org-capture)
      (setq org-capture-templates
-	   (quote (("t" "todo" entry (file "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/todo.org")
+	   (quote (("t" "todo" entry (file "/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode/refile/todo.org")
 		    "* TODO [#A] %?\n%U\n%a\n" :clock-in t :clock-resume t)
-		   ("r" "respond" entry (file "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/refile.org")
+		   ("r" "respond" entry (file "/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode/refile/refile.org")
 		    "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-		   ("n" "note" entry (file "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/note.org")
+		   ("n" "note" entry (file "/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode/refile/note.org")
 		    "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-		   ("j" "Journal" entry (file+datetree "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/journal.org")
+		   ("j" "Journal" entry (file+datetree "/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode/refile/journal.org")
 		    "* %?\n%U\n" :clock-in t :clock-resume t :tree-type month)
-		   ("w" "org-protocol" entry (file "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/refile.org")
+		   ("w" "org-protocol" entry (file "/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode/refile/refile.org")
 		    "* TODO Review %c\n%U\n" :immediate-finish t)
-		   ("m" "Meeting" entry (file "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/meeting.org")
+		   ("m" "Meeting" entry (file "/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode/refile/meeting.org")
 		    "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
-		   ("p" "Phone call" entry (file "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/phone.org")
+		   ("p" "Phone call" entry (file "/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode/refile/phone.org")
 		    "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-		   ("h" "Habit" entry (file "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/habit.org")
+		   ("h" "Habit" entry (file "/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode/refile/habit.org")
 		    "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 
 					   ;Allow setting single tags without the menu
@@ -2418,7 +2418,7 @@ see also [[https://www.emacswiki.org/emacs/ExternalDocumentation][EmacsWiki]]
     :ensure t
     :config
     (elfeed-org)
-    (setq rmh-elfeed-org-files (list "/mnt/c/Users/cbollinger/Daten/org-system/org-mode/refile/elfeed.org"))
+    (setq rmh-elfeed-org-files (list "/mnt/c/Users/cbollinger/Daten/05 org-system/org-mode/refile/elfeed.org"))
   )
 #+end_src
 
