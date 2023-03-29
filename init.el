@@ -2,8 +2,8 @@
 ;;       in Emacs and init.el will be generated automatically!
 
 ;; You will most likely need to adjust this font size for your system!
-(defvar efs/default-font-size 140)
-(defvar efs/default-variable-font-size 140)
+(defvar efs/default-font-size 120)
+(defvar efs/default-variable-font-size 100)
 
 ;; Make frame transparency overridable
 (defvar efs/frame-transparency '(100 . 100))
@@ -344,7 +344,7 @@
 				 "~/Daten/05 org-system/org-mode/duagon/Products")))
   (setq org-todo-keywords
 	(quote ((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
-		(sequence "EC(c)" "RFEW(0)" "RFEX(1)" "G2(2)" "G2.1(3)" "G2.2(4)" "G3(5)" "|" "Abnahme(6)")
+		(sequence "EC(C)" "RFEW(0)" "RFEX(1)" "G2(2)" "G2.1(3)" "G2.2(4)" "G3(5)" "|" "Abnahme(6)")
 		(sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
 
   (setq org-todo-keyword-faces
@@ -505,11 +505,11 @@
     (setenv "LANG" "en_US.UTF-8")
     (setq ispell-program-name "hunspell")
     ;;Configure German, Swiss German, and two variants of English.
-    (setq ispell-dictionary "de_DE,de_CH,en_GB,en_US")
+    (setq ispell-dictionary "de_CH,en_GB,en_US")
     ;;ispell-set-spellchecker-params has to be called
     ;;before ispell-hunspell-add-multi-dic will work
     (ispell-set-spellchecker-params)
-    (ispell-hunspell-add-multi-dic "de_DE,de_CH,en_GB,en_US")
+    (ispell-hunspell-add-multi-dic "de_CH,en_GB,en_US")
     ;;For saving words to the personal dictionary, don't infer it from
     ;;the locale, otherwise it would save to ~/.hunspell_de_DE.
     (setq ispell-personal-dictionary "~/.hunspell_personal"))
@@ -653,8 +653,8 @@
 (setq org-latex-listings 'minted)
 (setq org-src-fontify-natively t)
 
-(setq org-ditaa-jar-path "~/java/ditaa.jar")
-(setq org-plantuml-jar-path "~/java/plantuml.jar")
+(setq org-ditaa-jar-path "~/usr/share/ditaa/ditaa.jar")
+(setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
 ;; Use fundamental mode when editing plantuml blocks with C-c '
 (add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
 (add-to-list 'exec-path "/usr/bin/magick")
@@ -1251,16 +1251,3 @@
   (elfeed-org)
   (setq rmh-elfeed-org-files (list "~/Daten/05 org-system/org-mode/refile/elfeed.org"))
 )
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(yasnippet-snippets xref-js2 which-key vterm use-package undo-tree typescript-mode treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired sourcemap restclient request rainbow-delimiters ox-reveal org-tree-slide org-present org-bullets org-attach-screenshot no-littering lsp-ui lsp-treemacs lsp-ivy json-mode ivy-prescient indium hide-mode-line helpful gnuplot forge evil-nerd-commenter eterm-256color eshell-git-prompt elfeed-org doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles counsel-projectile command-log-mode ccls auto-package-update all-the-icons-ivy-rich all-the-icons-ivy all-the-icons-dired)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
