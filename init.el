@@ -1032,6 +1032,7 @@
     (dap-python-executable "python")
     (dap-python-debugger 'debugpy)
     :config
+    (setq py-python-command "python3")
      (require 'dap-python)
 )
 

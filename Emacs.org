@@ -1828,16 +1828,17 @@ We use =lsp-mode= and =dap-mode= to provide a more complete development
 environment for Python in Emacs.  Check out [[https://emacs-lsp.github.io/lsp-mode/page/lsp-pyls/][the =pyls= configuration]] in the
 =lsp-mode= documentation for more details.
 
-Make sure you have the =pyls= language server installed before trying
+Make sure you have the =python-lsp-server= language server installed before trying
 =lsp-mode=!
 
 #+begin_src sh :tangle no
-pip install --user "python-language-server[all]"
+pip install --user "python-lsp-server[all]"
 #+end_src
 
 There are a number of other language servers for Python so if you find that
 =pyls= doesn't work for you, consult the =lsp-mode= [[https://emacs-lsp.github.io/lsp-mode/page/languages/][language configuration
 documentation]] to try the others!
+
 
 #+begin_src emacs-lisp 
 
@@ -1850,8 +1851,16 @@ documentation]] to try the others!
       (dap-python-executable "python")
       (dap-python-debugger 'debugpy)
       :config
+      (setq py-python-command "python3")
        (require 'dap-python)
   )
+#+end_src
+
+
+Add the following line to your =bashrc= file to ensure python-lsp-server is found
+by emacs.
+#+begin_src sh 
+export PATH="~/.local/bin:$PATH"
 #+end_src
 
 
@@ -1989,6 +1998,7 @@ its commands directly.
 
 #+end_src
 
+
 ** Magit
 
 [[https://magit.vc/][Magit]] is the best Git interface I've ever used.  Common Git operations are easy
@@ -2009,6 +2019,7 @@ to execute quickly using Magit's command panel system.
 
 #+end_src
 
+
 ** Commenting
 
 Emacs' built in commenting functionality =comment-dwim= (usually bound to =M-;=)
@@ -2023,6 +2034,7 @@ since other editors sometimes use this binding but you could also replace Emacs'
     :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 
 #+end_src
+
 
 ** Rainbow Delimiters
 :PROPERTIES:
