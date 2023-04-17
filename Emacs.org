@@ -47,6 +47,7 @@ sudo apt install node.js -y
 sudo apt install npm -y
 #+end_src
 
+
 ** Call this shell script to install the iosevka-fonts
 
 This script is from =Programster's Blog=
@@ -2537,6 +2538,7 @@ see also [[https://www.emacswiki.org/emacs/ExternalDocumentation][EmacsWiki]]
 
 
 * Treemacs Workspace
+
 ** ionia
 *** libhost
  - path :: ~/Daten/dg_git/linux/project-specific/ionia/libraries/ionia-libhost
@@ -2582,6 +2584,8 @@ see also [[https://www.emacswiki.org/emacs/ExternalDocumentation][EmacsWiki]]
  - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/remoteiod
 *** eclr-app
  - path :: ~/Daten/dg_git/linux/project-specific/ionia/applications/eclr-app
+
+
 ** sp4comm
 *** sp4comm
  - path :: ~/Daten/Sience/Digital-Signal-Processing/sp4comm/orgmode/sp4comm.pdf
@@ -2601,6 +2605,8 @@ see also [[https://www.emacswiki.org/emacs/ExternalDocumentation][EmacsWiki]]
  - path :: ~/Daten/Sience/Digital-Signal-Processing/sp4comm/orgmode/week7
 *** Module 6: Digital Communication Systems
  - path :: ~/Daten/Sience/Digital-Signal-Processing/sp4comm/orgmode/week8
+
+
 ** Home
 *** christian
   - path :: ~

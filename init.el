@@ -1263,5 +1263,3 @@
   (elfeed-org)
   (setq rmh-elfeed-org-files (list "~/Daten/05 org-system/org-mode/refile/elfeed.org"))
 )
-
-(setq org-agenda-span 1)
