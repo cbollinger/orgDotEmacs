@@ -2,8 +2,8 @@
 ;;       in Emacs and init.el will be generated automatically!
 
 ;; You will most likely need to adjust this font size for your system!
-(defvar efs/default-font-size 120)
-(defvar efs/default-variable-font-size 100)
+(defvar efs/default-font-size 140)
+(defvar efs/default-variable-font-size 140)
 
 ;; Make frame transparency overridable
 (defvar efs/frame-transparency '(100 . 100))
@@ -133,7 +133,7 @@
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
-  :custom ((doom-modeline-height 15)))
+  :custom ((doom-modeline-height 20)))
 
 (use-package which-key
   :defer 
@@ -1011,11 +1011,17 @@
   (lsp-ui-doc-position 'bottom))
 
 (use-package lsp-treemacs
-  :after lsp
-  :commands lsp-treemacs-references)
+    :after lsp
+    :commands lsp-treemacs-references
+)
 
-(use-package lsp-ivy
-  :after lsp)
+(use-package helm-xref
+    :after lsp
+    :config 
+    (define-key global-map [remap find-file] #'helm-find-files)
+    (define-key global-map [remap execute-extended-command] #'helm-M-x)
+    (define-key global-map [remap switch-to-buffer] #'helm-mini)
+)
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
@@ -1042,6 +1048,7 @@
 (use-package ccls
     :init (setq ccls-sem-highlight-method 'font-lock)
     :hook ((c-mode c++-mode objc-mode cuda-mode) . (lambda () (require 'ccls) (lsp-deferred)))
+    :config(setq ccls-initialization-options '(:index (:comments 2) :completion (:detailedLabel t)))
 )
 
 ;; JavaScript
@@ -1087,18 +1094,22 @@
 (add-hook 'js-mode-hook #'indium-interaction-mode)
 
 (use-package company
-  :after lsp-mode
-  :hook (lsp-mode . company-mode)
-  :bind (:map company-active-map
-         ("<tab>" . company-complete-selection))
-        (:map lsp-mode-map
-         ("<tab>" . company-indent-or-complete-common))
-  :custom
-  (company-minimum-prefix-length 1)
-  (company-idle-delay 0.0))
+   :after lsp-mode
+   :hook (lsp-mode . company-mode)
+   :bind (:map company-active-map
+          ("<tab>" . company-complete-selection))
+         (:map lsp-mode-map
+          ("<tab>" . company-indent-or-complete-common))
+   :custom
+   (company-minimum-prefix-length 1)
+   (company-idle-delay 0.0)
+   (setq company-show-numbers t)
+   :config
+   (add-to-list 'company-backends #'company-tabnine)
+)
 
-;; (use-package company-box
-;;   :hook (company-mode . company-box-mode))
+  ;; (use-package company-box
+  ;;  :hook (company-mode . company-box-mode))
 
 (use-package projectile
   :diminish projectile-mode
@@ -1252,3 +1263,5 @@
   (elfeed-org)
   (setq rmh-elfeed-org-files (list "~/Daten/05 org-system/org-mode/refile/elfeed.org"))
 )
+
+(setq org-agenda-span 1)

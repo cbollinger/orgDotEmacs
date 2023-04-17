@@ -236,8 +236,8 @@ if you try to use this configuration directly.
   ;;       in Emacs and init.el will be generated automatically!
 
   ;; You will most likely need to adjust this font size for your system!
-  (defvar efs/default-font-size 120)
-  (defvar efs/default-variable-font-size 100)
+  (defvar efs/default-font-size 140)
+  (defvar efs/default-variable-font-size 140)
 
   ;; Make frame transparency overridable
   (defvar efs/frame-transparency '(100 . 100))
@@ -494,6 +494,7 @@ modes with Vi-like keybindings for evil-mode.
 
 
 * UI Configuration
+
 ** Command Log Mode
 
 [[https://github.com/lewang/command-log-mode][command-log-mode]] is useful for displaying a panel showing each key binding you
@@ -506,6 +507,7 @@ screencasts!
     :commands command-log-mode)
 
 #+end_src
+
 
 ** Color Theme
 
@@ -527,6 +529,7 @@ between them easily.
 
 #+end_src
 
+
 ** Better Modeline
 
 [[https://github.com/seagle0128/doom-modeline][doom-modeline]] is a very attractive and rich (yet still minimal) mode line
@@ -543,11 +546,63 @@ correctly.
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
-  :custom ((doom-modeline-height 15)))
+  :custom ((doom-modeline-height 20)))
 
 #+end_src
 
-** Which Key
+
+** Spacemacs Theme
+
+#+begin_src
+(use-package spacemacs-theme
+  :ensure t
+  :init
+  (load-theme 'spacemacs-dark t)
+  (setq spacemacs-theme-org-agenda-height nil)
+  (setq spacemacs-theme-org-height nil)
+  (set-face-attribute 'org-table nil :foreground "#008787")
+)
+
+#+end_src
+
+#+begin_src
+    (unless (package-installed-p 'spacemacs-theme)
+      (package-install 'spacemacs-theme))
+
+  (load-theme 'spacemacs-dark t)
+  (setq spacemacs-theme-org-agenda-height nil)
+  (setq spacemacs-theme-org-height nil)
+  ;; set sizes here to stop spacemacs theme resizing these
+  (set-face-attribute 'org-level-1 nil :height 1.5)
+  (set-face-attribute 'org-level-2 nil :height 1.3)
+  (set-face-attribute 'org-level-3 nil :height 1.2)
+  (set-face-attribute 'org-scheduled-today nil :height 1.0)
+  (set-face-attribute 'org-agenda-date-today nil :height 1.1)
+  (set-face-attribute 'org-table nil :foreground "#008787")
+
+#+end_src
+
+#+begin_src
+(use-package spaceline-all-the-icons 
+  :after spaceline
+  :config (spaceline-all-the-icons-theme)
+)
+#+end_src
+
+#+begin_src
+(use-package spaceline
+  :demand t
+  :init
+  (setq powerline-default-separator 'arrow-fade)
+  :config
+  (require 'spaceline-config)
+  (spaceline-spacemacs-theme))
+
+#+end_src
+
+
+
+*** Which Key
 
 [[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any key
 binding in Emacs to offer you all possible completions for the prefix.  For
@@ -567,7 +622,7 @@ possible key bindings in the mode of your current buffer.
 
 #+end_src
 
-** Ivy and Counsel
+*** Ivy and Counsel
 
 [[https://oremacs.com/swiper/][Ivy]] is an excellent completion framework for Emacs.  It provides a minimal yet
 powerful selection menu that appears when you open files, switch buffers, and
@@ -612,7 +667,7 @@ information about each item.
 
 #+end_src
 
-*** COMMENT Ivy Posframe
+**** COMMENT Ivy Posframe
 #+begin_src emacs-lisp
 (use-package ivy-posframe
   :custom
@@ -627,7 +682,7 @@ information about each item.
                                   (right-fringe . 8)))
   (ivy-posframe-mode 1))
 #+end_src
-*** Improved Candidate Sorting with prescient.el
+**** Improved Candidate Sorting with prescient.el
 
 prescient.el provides some helpful behavior for sorting Ivy completion
 candidates based on how recently or frequently you select them.  This can be
@@ -651,7 +706,7 @@ configure it!
 
 #+end_src
 
-** COMMENT Vertico
+*** COMMENT Vertico
 #+begin_src 
 (use-package vertico
 :ensure t
@@ -659,7 +714,7 @@ configure it!
 (vertico-mode))
 #+end_src
 
-** Helpful Help Commands
+*** Helpful Help Commands
 
 [[https://github.com/Wilfred/helpful][Helpful]] adds a lot of very helpful (get it?) information to Emacs' =describe-=
 command buffers.  For example, if you use =describe-function=, you will not only
@@ -682,7 +737,7 @@ It is very useful for figuring out how things work in Emacs.
 
 #+end_src
 
-** Treemacs
+*** Treemacs
 
 #+begin_src emacs-lisp
   (use-package treemacs
@@ -796,7 +851,7 @@ It is very useful for figuring out how things work in Emacs.
     :config (treemacs-set-scope-type 'Tabs))
 #+end_src
 
-** Text Scaling
+*** Text Scaling
 
 This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to design a transient key binding for quickly
 adjusting the scale of the text on screen.  We define a hydra that is bound to
@@ -1667,6 +1722,7 @@ the associated output files.
 ** LSP Mode: Languages
 
 *** IDE Features with lsp-mode
+
 **** lsp-mode
 
 We use the excellent [[https://emacs-lsp.github.io/lsp-mode/][lsp-mode]] to enable IDE-like functionality for many
@@ -1698,6 +1754,7 @@ and trying different things that you find there.
 )
 #+end_src
 
+
 **** lsp-ui
 
 [[https://emacs-lsp.github.io/lsp-ui/][lsp-ui]] is a set of UI enhancements built on top of =lsp-mode= which make Emacs
@@ -1713,12 +1770,12 @@ feel even more like an IDE.  Check out the screenshots on the =lsp-ui= homepage
 
 #+end_src
 
+
 **** lsp-treemacs
 
 [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]] provides nice tree views for different aspects of your code like
 symbols in a file, references of a symbol, or diagnostic messages (errors and
 warnings) that are found in your code.
-
 Try these commands with =M-x=:
 
 - =lsp-treemacs-symbols= - Show a tree view of the symbols in the current file
@@ -1734,8 +1791,10 @@ editor.
 #+begin_src emacs-lisp
   (use-package lsp-treemacs
     :after lsp
-    :commands lsp-treemacs-references)
+    :commands lsp-treemacs-references
+)
 #+end_src
+
 
 **** lsp-ivy
 
@@ -1750,10 +1809,27 @@ Try these commands with =M-x=:
 - =lsp-ivy-workspace-symbol= - Search for a symbol name in the current project workspace
 - =lsp-ivy-global-workspace-symbol= - Search for a symbol name in all active project workspaces
 
-#+begin_src emacs-lisp
+#+begin_src
 
   (use-package lsp-ivy
     :after lsp)
+
+#+end_src
+
+
+**** helm-xref
+
+The following mapping allows synced scrolling within the find-reference
+mini-buffer and the source code.
+#+begin_src emacs-lisp
+
+  (use-package helm-xref
+    :after lsp
+    :config 
+    (define-key global-map [remap find-file] #'helm-find-files)
+    (define-key global-map [remap execute-extended-command] #'helm-M-x)
+    (define-key global-map [remap switch-to-buffer] #'helm-mini)
+)
 
 #+end_src
 
@@ -1887,10 +1963,11 @@ path to your virtual environment before loading your project.
 
 *** CCLS 
 #+begin_src emacs-lisp
-  (use-package ccls
-      :init (setq ccls-sem-highlight-method 'font-lock)
-      :hook ((c-mode c++-mode objc-mode cuda-mode) . (lambda () (require 'ccls) (lsp-deferred)))
-  )
+    (use-package ccls
+        :init (setq ccls-sem-highlight-method 'font-lock)
+        :hook ((c-mode c++-mode objc-mode cuda-mode) . (lambda () (require 'ccls) (lsp-deferred)))
+        :config(setq ccls-initialization-options '(:index (:comments 2) :completion (:detailedLabel t)))
+    )
 #+end_src
 
 
@@ -1952,6 +2029,9 @@ location if needed).
 We also use [[https://github.com/sebastiencs/company-box][company-box]] to further enhance the look of the completions with
 icons and better overall presentation.
 
+!!! Delete manually Clang from the list =company-backends" if search results do
+not pop up immediately!!!!
+
 #+begin_src emacs-lisp
 
   (use-package company
@@ -1963,13 +2043,28 @@ icons and better overall presentation.
            ("<tab>" . company-indent-or-complete-common))
     :custom
     (company-minimum-prefix-length 1)
-    (company-idle-delay 0.0))
+    (company-idle-delay 0.0)
+    (setq company-show-numbers t)
+    :config
+    (add-to-list 'company-backends #'company-tabnine)
+ )
 
-  ;; (use-package company-box
-  ;;   :hook (company-mode . company-box-mode))
+   ;; (use-package company-box
+   ;;  :hook (company-mode . company-box-mode))
 
 #+end_src
 
+
+*** Tabnine
+=TabNine= is the all-language autocompleter. It uses machine learning to provide
+responsive, reliable, and relevant suggestions.
+
+company-tabnine provides TabNine completion backend for company-mode. It takes
+care of TabNine binaries, so installation is easy.
+
+#+begin_src
+  (use-package company-tabnine :ensure t)
+#+end_src
 
 ** Projectile
 
@@ -2334,6 +2429,7 @@ Here are some key bindings you should try out:
 
 
 * Applications
+
 ** Json-Mode
 
 #+begin_src emacs-lisp
@@ -2350,6 +2446,7 @@ Here are some key bindings you should try out:
   (use-package json)
 #+end_src
 
+
 ** RestClient
 
 [[https://github.com/pashky/restclient.el][restclient.el]] and [[https://erick.navarro.io/blog/testing-an-api-with-emacs-and-restclient/][Testing an API with emacs and restclient]]
@@ -2365,6 +2462,7 @@ Here we're using use-package to install restclient.el and also we're configuring
      :bind (:map restclient-mode-map
                  ("C-c C-f" . json-mode-beautify)))
 #+end_src
+
 
 ** Some App
 
