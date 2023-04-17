@@ -6,11 +6,13 @@
 * Prerequisite - Before you start
 
 Issue the following the steps before =emacs= loads =init.el= tangled from this file. 
+
 ** Company related fonts from
 
 #+begin_src 
 https://gitlab2.duagon.com/tools/docker/latex/-/tree/master/files/fonts
 #+end_src
+
 
 ** Call this shell scripts to install all the required system packages
 
@@ -45,6 +47,8 @@ sudo apt install ditaa -y
 sudo apt install octave -y
 sudo apt install node.js -y
 sudo apt install npm -y
+sudo apt install cmake -y
+sudo apt install libtool-bin
 #+end_src
 
 
@@ -216,12 +220,6 @@ export DISPLAY=$(ip route | awk '/^default/{print $3; exit}'):0.0
 export LIBGL_ALWAYS_INDIRECT=1
 setsid emacs
 "
-#+end_src
-
-
-** Syncthing
-#+begin_src 
-http://127.0.0.1:8384/
 #+end_src
 
 
@@ -417,6 +415,7 @@ above.
 
 
 * Yasnippet
+
 #+begin_src emacs-lisp 
 (unless (package-installed-p 'yasnippet)
   (package-install 'yasnippet))
@@ -434,6 +433,7 @@ above.
 
 
 * Undo
+
 Enables the convinient undo-tree, which enables stepwise undo controlled by the
 arrow key's.
 #+begin_src emacs-lisp
@@ -509,6 +509,7 @@ screencasts!
     :commands command-log-mode)
 
 #+end_src
+
 
 ** Color Theme
 
@@ -2074,6 +2075,7 @@ care of TabNine binaries, so installation is easy.
   (use-package company-tabnine :ensure t)
 #+end_src
 
+
 ** Projectile
 
 [[https://projectile.mx/][Projectile]] is a project management library for Emacs which makes it a lot easier
@@ -2158,6 +2160,7 @@ them yourself.
 
 
 * Terminals
+
 ** term-mode
 
 =term-mode= is a built-in terminal emulator in Emacs.  Because it is written in
@@ -2218,6 +2221,7 @@ already so you may not have to do anything extra to use it.
 
 #+end_src
 
+
 ** vterm
 
 [[https://github.com/akermu/emacs-libvterm/][vterm]] is an improved terminal emulator package which uses a compiled native
@@ -2239,6 +2243,7 @@ can use it successfully.
     (setq vterm-max-scrollback 10000))
 
 #+end_src
+
 
 ** shell-mode
 
@@ -2267,6 +2272,7 @@ how you would set up =shell-mode= to run PowerShell on Windows:
     (setq explicit-powershell.exe-args '()))
 
 #+end_src
+
 
 ** Eshell
 
@@ -2334,6 +2340,7 @@ For more thoughts on Eshell, check out these articles by Pierre Neidhardt:
 
 
 * File Management
+
 ** Dired
 
 Dired is a built-in file manager for Emacs that does some pretty amazing things!
@@ -2365,6 +2372,7 @@ Here are some key bindings you should try out:
 - =k= / =K= - "Kill" marked items (refresh buffer with =g= / =g r= to get them back)
 - Many operations can be done on a single file if there are no active marks!
 
+
 **** Copying and Renaming files
 
 - =C= - Copy marked files (or if no files are marked, the current file)
@@ -2375,6 +2383,7 @@ Here are some key bindings you should try out:
 
 *Power command*: =C-x C-q= (=dired-toggle-read-only=) - Makes all file names in the buffer editable directly to rename them!  Press =Z Z= to confirm renaming or =Z Q= to abort.
 
+
 **** Deleting files
 
 - =D= - Delete marked file
@@ -2382,11 +2391,13 @@ Here are some key bindings you should try out:
 - =x= - Execute deletion for marks
 - =delete-by-moving-to-trash= - Move to trash instead of deleting permanently
 
+
 **** Creating and extracting archives
 
 - =Z= - Compress or uncompress a file or folder to (=.tar.gz=)
 - =c= - Compress selection to a specific file
 - =dired-compress-files-alist= - Bind compression commands to file extension
+
 
 **** Other common operations
 
@@ -2396,6 +2407,7 @@ Here are some key bindings you should try out:
 - =G= - Change file group
 - =S= - Create a symbolic link to this file
 - =L= - Load an Emacs Lisp file into Emacs
+
 
 *** Configuration
 
