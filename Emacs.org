@@ -496,6 +496,7 @@ modes with Vi-like keybindings for evil-mode.
 
 * UI Configuration
 
+
 ** Command Log Mode
 
 [[https://github.com/lewang/command-log-mode][command-log-mode]] is useful for displaying a panel showing each key binding you
@@ -508,7 +509,6 @@ screencasts!
     :commands command-log-mode)
 
 #+end_src
-
 
 ** Color Theme
 
@@ -531,6 +531,7 @@ between them easily.
 #+end_src
 
 
+
 ** Better Modeline
 
 [[https://github.com/seagle0128/doom-modeline][doom-modeline]] is a very attractive and rich (yet still minimal) mode line
@@ -550,6 +551,7 @@ correctly.
   :custom ((doom-modeline-height 20)))
 
 #+end_src
+
 
 
 ** Spacemacs Theme
@@ -603,7 +605,7 @@ correctly.
 
 
 
-*** Which Key
+** Which Key
 
 [[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any key
 binding in Emacs to offer you all possible completions for the prefix.  For
@@ -623,7 +625,8 @@ possible key bindings in the mode of your current buffer.
 
 #+end_src
 
-*** Ivy and Counsel
+
+** Ivy and Counsel
 
 [[https://oremacs.com/swiper/][Ivy]] is an excellent completion framework for Emacs.  It provides a minimal yet
 powerful selection menu that appears when you open files, switch buffers, and
@@ -668,7 +671,7 @@ information about each item.
 
 #+end_src
 
-**** COMMENT Ivy Posframe
+*** COMMENT Ivy Posframe
 #+begin_src emacs-lisp
 (use-package ivy-posframe
   :custom
@@ -683,7 +686,8 @@ information about each item.
                                   (right-fringe . 8)))
   (ivy-posframe-mode 1))
 #+end_src
-**** Improved Candidate Sorting with prescient.el
+
+*** Improved Candidate Sorting with prescient.el
 
 prescient.el provides some helpful behavior for sorting Ivy completion
 candidates based on how recently or frequently you select them.  This can be
@@ -707,7 +711,8 @@ configure it!
 
 #+end_src
 
-*** COMMENT Vertico
+
+** COMMENT Vertico
 #+begin_src 
 (use-package vertico
 :ensure t
@@ -715,7 +720,8 @@ configure it!
 (vertico-mode))
 #+end_src
 
-*** Helpful Help Commands
+
+** Helpful Help Commands
 
 [[https://github.com/Wilfred/helpful][Helpful]] adds a lot of very helpful (get it?) information to Emacs' =describe-=
 command buffers.  For example, if you use =describe-function=, you will not only
@@ -738,7 +744,8 @@ It is very useful for figuring out how things work in Emacs.
 
 #+end_src
 
-*** Treemacs
+
+** Treemacs
 
 #+begin_src emacs-lisp
   (use-package treemacs
@@ -834,7 +841,7 @@ It is very useful for figuring out how things work in Emacs.
     :ensure t)
 
   (use-package treemacs-icons-dired
-    :hook (dired-mode . treemacs-icons-dired-enable-once)
+    :hook (dired-mode-hook . treemacs-icons-dired-mode)
     :ensure t)
 
   (use-package treemacs-magit

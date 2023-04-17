@@ -285,7 +285,7 @@
   :ensure t)
 
 (use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-enable-once)
+  :hook (dired-mode-hook . treemacs-icons-dired-mode)
   :ensure t)
 
 (use-package treemacs-magit
