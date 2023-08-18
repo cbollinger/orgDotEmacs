@@ -334,14 +334,14 @@
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
-  (setq org-directory "~/Daten/05 org-system/org-mode")
-  (setq org-default-notes-file "~/Daten/05 org-system/org-mode/refile/refile.org")
-  (setq org-agenda-files (quote ("~/Daten/05 org-system/org-mode/refile"
-				 "~/Daten/05 org-system/org-mode/private"
-				 "~/Daten/05 org-system/org-mode/gnu-software"
-				 "~/Daten/05 org-system/org-mode/duagon/General"
-				 "~/Daten/05 org-system/org-mode/duagon/Clients"
-				 "~/Daten/05 org-system/org-mode/duagon/Products")))
+  (setq org-directory "~/Daten/04-org-system/org-mode")
+  (setq org-default-notes-file "~/Daten/04-org-system/org-mode/refile/refile.org")
+  (setq org-agenda-files (quote ("~/Daten/04-org-system/org-mode/refile"
+				 "~/Daten/04-org-system/org-mode/private"
+				 "~/Daten/04-org-system/org-mode/gnu-software"
+				 "~/Daten/04-org-system/org-mode/duagon/General"
+				 "~/Daten/04-org-system/org-mode/duagon/Clients"
+				 "~/Daten/04-org-system/org-mode/duagon/Products")))
   (setq org-todo-keywords
 	(quote ((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
 		(sequence "EC(C)" "RFEW(0)" "RFEX(1)" "G2(2)" "G2.1(3)" "G2.2(4)" "G3(5)" "|" "Abnahme(6)")
@@ -472,21 +472,21 @@
 					;I use C-c c to start capture mode
   (global-set-key (kbd "C-c c") 'org-capture)
   (setq org-capture-templates
-	(quote (("t" "todo" entry (file "~/Daten/05 org-system/org-mode/refile/todo.org")
+	(quote (("t" "todo" entry (file "~/Daten/04-org-system/org-mode/refile/todo.org")
 		 "* TODO [#A] %?\n%U\n%a\n" :clock-in t :clock-resume t)
-		("r" "respond" entry (file "~/Daten/05 org-system/org-mode/refile/refile.org")
+		("r" "respond" entry (file "~/Daten/04-org-system/org-mode/refile/refile.org")
 		 "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-		("n" "note" entry (file "~/Daten/05 org-system/org-mode/refile/note.org")
+		("n" "note" entry (file "~/Daten/04-org-system/org-mode/refile/note.org")
 		 "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-		("j" "Journal" entry (file+datetree "~/Daten/05 org-system/org-mode/refile/journal.org")
+		("j" "Journal" entry (file+datetree "~/Daten/04-org-system/org-mode/refile/journal.org")
 		 "* %?\n%U\n" :clock-in t :clock-resume t :tree-type month)
-		("w" "org-protocol" entry (file "~/Daten/05 org-system/org-mode/refile/refile.org")
+		("w" "org-protocol" entry (file "~/Daten/04-org-system/org-mode/refile/refile.org")
 		 "* TODO Review %c\n%U\n" :immediate-finish t)
-		("m" "Meeting" entry (file "~/Daten/05 org-system/org-mode/refile/meeting.org")
+		("m" "Meeting" entry (file "~/Daten/04-org-system/org-mode/refile/meeting.org")
 		 "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
-		("p" "Phone call" entry (file "~/Daten/05 org-system/org-mode/refile/phone.org")
+		("p" "Phone call" entry (file "~/Daten/04-org-system/org-mode/refile/phone.org")
 		 "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-		("h" "Habit" entry (file "~/Daten/05 org-system/org-mode/refile/habit.org")
+		("h" "Habit" entry (file "~/Daten/04-org-system/org-mode/refile/habit.org")
 		 "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 
 					;Allow setting single tags without the menu
@@ -1144,6 +1144,15 @@
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
+(use-package async)
+(use-package dash)
+(use-package f)
+(use-package s)
+(use-package simple-httpd)
+
+(use-package code-compass
+  :load-path "~/.emacs.d/lisp")
+
 (use-package term
   :commands term
   :config
@@ -1261,5 +1270,18 @@
   :ensure t
   :config
   (elfeed-org)
-  (setq rmh-elfeed-org-files (list "~/Daten/05 org-system/org-mode/refile/elfeed.org"))
+  (setq rmh-elfeed-org-files (list "~/Daten/04-org-system/org-mode/refile/elfeed.org"))
 )
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(yasnippet-snippets xref-js2 which-key vterm use-package undo-tree typescript-mode treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired sourcemap smart-mode-line-powerline-theme smart-mode-line-atom-one-dark-theme restclient request rainbow-delimiters ox-reveal org-tree-slide org-present org-bullets org-attach-screenshot no-littering memoize lsp-ui lsp-treemacs lsp-ivy json-mode ivy-prescient indium hide-mode-line helpful helm-xref gnuplot forge evil-nerd-commenter eterm-256color eshell-git-prompt elfeed-org doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles counsel-projectile company-tabnine company-quickhelp company-box command-log-mode code-compass cmake-mode ccls auto-package-update all-the-icons-ivy-rich all-the-icons-ivy all-the-icons-dired)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
