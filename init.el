@@ -135,8 +135,13 @@
 (use-package all-the-icons)
 
 (use-package doom-modeline
+  :ensure t
   :init (doom-modeline-mode 1)
-  :custom ((doom-modeline-height 20)))
+  :custom (doom-modeline-height 40)
+)
+
+(use-package all-the-icons
+  :if (display-graphic-p))
 
 (use-package which-key
   :defer 
@@ -292,9 +297,9 @@
   :after (treemacs projectile)
   :ensure t)
 
-(use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-enable-once)
-  :ensure t)
+;; (use-package treemacs-icons-dired
+;;   :hook (dired-mode . treemacs-icons-dired-enable-once)
+;;   :ensure t)
 
 (use-package treemacs-magit
   :after (treemacs magit)
