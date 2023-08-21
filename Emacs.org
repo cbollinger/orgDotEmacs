@@ -1,4 +1,3 @@
-
 #+title: Flexible Emacs Configuration
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 #+CALL: checkout-submodules()
@@ -286,7 +285,11 @@ Emacs has a built in package manager but it doesn't make it easy to
 automatically install packages on a new system the first time you pull down your
 configuration.  [[https://github.com/jwiegley/use-package][use-package]] is a really helpful package used in this
 configuration to make it a lot easier to automate the installation and
-configuration of everything else we use.
+configuration of everything else we use.  [[https://elpa.nongnu.org/][Melpa NonGnu]] is used for
+==taskjugger== see ~/.emacs.d/elpa/org-contrib-0.4.1.  The taskjuggler export
+interface ox-taskjuggler needs to be activated in emacs customization
+==org-export-backends==
+
 
 #+begin_src emacs-lisp
       ;; Initialize package sources
@@ -548,12 +551,14 @@ correctly.
 
 #+begin_src emacs-lisp
 
-  (use-package all-the-icons)
+    (use-package all-the-icons)
 
-  (use-package doom-modeline
-    :ensure t
-    :hook (after-init . doom-modeline-mode)
-    :custom (setq doom-modeline-height 25))
+    (use-package doom-modeline
+      :ensure t
+      :hook (after-init . doom-modeline-mode)
+      :init
+      (setq doom-modeline-height 25)
+      (setq doom-modeline-minor-modes t))
 
 #+end_src
 

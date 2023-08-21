@@ -137,7 +137,9 @@
 (use-package doom-modeline
   :ensure t
   :hook (after-init . doom-modeline-mode)
-  :custom (setq doom-modeline-height 25))
+  :init
+  (setq doom-modeline-height 25)
+  (setq doom-modeline-minor-modes t))
 
 (use-package which-key
   :defer 
