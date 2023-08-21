@@ -1284,16 +1284,3 @@
   (elfeed-org)
   (setq rmh-elfeed-org-files (list "~/Daten/04-org-system/org-mode/refile/elfeed.org"))
 )
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(code-compass yasnippet-snippets xref-js2 which-key vterm use-package undo-tree typescript-mode treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil sourcemap simple-httpd restclient request rainbow-delimiters ox-reveal org-tree-slide org-present org-contrib org-bullets org-attach-screenshot no-littering lsp-ui lsp-treemacs lsp-ivy json-mode ivy-rich ivy-prescient indium hide-mode-line helpful helm-xref goto-chg gnuplot forge evil-nerd-commenter eterm-256color eshell-git-prompt elfeed-org doom-themes doom-modeline-now-playing dired-single dired-open dired-hide-dotfiles counsel-projectile company-tabnine command-log-mode cmake-mode ccls auto-package-update all-the-icons-dired @)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
