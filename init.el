@@ -132,14 +132,13 @@
   (doom-themes-org-config)
   )
 
-(use-package all-the-icons)
-
 (use-package doom-modeline
       :ensure t
       :hook (after-init . doom-modeline-mode)
       :init
-      (setq doom-modeline-height 25)
-      (setq doom-modeline-minor-modes t))
+      (setq doom-modeline-height 45)
+      (setq doom-modeline-minor-modes t)
+)
 
 (use-package all-the-icons
   :if (display-graphic-p))

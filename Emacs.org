@@ -502,8 +502,6 @@ modes with Vi-like keybindings for evil-mode.
 
 * UI Configuration
 
-
-
 ** Command Log Mode
 
 [[https://github.com/lewang/command-log-mode][command-log-mode]] is useful for displaying a panel showing each key binding you
@@ -552,16 +550,16 @@ check out the [[https://github.com/seagle0128/doom-modeline#customize][configura
 to run ==M-x all-the-icons-install-fonts== so that mode line icons display
 correctly.
 
-#+begin_src emacs-lisp
 
-(use-package all-the-icons)
+#+begin_src emacs-lisp
 
 (use-package doom-modeline
       :ensure t
       :hook (after-init . doom-modeline-mode)
       :init
-      (setq doom-modeline-height 25)
-      (setq doom-modeline-minor-modes t))
+      (setq doom-modeline-height 45)
+      (setq doom-modeline-minor-modes t)
+)
 #+end_src
 
 
