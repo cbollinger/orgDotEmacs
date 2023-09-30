@@ -136,12 +136,19 @@
 
 (use-package doom-modeline
   :ensure t
+<<<<<<< HEAD
   :init (doom-modeline-mode 1)
   :custom (doom-modeline-height 40)
 )
 
 (use-package all-the-icons
   :if (display-graphic-p))
+=======
+  :hook (after-init . doom-modeline-mode)
+  :init
+  (setq doom-modeline-height 25)
+  (setq doom-modeline-minor-modes t))
+>>>>>>> 94a13f95daab397b22d52075dad493488e4c1284
 
 (use-package which-key
   :defer 
@@ -297,6 +304,10 @@
   :after (treemacs projectile)
   :ensure t)
 
+<<<<<<< HEAD
+=======
+;; This generates double coloumns with icons - see dired all-the-icons
+>>>>>>> 94a13f95daab397b22d52075dad493488e4c1284
 ;; (use-package treemacs-icons-dired
 ;;   :hook (dired-mode . treemacs-icons-dired-enable-once)
 ;;   :ensure t)
@@ -1226,10 +1237,10 @@
   :commands (dired dired-jump)
   :bind (("C-x C-j" . dired-jump))
   :custom ((dired-listing-switches "-agho --group-directories-first"))
-;;   :config
-;;   (evil-collection-define-key 'normal 'dired-mode-map
-;;     "h" 'dired-single-up-directory
-;;     "l" 'dired-single-buffer)
+  ;;   :config
+  ;;   (evil-collection-define-key 'normal 'dired-mode-map
+  ;;     "h" 'dired-single-up-directory
+  ;;     "l" 'dired-single-buffer)
   )
 
 (use-package dired-single
