@@ -554,23 +554,14 @@ correctly.
 
 #+begin_src emacs-lisp
 
-    (use-package all-the-icons)
+(use-package all-the-icons)
 
-<<<<<<< HEAD
 (use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1)
-  :custom (doom-modeline-height 40)
-)
-=======
-    (use-package doom-modeline
       :ensure t
       :hook (after-init . doom-modeline-mode)
       :init
       (setq doom-modeline-height 25)
       (setq doom-modeline-minor-modes t))
-
->>>>>>> 94a13f95daab397b22d52075dad493488e4c1284
 #+end_src
 
 
