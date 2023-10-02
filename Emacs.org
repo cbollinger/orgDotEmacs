@@ -502,7 +502,6 @@ modes with Vi-like keybindings for evil-mode.
 
 * UI Configuration
 
-
 ** Command Log Mode
 
 [[https://github.com/lewang/command-log-mode][command-log-mode]] is useful for displaying a panel showing each key binding you
@@ -515,6 +514,7 @@ screencasts!
     :commands command-log-mode)
 
 #+end_src
+
 
 
 ** Color Theme
@@ -539,6 +539,7 @@ between them easily.
 
 
 
+
 ** Better Modeline
 
 [[https://github.com/seagle0128/doom-modeline][doom-modeline]] is a very attractive and rich (yet still minimal) mode line
@@ -549,19 +550,23 @@ check out the [[https://github.com/seagle0128/doom-modeline#customize][configura
 to run ==M-x all-the-icons-install-fonts== so that mode line icons display
 correctly.
 
+
 #+begin_src emacs-lisp
 
-    (use-package all-the-icons)
-
-    (use-package doom-modeline
+(use-package doom-modeline
       :ensure t
       :hook (after-init . doom-modeline-mode)
       :init
-      (setq doom-modeline-height 25)
-      (setq doom-modeline-minor-modes t))
-
+      (setq doom-modeline-height 45)
+      (setq doom-modeline-minor-modes t)
+)
 #+end_src
 
+
+#+begin_src emacs-lisp
+(use-package all-the-icons
+  :if (display-graphic-p))
+#+end_src
 
 
 ** Spacemacs Theme
@@ -615,6 +620,7 @@ correctly.
 
 
 
+
 ** Which Key
 
 [[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any key
@@ -634,6 +640,7 @@ possible key bindings in the mode of your current buffer.
     (setq which-key-idle-delay 1))
 
 #+end_src
+
 
 
 ** Ivy and Counsel
@@ -722,6 +729,7 @@ configure it!
 #+end_src
 
 
+
 ** COMMENT Vertico
 #+begin_src 
 (use-package vertico
@@ -729,6 +737,7 @@ configure it!
 :init
 (vertico-mode))
 #+end_src
+
 
 
 ** Helpful Help Commands
@@ -753,6 +762,7 @@ It is very useful for figuring out how things work in Emacs.
     ([remap describe-key] . helpful-key))
 
 #+end_src
+
 
 
 ** Treemacs
