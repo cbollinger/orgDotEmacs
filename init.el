@@ -589,14 +589,24 @@
   ;; Set face for org
    (set-face-attribute 'org-document-title nil :font "Iosevka Etoile" :weight 'bold :height 2.0)
    ;; Set faces for heading levels
-    (dolist (face '((org-level-1 . 1.4)
-                    (org-level-2 . 1.3)
-                    (org-level-3 . 1.2)
-                    (org-level-4 . 1.1)
-                    (org-level-5 . 1.1)
-                    (org-level-6 . 1.1)
-                    (org-level-7 . 1.1)
-                    (org-level-8 . 1.1)))
+    ;; (dolist (face '((org-level-1 . 1.4)
+    ;;                 (org-level-2 . 1.3)
+    ;;                 (org-level-3 . 1.2)
+    ;;                 (org-level-4 . 1.1)
+    ;;                 (org-level-5 . 1.1)
+    ;;                 (org-level-6 . 1.1)
+    ;;                 (org-level-7 . 1.1)
+    ;;                 (org-level-8 . 1.1)))
+    ;;   (set-face-attribute (car face) nil :font "Iosevka Etoile" :weight 'medium :height (cdr face)))
+
+    (dolist (face '((org-level-1 . 1.0)
+                    (org-level-2 . 1.0)
+                    (org-level-3 . 1.0)
+                    (org-level-4 . 1.0)
+                    (org-level-5 . 1.0)
+                    (org-level-6 . 1.0)
+                    (org-level-7 . 1.0)
+                    (org-level-8 . 1.0)))
       (set-face-attribute (car face) nil :font "Iosevka Etoile" :weight 'medium :height (cdr face)))
 
 
@@ -1286,3 +1296,15 @@
   (elfeed-org)
   (setq rmh-elfeed-org-files (list "~/Daten/04-org-system/org-mode/refile/elfeed.org"))
 )
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-export-backends '(ascii html icalendar latex odt taskjuggler)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-column ((t (:background "blue" :strike-through nil :underline nil :slant normal :weight normal)))))
