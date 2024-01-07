@@ -385,7 +385,6 @@
   :bind
   (("\C-cl" . org-store-link)
   ("\C-cb" . org-iswitchb))
-  :commands org-capture
   :hook (org-mode . efs/org-mode-setup)
   :config
   (efs/org-font-setup)
@@ -393,39 +392,13 @@
   (setq org-ellipsis " ▾")
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
-  (setq org-directory "~/Daten/04-org-system/org-mode")
-  (setq org-default-notes-file "~/Daten/04-org-system/org-mode/refile/refile.org")
 
-                                        ;I use C-c c to start capture mode
-  (global-set-key (kbd "C-c c") 'org-capture)
-  (setq org-capture-templates
-        (quote (("t" "todo" entry (file "~/Daten/04-org-system/org-mode/refile/todo.org")
-                 "* TODO [#A] %?\n%U\n%a\n" :clock-in t :clock-resume t)
-                ("r" "respond" entry (file "~/Daten/04-org-system/org-mode/refile/refile.org")
-                 "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-                ("n" "note" entry (file "~/Daten/04-org-system/org-mode/refile/note.org")
-                 "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-                ("j" "Journal" entry (file+datetree "~/Daten/04-org-system/org-mode/refile/journal.org")
-                 "* %?\n%U\n" :clock-in t :clock-resume t :tree-type month)
-                ("w" "org-protocol" entry (file "~/Daten/04-org-system/org-mode/refile/refile.org")
-                 "* TODO Review %c\n%U\n" :immediate-finish t)
-                ("m" "Meeting" entry (file "~/Daten/04-org-system/org-mode/refile/meeting.org")
-                 "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
-                ("p" "Phone call" entry (file "~/Daten/04-org-system/org-mode/refile/phone.org")
-                 "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-                ("h" "Habit" entry (file "~/Daten/04-org-system/org-mode/refile/habit.org")
-                 "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+  (setq org-fast-tag-selection-single-key (quote expert)) ;; Allow setting single tags without the menu
+  (setq org-agenda-tags-todo-honor-ignore-options t)      ;; For tag searches ignore tasks with scheduled and deadline dates
+  (add-hook 'org-mode-hook 'turn-on-flyspell 'append)     ;; flyspell mode for spell checking everywhere
 
-                                        ;Allow setting single tags without the menu
-  (setq org-fast-tag-selection-single-key (quote expert))
-                                        ;For tag searches ignore tasks with scheduled and deadline dates
-  (setq org-agenda-tags-todo-honor-ignore-options t)
-                                        ;Spell checker
-                                        ;flyspell mode for spell checking everywhere
-  (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
 
-                                        ;Setting up spell checking with multiple dictionaries
-  (with-eval-after-load "ispell"
+  (with-eval-after-load "ispell"                         ;; Setting up spell checking with multiple dictionaries
     ;;Configure `LANG`, otherwise ispell.el cannot find a 'default
     ;;dictionary' even though multiple dictionaries will be configured
     ;;in next line.
@@ -633,6 +606,33 @@
             (org-agenda-sorting-strategy
              '(todo-state-down effort-up category-keep))))
           )))
+
+(use-package org
+    :commands org-capture
+    :config
+     (setq org-directory "~/Daten/04-org-system/org-mode")
+     (setq org-default-notes-file "~/Daten/04-org-system/org-mode/refile/refile.org")
+
+                                           ;I use C-c c to start capture mode
+     (global-set-key (kbd "C-c c") 'org-capture)
+     (setq org-capture-templates
+           (quote (("t" "todo" entry (file "~/Daten/04-org-system/org-mode/refile/todo.org")
+                    "* TODO [#A] %?\n%U\n%a\n" :clock-in t :clock-resume t)
+                   ("r" "respond" entry (file "~/Daten/04-org-system/org-mode/refile/refile.org")
+                    "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
+                   ("n" "note" entry (file "~/Daten/04-org-system/org-mode/refile/note.org")
+                    "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+                   ("j" "Journal" entry (file+datetree "~/Daten/04-org-system/org-mode/refile/journal.org")
+                    "* %?\n%U\n" :clock-in t :clock-resume t :tree-type month)
+                   ("w" "org-protocol" entry (file "~/Daten/04-org-system/org-mode/refile/refile.org")
+                    "* TODO Review %c\n%U\n" :immediate-finish t)
+                   ("m" "Meeting" entry (file "~/Daten/04-org-system/org-mode/refile/meeting.org")
+                    "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
+                   ("p" "Phone call" entry (file "~/Daten/04-org-system/org-mode/refile/phone.org")
+                    "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
+                   ("h" "Habit" entry (file "~/Daten/04-org-system/org-mode/refile/habit.org")
+                    "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+)
 
 (require 'org-habit)
 (add-to-list 'org-modules 'org-habit)
