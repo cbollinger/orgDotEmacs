@@ -472,7 +472,7 @@
                                  ;; "~/Daten/04-org-system/org-mode/duagon/Products"
                                  "~/Daten/04-org-system/org-mode/duagon/contracts")))
   (setq org-todo-keywords
-        (quote ((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
+        (quote ((sequence "TODO(t)" "ONGOING(o)" "RISK(r)" "|" "DONE(d)")
                 (sequence "WP(W)" "WPon(O)" "|" "WPclose(C)")
                 (sequence "EC(0)" "RFEW(1)" "RFEX(2)" "G2(3)" "G2.1(4)" "G2.2(5)" "G3(6)" "Abnahme(7)" "|" "Closed(8)")
                 ;; (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")
@@ -481,7 +481,8 @@
   (setq org-todo-keyword-faces
         (quote (("TODO"      :foreground "red"          :weight bold)
                 ("NEXT"      :foreground "blue"         :weight bold)
-                ("ONGOING"   :foreground "yellow"       :weight bold)
+                ("ONGOING"   :foreground "blue"         :weight bold)
+                ("RISK"      :foreground "yellow"       :weight bold)
                 ("DONE"      :foreground "forest green" :weight bold)
 
                 ("WP"        :foreground "blue"         :weight bold)
@@ -505,15 +506,15 @@
                 ;; ("PHONE"     :foreground "forest green" :weight bold)
                 )))
 
-  (setq org-todo-state-tags-triggers
-        (quote (("CANCELLED" ("CANCELLED" . t))
-                ("WAITING" ("WAITING" . t))
-                ("HOLD" ("WAITING") ("HOLD" . t))
-                ("DONE" ("WAITING") ("HOLD"))
-                ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
-                ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
-                ("ONGOING" ("WAITING") ("CANCELLED") ("HOLD"))
-                ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
+  ;; (setq org-todo-state-tags-triggers
+  ;;       (quote (("CANCELLED" ("CANCELLED" . t))
+  ;;               ("WAITING" ("WAITING" . t))
+  ;;               ("HOLD" ("WAITING") ("HOLD" . t))
+  ;;               ("DONE" ("WAITING") ("HOLD"))
+  ;;               ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
+  ;;               ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
+  ;;               ("ONGOING" ("WAITING") ("CANCELLED") ("HOLD"))
+  ;;               ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
 
                                         ;Targets include this file and any file contributing to the agenda - up to 9 levels deep
   (setq org-refile-targets (quote ((nil :maxlevel . 9)
@@ -554,6 +555,7 @@
                             (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
 
           ("c" "EC-Overview" ((agenda "" ((org-deadline-warning-days 7)))
+                              (todo "RISK"                 ((org-agenda-overriding-header "Risk Evaluation")))
                               (todo "EC"                   ((org-agenda-overriding-header "EC Setup")))
                               (todo "RFEW"                 ((org-agenda-overriding-header "RFEW: Request for Work")))
                               (todo "RFEX"                 ((org-agenda-overriding-header "RFEX: Request for Execution")))
@@ -566,37 +568,6 @@
                               (tags-todo "agenda/ACTIVE"   ((org-agenda-overriding-header "Active Projects")))))
 
           ("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))
-
-          ("x" "Next Tasks"
-           ((todo "NEXT" ((org-agenda-overriding-header "Next Tasks")))))
-
-          ("w" "Workflow Status"
-           ((todo "WAIT"
-                  ((org-agenda-overriding-header "Waiting on External")
-                   (org-agenda-files org-agenda-files)))
-            (todo "REVIEW"
-                  ((org-agenda-overriding-header "In Review")
-                   (org-agenda-files org-agenda-files)))
-            (todo "PLAN"
-                  ((org-agenda-overriding-header "In Planning")
-                   (org-agenda-todo-list-sublevels nil)
-                   (org-agenda-files org-agenda-files)))
-            (todo "BACKLOG"
-                  ((org-agenda-overriding-header "Project Backlog")
-                   (org-agenda-todo-list-sublevels nil)
-                   (org-agenda-files org-agenda-files)))
-            (todo "READY"
-                  ((org-agenda-overriding-header "Ready for Work")
-                   (org-agenda-files org-agenda-files)))
-            (todo "ACTIVE"
-                  ((org-agenda-overriding-header "Active Projects")
-                   (org-agenda-files org-agenda-files)))
-            (todo "COMPLETED"
-                  ((org-agenda-overriding-header "Completed Projects")
-                   (org-agenda-files org-agenda-files)))
-            (todo "CANCELlED"
-                  ((org-agenda-overriding-header "Cancelled Projects")
-                   (org-agenda-files org-agenda-files)))))
 
           ("N" "Notes" tags "NOTE"
            ( (org-agenda-overriding-header "Notes") (org-tags-match-list-sublevels t)))
