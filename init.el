@@ -384,20 +384,113 @@
   :mode (("\\.org$" . org-mode))
   :bind
   (("\C-cl" . org-store-link)
-  ("\C-ca" . org-agenda)
   ("\C-cb" . org-iswitchb))
-  :commands (org-capture org-agenda)
+  :commands org-capture
   :hook (org-mode . efs/org-mode-setup)
   :config
   (efs/org-font-setup)
   (efs/org-mode-setup)
   (setq org-ellipsis " ▾")
-  (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
-  (setq org-agenda-start-with-log-mode nil)
   (setq org-directory "~/Daten/04-org-system/org-mode")
   (setq org-default-notes-file "~/Daten/04-org-system/org-mode/refile/refile.org")
+
+                                        ;I use C-c c to start capture mode
+  (global-set-key (kbd "C-c c") 'org-capture)
+  (setq org-capture-templates
+        (quote (("t" "todo" entry (file "~/Daten/04-org-system/org-mode/refile/todo.org")
+                 "* TODO [#A] %?\n%U\n%a\n" :clock-in t :clock-resume t)
+                ("r" "respond" entry (file "~/Daten/04-org-system/org-mode/refile/refile.org")
+                 "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
+                ("n" "note" entry (file "~/Daten/04-org-system/org-mode/refile/note.org")
+                 "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+                ("j" "Journal" entry (file+datetree "~/Daten/04-org-system/org-mode/refile/journal.org")
+                 "* %?\n%U\n" :clock-in t :clock-resume t :tree-type month)
+                ("w" "org-protocol" entry (file "~/Daten/04-org-system/org-mode/refile/refile.org")
+                 "* TODO Review %c\n%U\n" :immediate-finish t)
+                ("m" "Meeting" entry (file "~/Daten/04-org-system/org-mode/refile/meeting.org")
+                 "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
+                ("p" "Phone call" entry (file "~/Daten/04-org-system/org-mode/refile/phone.org")
+                 "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
+                ("h" "Habit" entry (file "~/Daten/04-org-system/org-mode/refile/habit.org")
+                 "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+
+                                        ;Allow setting single tags without the menu
+  (setq org-fast-tag-selection-single-key (quote expert))
+                                        ;For tag searches ignore tasks with scheduled and deadline dates
+  (setq org-agenda-tags-todo-honor-ignore-options t)
+                                        ;Spell checker
+                                        ;flyspell mode for spell checking everywhere
+  (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
+
+                                        ;Setting up spell checking with multiple dictionaries
+  (with-eval-after-load "ispell"
+    ;;Configure `LANG`, otherwise ispell.el cannot find a 'default
+    ;;dictionary' even though multiple dictionaries will be configured
+    ;;in next line.
+    (setenv "LANG" "en_US.UTF-8")
+    (setq ispell-program-name "hunspell")
+    ;;Configure German, Swiss German, and two variants of English.
+    (setq ispell-dictionary "de_CH,en_GB,en_US")
+    ;;ispell-set-spellchecker-params has to be called
+    ;;before ispell-hunspell-add-multi-dic will work
+    (ispell-set-spellchecker-params)
+    (ispell-hunspell-add-multi-dic "de_CH,en_GB,en_US")
+    ;;For saving words to the personal dictionary, don't infer it from
+    ;;the locale, otherwise it would save to ~/.hunspell_de_DE.
+    (setq ispell-personal-dictionary "~/.hunspell_personal"))
+
+  ;; Disable keys in org-mode
+  ;;    C-c [
+  ;;    C-c ]
+  ;;    C-c ;
+  ;;    C-c C-x C-q  cancelling the clock (we never want this)
+  (add-hook 'org-mode-hook
+  '(lambda ()
+               ;; Undefine C-c [ and C-c ] since this breaks my
+               ;; org-agenda files when directories are include It
+               ;; expands the files in the directories individually
+               (org-defkey org-mode-map "\C-c[" 'undefined)
+               (org-defkey org-mode-map "\C-c]" 'undefined)
+               (org-defkey org-mode-map "\C-c;" 'undefined)
+               (org-defkey org-mode-map "\C-c\C-x\C-q" 'undefined))
+               'append)
+
+
+  ;; Download the sound at https://freesound.org/people/.Andre_Onate/sounds/484665/
+  (setq org-clock-sound "~/.emacs.d/wav/mixkit-slot-machine-win-siren-1929.wav")
+  )
+
+(use-package org
+  :bind ("\C-ca" . org-agenda)  
+  :commands org-agenda
+  :config
+  (setq org-agenda-start-with-log-mode nil)                          
+  (setq org-agenda-window-setup (quote current-window))              ;; open agenda in current window
+  (setq org-deadline-warning-days 7)                                 ;; warn me of any deadlines in next 7 days
+  (setq org-agenda-span (quote week))                                ;; show me tasks scheduled or due in next week, fortnight
+  (setq org-agenda-skip-scheduled-if-deadline-is-shown t)            ;; don't show tasks as scheduled if they are already shown as a deadline
+  (setq org-agenda-skip-deadline-prewarning-if-scheduled             ;; don't give awarning colour to tasks with impending deadlines
+        (quote pre-scheduled))                                       ;; if they are scheduled to be done
+
+  (setq org-agenda-todo-ignore-deadlines (quote all))                ;; don't show tasks that are scheduled or have deadlines in the
+  (setq org-agenda-todo-ignore-scheduled (quote all))                ;; normal todo list
+
+  (add-hook 'org-finalize-agenda-hook 'place-agenda-tags)            ;; Place tags close to the right-hand side of the window
+  (defun place-agenda-tags ()
+    "Put the agenda tags by the right border of the agenda window."
+    (setq org-agenda-tags-column (/(* 2 (window-width)) 4 ))
+    (org-agenda-align-tags))
+
+  (setq org-agenda-sorting-strategy                                  ;; sort tasks in order of when they are due and then by priority
+        (quote
+         ((agenda deadline-up priority-down)
+          (todo priority-down category-keep)
+          (tags priority-down category-keep)
+          (search category-keep))))
+
+
   (setq org-agenda-files (quote ("~/Daten/04-org-system/org-mode/refile"
                                  "~/Daten/04-org-system/org-mode/private"
                                  ;; "~/Daten/04-org-system/org-mode/gnu-software"
@@ -539,106 +632,7 @@
            ((org-agenda-overriding-header "Habits")
             (org-agenda-sorting-strategy
              '(todo-state-down effort-up category-keep))))
-          ))
-
-                                        ;I use C-c c to start capture mode
-  (global-set-key (kbd "C-c c") 'org-capture)
-  (setq org-capture-templates
-        (quote (("t" "todo" entry (file "~/Daten/04-org-system/org-mode/refile/todo.org")
-                 "* TODO [#A] %?\n%U\n%a\n" :clock-in t :clock-resume t)
-                ("r" "respond" entry (file "~/Daten/04-org-system/org-mode/refile/refile.org")
-                 "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-                ("n" "note" entry (file "~/Daten/04-org-system/org-mode/refile/note.org")
-                 "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-                ("j" "Journal" entry (file+datetree "~/Daten/04-org-system/org-mode/refile/journal.org")
-                 "* %?\n%U\n" :clock-in t :clock-resume t :tree-type month)
-                ("w" "org-protocol" entry (file "~/Daten/04-org-system/org-mode/refile/refile.org")
-                 "* TODO Review %c\n%U\n" :immediate-finish t)
-                ("m" "Meeting" entry (file "~/Daten/04-org-system/org-mode/refile/meeting.org")
-                 "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
-                ("p" "Phone call" entry (file "~/Daten/04-org-system/org-mode/refile/phone.org")
-                 "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-                ("h" "Habit" entry (file "~/Daten/04-org-system/org-mode/refile/habit.org")
-                 "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
-
-                                        ;Allow setting single tags without the menu
-  (setq org-fast-tag-selection-single-key (quote expert))
-                                        ;For tag searches ignore tasks with scheduled and deadline dates
-  (setq org-agenda-tags-todo-honor-ignore-options t)
-                                        ;Spell checker
-                                        ;flyspell mode for spell checking everywhere
-  (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
-
-                                        ;Setting up spell checking with multiple dictionaries
-  (with-eval-after-load "ispell"
-    ;;Configure `LANG`, otherwise ispell.el cannot find a 'default
-    ;;dictionary' even though multiple dictionaries will be configured
-    ;;in next line.
-    (setenv "LANG" "en_US.UTF-8")
-    (setq ispell-program-name "hunspell")
-    ;;Configure German, Swiss German, and two variants of English.
-    (setq ispell-dictionary "de_CH,en_GB,en_US")
-    ;;ispell-set-spellchecker-params has to be called
-    ;;before ispell-hunspell-add-multi-dic will work
-    (ispell-set-spellchecker-params)
-    (ispell-hunspell-add-multi-dic "de_CH,en_GB,en_US")
-    ;;For saving words to the personal dictionary, don't infer it from
-    ;;the locale, otherwise it would save to ~/.hunspell_de_DE.
-    (setq ispell-personal-dictionary "~/.hunspell_personal"))
-
-                                        ;Place tags close to the right-hand side of the window
-  (add-hook 'org-finalize-agenda-hook 'place-agenda-tags)
-  (defun place-agenda-tags ()
-    "Put the agenda tags by the right border of the agenda window."
-    (setq org-agenda-tags-column (/(* 2 (window-width)) 4 ))
-    (org-agenda-align-tags))
-
-   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; org-mode agenda options                                                ;;
-   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;open agenda in current window
-  (setq org-agenda-window-setup (quote current-window))
-  ;;warn me of any deadlines in next 7 days
-  (setq org-deadline-warning-days 7)
-  ;;show me tasks scheduled or due in next fortnight
-  (setq org-agenda-span (quote week))
-  ;;don't show tasks as scheduled if they are already shown as a deadline
-  (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
-  ;;don't give awarning colour to tasks with impending deadlines
-  ;;if they are scheduled to be done
-  (setq org-agenda-skip-deadline-prewarning-if-scheduled (quote pre-scheduled))
-  ;;don't show tasks that are scheduled or have deadlines in the
-  ;;normal todo list
-  (setq org-agenda-todo-ignore-deadlines (quote all))
-  (setq org-agenda-todo-ignore-scheduled (quote all))
-  ;;sort tasks in order of when they are due and then by priority
-  (setq org-agenda-sorting-strategy
-        (quote
-         ((agenda deadline-up priority-down)
-          (todo priority-down category-keep)
-          (tags priority-down category-keep)
-          (search category-keep))))
-
-  ;; Disable keys in org-mode
-  ;;    C-c [
-  ;;    C-c ]
-  ;;    C-c ;
-  ;;    C-c C-x C-q  cancelling the clock (we never want this)
-  (add-hook 'org-mode-hook
-  '(lambda ()
-               ;; Undefine C-c [ and C-c ] since this breaks my
-               ;; org-agenda files when directories are include It
-               ;; expands the files in the directories individually
-               (org-defkey org-mode-map "\C-c[" 'undefined)
-               (org-defkey org-mode-map "\C-c]" 'undefined)
-               (org-defkey org-mode-map "\C-c;" 'undefined)
-               (org-defkey org-mode-map "\C-c\C-x\C-q" 'undefined))
-               'append)
-
-
-  ;; Download the sound at https://freesound.org/people/.Andre_Onate/sounds/484665/
-  (setq org-clock-sound "~/.emacs.d/wav/mixkit-slot-machine-win-siren-1929.wav")
-  )
+          )))
 
 (require 'org-habit)
 (add-to-list 'org-modules 'org-habit)

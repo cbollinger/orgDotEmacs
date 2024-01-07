@@ -996,162 +996,17 @@ explanation.
      :mode (("\\.org$" . org-mode))
      :bind
      (("\C-cl" . org-store-link)
-     ("\C-ca" . org-agenda)
      ("\C-cb" . org-iswitchb))
-     :commands (org-capture org-agenda)
+     :commands org-capture
      :hook (org-mode . efs/org-mode-setup)
      :config
      (efs/org-font-setup)
      (efs/org-mode-setup)
      (setq org-ellipsis " ▾")
-     (setq org-agenda-start-with-log-mode t)
      (setq org-log-done 'time)
      (setq org-log-into-drawer t)
-     (setq org-agenda-start-with-log-mode nil)
      (setq org-directory "~/Daten/04-org-system/org-mode")
      (setq org-default-notes-file "~/Daten/04-org-system/org-mode/refile/refile.org")
-     (setq org-agenda-files (quote ("~/Daten/04-org-system/org-mode/refile"
-                                    "~/Daten/04-org-system/org-mode/private"
-                                    ;; "~/Daten/04-org-system/org-mode/gnu-software"
-                                    "~/Daten/04-org-system/org-mode/duagon/General"
-                                    ;; "~/Daten/04-org-system/org-mode/duagon/Clients"
-                                    ;; "~/Daten/04-org-system/org-mode/duagon/Products"
-                                    "~/Daten/04-org-system/org-mode/duagon/contracts")))
-     (setq org-todo-keywords
-           (quote ((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
-                   (sequence "WP(W)" "WPon(O)" "|" "WPclose(C)")
-                   (sequence "EC(0)" "RFEW(1)" "RFEX(2)" "G2(3)" "G2.1(4)" "G2.2(5)" "G3(6)" "Abnahme(7)" "|" "Closed(8)")
-                   ;; (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")
-                   )))
-
-     (setq org-todo-keyword-faces
-           (quote (("TODO"      :foreground "red"          :weight bold)
-                   ("NEXT"      :foreground "blue"         :weight bold)
-                   ("ONGOING"   :foreground "yellow"       :weight bold)
-                   ("DONE"      :foreground "forest green" :weight bold)
-
-                   ("WP"        :foreground "blue"         :weight bold)
-                   ("WPon"      :foreground "yellow"       :weight bold)
-                   ("WPclose"   :foreground "brown"        :weight bold)
-
-                   ("EC"        :foreground "red"          :weight bold)
-                   ("RFEW"      :foreground "blue"         :weight bold)
-                   ("RFEX"      :foreground "magenta"      :weight bold)
-                   ("G2"        :foreground "magenta"      :weight bold)
-                   ("G2.1"      :foreground "yellow"       :weight bold)
-                   ("G2.2"      :foreground "brown"        :weight bold)
-                   ("G3"        :foreground "forest green" :weight bold)
-                   ("Abnahme"   :foreground "green"        :weight bold)
-                   ("Closed"    :foreground "brown"        :weight bold)
-
-                   ;; ("WAITING"   :foreground "orange"       :weight bold)
-                   ;; ("HOLD"      :foreground "magenta"      :weight bold)
-                   ;; ("CANCELLED" :foreground "forest green" :weight bold)
-                   ;; ("MEETING"   :foreground "forest green" :weight bold)
-                   ;; ("PHONE"     :foreground "forest green" :weight bold)
-                   )))
-
-     (setq org-todo-state-tags-triggers
-           (quote (("CANCELLED" ("CANCELLED" . t))
-                   ("WAITING" ("WAITING" . t))
-                   ("HOLD" ("WAITING") ("HOLD" . t))
-                   ("DONE" ("WAITING") ("HOLD"))
-                   ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
-                   ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
-                   ("ONGOING" ("WAITING") ("CANCELLED") ("HOLD"))
-                   ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
-
-                                           ;Targets include this file and any file contributing to the agenda - up to 9 levels deep
-     (setq org-refile-targets (quote ((nil :maxlevel . 9)
-                                      (org-agenda-files :maxlevel . 9))))
-
-                                           ;Save Org buffers after refiling!
-     (advice-add 'org-refile :after 'org-save-all-org-buffers)
-
-     (setq org-tag-alist (quote ((:startgroup)
-                                 ("Projekte" . ?P)
-                                 (:grouptags)
-                                 ("D521_PDM" . ?a)
-                                 ("D522_BT" . ?b)
-                                 ("D522_NLD" . ?c)
-                                 ("RemoteIO" . ?c)
-                                 (:endgroup)
-                                 (:startgroup)
-                                 ("Private" . ?V)
-                                 (:grouptags)
-                                 ("Training" . ?t)
-                                 ("DSP" . ?d)
-                                 ("NOTE" . ?n)
-                                 ("ORG" . ?o)
-                                 ("PERSONAL" . ?p)
-                                 (:endgroup)
-                                 ("FLAGGED" . ??))))
-
-                                           ;Configure custom agenda views
-     (setq org-agenda-custom-commands
-           '(
-             ("d" "Dashboard" ((agenda "" ((org-deadline-warning-days 7)))
-                               (todo "NEXT"               ((org-agenda-overriding-header "Next Tasks")))
-                               (todo "ONGOING"            ((org-agenda-overriding-header "All ongoing Action Items")))
-                               (todo "WAITING"            ((org-agenda-overriding-header "Action Items, waiting for external input")))
-                               (todo "HOLD"               ((org-agenda-overriding-header "Action Items on hold")))
-                               (todo "TODO"               ((org-agenda-overriding-header "Action Itmes Backlog")))
-                               (todo "CANCELLED"          ((org-agenda-overriding-header "Action Item CANCELLED")))
-                               (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
-
-             ("c" "EC-Overview" ((agenda "" ((org-deadline-warning-days 7)))
-                                 (todo "EC"                   ((org-agenda-overriding-header "EC Setup")))
-                                 (todo "RFEW"                 ((org-agenda-overriding-header "RFEW: Request for Work")))
-                                 (todo "RFEX"                 ((org-agenda-overriding-header "RFEX: Request for Execution")))
-                                 (todo "G2"                   ((org-agenda-overriding-header "G2: Planning")))
-                                 (todo "G2.1"                 ((org-agenda-overriding-header "G2.1: Development")))
-                                 (todo "G2.2"                 ((org-agenda-overriding-header "G2.2: G2 Validation")))
-                                 (todo "G3"                   ((org-agenda-overriding-header "G3: G3 Validation")))
-                                 (todo "Abnahme"              ((org-agenda-overriding-header "Abnahmeprotokoll")))
-                                 (todo "Closed"               ((org-agenda-overriding-header "Geschlossene Contracts")))
-                                 (tags-todo "agenda/ACTIVE"   ((org-agenda-overriding-header "Active Projects")))))
-
-             ("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))
-
-             ("x" "Next Tasks"
-              ((todo "NEXT" ((org-agenda-overriding-header "Next Tasks")))))
-
-             ("w" "Workflow Status"
-              ((todo "WAIT"
-                     ((org-agenda-overriding-header "Waiting on External")
-                      (org-agenda-files org-agenda-files)))
-               (todo "REVIEW"
-                     ((org-agenda-overriding-header "In Review")
-                      (org-agenda-files org-agenda-files)))
-               (todo "PLAN"
-                     ((org-agenda-overriding-header "In Planning")
-                      (org-agenda-todo-list-sublevels nil)
-                      (org-agenda-files org-agenda-files)))
-               (todo "BACKLOG"
-                     ((org-agenda-overriding-header "Project Backlog")
-                      (org-agenda-todo-list-sublevels nil)
-                      (org-agenda-files org-agenda-files)))
-               (todo "READY"
-                     ((org-agenda-overriding-header "Ready for Work")
-                      (org-agenda-files org-agenda-files)))
-               (todo "ACTIVE"
-                     ((org-agenda-overriding-header "Active Projects")
-                      (org-agenda-files org-agenda-files)))
-               (todo "COMPLETED"
-                     ((org-agenda-overriding-header "Completed Projects")
-                      (org-agenda-files org-agenda-files)))
-               (todo "CANCELlED"
-                     ((org-agenda-overriding-header "Cancelled Projects")
-                      (org-agenda-files org-agenda-files)))))
-
-             ("N" "Notes" tags "NOTE"
-              ( (org-agenda-overriding-header "Notes") (org-tags-match-list-sublevels t)))
-
-             ("h" "Habits" tags-todo "STYLE=\"habit\""
-              ((org-agenda-overriding-header "Habits")
-               (org-agenda-sorting-strategy
-                '(todo-state-down effort-up category-keep))))
-             ))
 
                                            ;I use C-c c to start capture mode
      (global-set-key (kbd "C-c c") 'org-capture)
@@ -1198,39 +1053,6 @@ explanation.
        ;;the locale, otherwise it would save to ~/.hunspell_de_DE.
        (setq ispell-personal-dictionary "~/.hunspell_personal"))
 
-                                           ;Place tags close to the right-hand side of the window
-     (add-hook 'org-finalize-agenda-hook 'place-agenda-tags)
-     (defun place-agenda-tags ()
-       "Put the agenda tags by the right border of the agenda window."
-       (setq org-agenda-tags-column (/(* 2 (window-width)) 4 ))
-       (org-agenda-align-tags))
-
-      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     ;; org-mode agenda options                                                ;;
-      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     ;;open agenda in current window
-     (setq org-agenda-window-setup (quote current-window))
-     ;;warn me of any deadlines in next 7 days
-     (setq org-deadline-warning-days 7)
-     ;;show me tasks scheduled or due in next fortnight
-     (setq org-agenda-span (quote week))
-     ;;don't show tasks as scheduled if they are already shown as a deadline
-     (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
-     ;;don't give awarning colour to tasks with impending deadlines
-     ;;if they are scheduled to be done
-     (setq org-agenda-skip-deadline-prewarning-if-scheduled (quote pre-scheduled))
-     ;;don't show tasks that are scheduled or have deadlines in the
-     ;;normal todo list
-     (setq org-agenda-todo-ignore-deadlines (quote all))
-     (setq org-agenda-todo-ignore-scheduled (quote all))
-     ;;sort tasks in order of when they are due and then by priority
-     (setq org-agenda-sorting-strategy
-           (quote
-            ((agenda deadline-up priority-down)
-             (todo priority-down category-keep)
-             (tags priority-down category-keep)
-             (search category-keep))))
-
      ;; Disable keys in org-mode
      ;;    C-c [
      ;;    C-c ]
@@ -1251,6 +1073,184 @@ explanation.
      ;; Download the sound at https://freesound.org/people/.Andre_Onate/sounds/484665/
      (setq org-clock-sound "~/.emacs.d/wav/mixkit-slot-machine-win-siren-1929.wav")
      )
+#+end_src
+
+** Org Custom Agenda View
+
+#+begin_src emacs-lisp
+  (use-package org
+    :bind ("\C-ca" . org-agenda)  
+    :commands org-agenda
+    :config
+    (setq org-agenda-start-with-log-mode nil)                          
+    (setq org-agenda-window-setup (quote current-window))              ;; open agenda in current window
+    (setq org-deadline-warning-days 7)                                 ;; warn me of any deadlines in next 7 days
+    (setq org-agenda-span (quote week))                                ;; show me tasks scheduled or due in next week, fortnight
+    (setq org-agenda-skip-scheduled-if-deadline-is-shown t)            ;; don't show tasks as scheduled if they are already shown as a deadline
+    (setq org-agenda-skip-deadline-prewarning-if-scheduled             ;; don't give awarning colour to tasks with impending deadlines
+          (quote pre-scheduled))                                       ;; if they are scheduled to be done
+
+    (setq org-agenda-todo-ignore-deadlines (quote all))                ;; don't show tasks that are scheduled or have deadlines in the
+    (setq org-agenda-todo-ignore-scheduled (quote all))                ;; normal todo list
+
+    (add-hook 'org-finalize-agenda-hook 'place-agenda-tags)            ;; Place tags close to the right-hand side of the window
+    (defun place-agenda-tags ()
+      "Put the agenda tags by the right border of the agenda window."
+      (setq org-agenda-tags-column (/(* 2 (window-width)) 4 ))
+      (org-agenda-align-tags))
+
+    (setq org-agenda-sorting-strategy                                  ;; sort tasks in order of when they are due and then by priority
+          (quote
+           ((agenda deadline-up priority-down)
+            (todo priority-down category-keep)
+            (tags priority-down category-keep)
+            (search category-keep))))
+
+
+    (setq org-agenda-files (quote ("~/Daten/04-org-system/org-mode/refile"
+                                   "~/Daten/04-org-system/org-mode/private"
+                                   ;; "~/Daten/04-org-system/org-mode/gnu-software"
+                                   "~/Daten/04-org-system/org-mode/duagon/General"
+                                   ;; "~/Daten/04-org-system/org-mode/duagon/Clients"
+                                   ;; "~/Daten/04-org-system/org-mode/duagon/Products"
+                                   "~/Daten/04-org-system/org-mode/duagon/contracts")))
+    (setq org-todo-keywords
+          (quote ((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
+                  (sequence "WP(W)" "WPon(O)" "|" "WPclose(C)")
+                  (sequence "EC(0)" "RFEW(1)" "RFEX(2)" "G2(3)" "G2.1(4)" "G2.2(5)" "G3(6)" "Abnahme(7)" "|" "Closed(8)")
+                  ;; (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")
+                  )))
+
+    (setq org-todo-keyword-faces
+          (quote (("TODO"      :foreground "red"          :weight bold)
+                  ("NEXT"      :foreground "blue"         :weight bold)
+                  ("ONGOING"   :foreground "yellow"       :weight bold)
+                  ("DONE"      :foreground "forest green" :weight bold)
+
+                  ("WP"        :foreground "blue"         :weight bold)
+                  ("WPon"      :foreground "yellow"       :weight bold)
+                  ("WPclose"   :foreground "brown"        :weight bold)
+
+                  ("EC"        :foreground "red"          :weight bold)
+                  ("RFEW"      :foreground "blue"         :weight bold)
+                  ("RFEX"      :foreground "magenta"      :weight bold)
+                  ("G2"        :foreground "magenta"      :weight bold)
+                  ("G2.1"      :foreground "yellow"       :weight bold)
+                  ("G2.2"      :foreground "brown"        :weight bold)
+                  ("G3"        :foreground "forest green" :weight bold)
+                  ("Abnahme"   :foreground "green"        :weight bold)
+                  ("Closed"    :foreground "brown"        :weight bold)
+
+                  ;; ("WAITING"   :foreground "orange"       :weight bold)
+                  ;; ("HOLD"      :foreground "magenta"      :weight bold)
+                  ;; ("CANCELLED" :foreground "forest green" :weight bold)
+                  ;; ("MEETING"   :foreground "forest green" :weight bold)
+                  ;; ("PHONE"     :foreground "forest green" :weight bold)
+                  )))
+
+    (setq org-todo-state-tags-triggers
+          (quote (("CANCELLED" ("CANCELLED" . t))
+                  ("WAITING" ("WAITING" . t))
+                  ("HOLD" ("WAITING") ("HOLD" . t))
+                  ("DONE" ("WAITING") ("HOLD"))
+                  ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
+                  ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
+                  ("ONGOING" ("WAITING") ("CANCELLED") ("HOLD"))
+                  ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
+
+                                          ;Targets include this file and any file contributing to the agenda - up to 9 levels deep
+    (setq org-refile-targets (quote ((nil :maxlevel . 9)
+                                     (org-agenda-files :maxlevel . 9))))
+
+                                          ;Save Org buffers after refiling!
+    (advice-add 'org-refile :after 'org-save-all-org-buffers)
+
+    (setq org-tag-alist (quote ((:startgroup)
+                                ("Projekte" . ?P)
+                                (:grouptags)
+                                ("D521_PDM" . ?a)
+                                ("D522_BT" . ?b)
+                                ("D522_NLD" . ?c)
+                                ("RemoteIO" . ?c)
+                                (:endgroup)
+                                (:startgroup)
+                                ("Private" . ?V)
+                                (:grouptags)
+                                ("Training" . ?t)
+                                ("DSP" . ?d)
+                                ("NOTE" . ?n)
+                                ("ORG" . ?o)
+                                ("PERSONAL" . ?p)
+                                (:endgroup)
+                                ("FLAGGED" . ??))))
+
+                                          ;Configure custom agenda views
+    (setq org-agenda-custom-commands
+          '(
+            ("d" "Dashboard" ((agenda "" ((org-deadline-warning-days 7)))
+                              (todo "NEXT"               ((org-agenda-overriding-header "Next Tasks")))
+                              (todo "ONGOING"            ((org-agenda-overriding-header "All ongoing Action Items")))
+                              (todo "WAITING"            ((org-agenda-overriding-header "Action Items, waiting for external input")))
+                              (todo "HOLD"               ((org-agenda-overriding-header "Action Items on hold")))
+                              (todo "TODO"               ((org-agenda-overriding-header "Action Itmes Backlog")))
+                              (todo "CANCELLED"          ((org-agenda-overriding-header "Action Item CANCELLED")))
+                              (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+
+            ("c" "EC-Overview" ((agenda "" ((org-deadline-warning-days 7)))
+                                (todo "EC"                   ((org-agenda-overriding-header "EC Setup")))
+                                (todo "RFEW"                 ((org-agenda-overriding-header "RFEW: Request for Work")))
+                                (todo "RFEX"                 ((org-agenda-overriding-header "RFEX: Request for Execution")))
+                                (todo "G2"                   ((org-agenda-overriding-header "G2: Planning")))
+                                (todo "G2.1"                 ((org-agenda-overriding-header "G2.1: Development")))
+                                (todo "G2.2"                 ((org-agenda-overriding-header "G2.2: G2 Validation")))
+                                (todo "G3"                   ((org-agenda-overriding-header "G3: G3 Validation")))
+                                (todo "Abnahme"              ((org-agenda-overriding-header "Abnahmeprotokoll")))
+                                (todo "Closed"               ((org-agenda-overriding-header "Geschlossene Contracts")))
+                                (tags-todo "agenda/ACTIVE"   ((org-agenda-overriding-header "Active Projects")))))
+
+            ("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))
+
+            ("x" "Next Tasks"
+             ((todo "NEXT" ((org-agenda-overriding-header "Next Tasks")))))
+
+            ("w" "Workflow Status"
+             ((todo "WAIT"
+                    ((org-agenda-overriding-header "Waiting on External")
+                     (org-agenda-files org-agenda-files)))
+              (todo "REVIEW"
+                    ((org-agenda-overriding-header "In Review")
+                     (org-agenda-files org-agenda-files)))
+              (todo "PLAN"
+                    ((org-agenda-overriding-header "In Planning")
+                     (org-agenda-todo-list-sublevels nil)
+                     (org-agenda-files org-agenda-files)))
+              (todo "BACKLOG"
+                    ((org-agenda-overriding-header "Project Backlog")
+                     (org-agenda-todo-list-sublevels nil)
+                     (org-agenda-files org-agenda-files)))
+              (todo "READY"
+                    ((org-agenda-overriding-header "Ready for Work")
+                     (org-agenda-files org-agenda-files)))
+              (todo "ACTIVE"
+                    ((org-agenda-overriding-header "Active Projects")
+                     (org-agenda-files org-agenda-files)))
+              (todo "COMPLETED"
+                    ((org-agenda-overriding-header "Completed Projects")
+                     (org-agenda-files org-agenda-files)))
+              (todo "CANCELlED"
+                    ((org-agenda-overriding-header "Cancelled Projects")
+                     (org-agenda-files org-agenda-files)))))
+
+            ("N" "Notes" tags "NOTE"
+             ( (org-agenda-overriding-header "Notes") (org-tags-match-list-sublevels t)))
+
+            ("h" "Habits" tags-todo "STYLE=\"habit\""
+             ((org-agenda-overriding-header "Habits")
+              (org-agenda-sorting-strategy
+               '(todo-state-down effort-up category-keep))))
+            )))
+
+
 #+end_src
 
 ** Org Habit
