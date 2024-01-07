@@ -395,6 +395,7 @@
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
+  (setq org-agenda-start-with-log-mode nil)
   (setq org-directory "~/Daten/04-org-system/org-mode")
   (setq org-default-notes-file "~/Daten/04-org-system/org-mode/refile/refile.org")
   (setq org-agenda-files (quote ("~/Daten/04-org-system/org-mode/refile"
@@ -406,14 +407,20 @@
                                  "~/Daten/04-org-system/org-mode/duagon/contracts")))
   (setq org-todo-keywords
         (quote ((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
+                (sequence "WP(W)" "WPon(O)" "|" "WPclose(C)")
                 (sequence "EC(0)" "RFEW(1)" "RFEX(2)" "G2(3)" "G2.1(4)" "G2.2(5)" "G3(6)" "Abnahme(7)" "|" "Closed(8)")
-                (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
+                ;; (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")
+                )))
 
   (setq org-todo-keyword-faces
         (quote (("TODO"      :foreground "red"          :weight bold)
                 ("NEXT"      :foreground "blue"         :weight bold)
                 ("ONGOING"   :foreground "yellow"       :weight bold)
                 ("DONE"      :foreground "forest green" :weight bold)
+
+                ("WP"        :foreground "blue"         :weight bold)
+                ("WPon"      :foreground "yellow"       :weight bold)
+                ("WPclose"   :foreground "brown"        :weight bold)
 
                 ("EC"        :foreground "red"          :weight bold)
                 ("RFEW"      :foreground "blue"         :weight bold)
@@ -423,12 +430,14 @@
                 ("G2.2"      :foreground "brown"        :weight bold)
                 ("G3"        :foreground "forest green" :weight bold)
                 ("Abnahme"   :foreground "green"        :weight bold)
+                ("Closed"    :foreground "brown"        :weight bold)
 
-                ("WAITING"   :foreground "orange"       :weight bold)
-                ("HOLD"      :foreground "magenta"      :weight bold)
-                ("CANCELLED" :foreground "forest green" :weight bold)
-                ("MEETING"   :foreground "forest green" :weight bold)
-                ("PHONE"     :foreground "forest green" :weight bold))))
+                ;; ("WAITING"   :foreground "orange"       :weight bold)
+                ;; ("HOLD"      :foreground "magenta"      :weight bold)
+                ;; ("CANCELLED" :foreground "forest green" :weight bold)
+                ;; ("MEETING"   :foreground "forest green" :weight bold)
+                ;; ("PHONE"     :foreground "forest green" :weight bold)
+                )))
 
   (setq org-todo-state-tags-triggers
         (quote (("CANCELLED" ("CANCELLED" . t))
@@ -592,7 +601,7 @@
   ;;warn me of any deadlines in next 7 days
   (setq org-deadline-warning-days 7)
   ;;show me tasks scheduled or due in next fortnight
-  (setq org-agenda-span (quote fortnight))
+  (setq org-agenda-span (quote week))
   ;;don't show tasks as scheduled if they are already shown as a deadline
   (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
   ;;don't give awarning colour to tasks with impending deadlines
@@ -650,163 +659,6 @@
   :hook (org-mode . org-bullets-mode)
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
-
-(require 'ox-latex)
-(require 'ob-js)
-(require 'color)
-
-;; (unless (package-installed-p 'ob-ipython)
-;;   (package-install 'ob-ipython))
-;; (require 'ob-ipython)
-
-(setq org-startup-shrink-all-tables t)
-(setq org-startup-folded t)
-(setq org-hide-block-startup t)
-
-;; Make babel results blocks lowercase
-;; (setq org-babel-results-keyword "results")
-
-;; Do not ask when evaluating source code blocks
-(defun bh/display-inline-images ()
-  (condition-case nil
-      (org-display-inline-images)
-    (error nil)))
-
-;; Highlight coloring export of source code block export
-(add-to-list 'org-latex-packages-alist '("" "minted"))
-(setq org-latex-listings 'minted)
-(setq org-src-fontify-natively t)
-
-(setq org-ditaa-jar-path "~/usr/share/ditaa/ditaa.jar")
-(setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
-;; Use fundamental mode when editing plantuml blocks with C-c '
-(add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
-(add-to-list 'exec-path "/usr/bin/magick")
-(use-package gnuplot
-  :init
-)
-
-(with-eval-after-load 'org
-      (org-babel-do-load-languages
-       'org-babel-load-languages
-       '((emacs-lisp . t)    ; 
-         (C          . t)    ; C, C++, D
-         (js         . t)    ; JavaScript
-         (org        , t)    ;
-         (ditaa      . t)    ; ditaa
-         (shell      . t)    ; shell, bash
-         (lisp       . t)    ; lisp
-         (latex      . t)    ; latex
-         (octave     . t)    ; octave
-         (gnuplot    . t)    ; gnuplot
-         (python     . t)    ; pyhon
-         (plantuml   . t)))  ; this line activate plantuml
-
-      (push '("conf-unix" . conf-unix) org-src-lang-modes))
-
-    ;; Use python lexer for ipython blocks
-;;  (ipython     . t)   ; pyhon
-;;  (setq python-shell-interpreter "python3")
-;;  (add-to-list 'org-latex-minted-langs '(ipython "python"))  
-
-  ;; Do not prompt to confirm evaluation
-  ;; This may be dangerous - make sure you understand the consequences
-  ;; of setting this -- see the docstring for details
-  (setq org-confirm-babel-evaluate nil)
-
-(unless (package-installed-p 'ox-reveal)
-  (package-install 'ox-reveal))
-(require 'ox-reveal)
-(setq ox-reveal-always-ensure t)
-(setq org-reveal-root "file:///home/christian/Daten/04 git/reveal.js")
-(setq Org-Reveal-title-slide nil)
-
-(use-package hide-mode-line
-  :ensure t)
-
-(defun my/org-tree-slide-setup ()
-  (interactive)
-  (org-display-inline-images)
-  (hide-mode-line-mode 1)
-  (setq text-scale-mode-amount 3)
-  (text-scale-mode 1))
-
-(defun my/org-tree-slide-end ()
-  (interactive)
-  (org-display-inline-images)
-  (hide-mode-line-mode 0)
-  (text-scale-mode 0)
-  (org-tree-slide-mode 0))
-
-(use-package org-tree-slide
-  :ensure t
-  :defer t
-  :custom
-  (org-image-actual-width nil)
-  (org-tree-slide-activate-message "Presentation started!")
-  (org-tree-slide-deactivate-message "Presentation finished!")
-  :hook ((org-tree-slide-play . my/org-tree-slide-setup)
-         (org-tree-slide-stop . my/org-tree-slide-end))
-  :bind (:map org-tree-slide-mode-map
-              ("<f6>" . org-tree-slide-move-previous-tree)
-              ("<f7>" . org-tree-slide-move-next-tree)
-              ("<f8>" . org-tree-slide-content)))
-
-(defun dw/org-present-prepare-slide ()
-  (org-overview)
-  (org-show-entry)
-  (org-show-children))
-
-(defun dw/org-present-hook ()
-  (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
-                                     (header-line (:height 4.5) variable-pitch)
-                                     (org-code (:height 1.55) org-code)
-                                     (org-verbatim (:height 1.55) org-verbatim)
-                                     (org-block (:height 1.25) org-block)
-                                     (org-block-begin-line (:height 0.7) org-block)))
-  (setq header-line-format " ")
-  (org-display-inline-images)
-  (dw/org-present-prepare-slide))
-
-(defun dw/org-present-quit-hook ()
-  (setq-local face-remapping-alist '((default variable-pitch default)))
-  (setq header-line-format nil)
-  (org-present-small)
-  (org-remove-inline-images))
-
-(defun dw/org-present-prev ()
-  (interactive)
-  (org-present-prev)
-  (dw/org-present-prepare-slide))
-
-(defun dw/org-present-next ()
-  (interactive)
-  (org-present-next)
-  (dw/org-present-prepare-slide))
-
-(use-package org-present
-  :bind (:map org-present-mode-keymap
-         ("C-c C-j" . dw/org-present-next)
-         ("C-c C-k" . dw/org-present-prev))
-  :hook ((org-present-mode . dw/org-present-hook)
-         (org-present-mode-quit . dw/org-present-quit-hook)))
-
-(with-eval-after-load 'org
-  ;; This is needed as of Org 9.2
-  (require 'org-tempo)
-
-  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python")))
-
-;; Automatically tangle our Emacs.org config file when we save it
-(defun efs/org-babel-tangle-config ()
-  (when (string-equal (file-name-directory (buffer-file-name))
-                      (expand-file-name user-emacs-directory))
-    ;; Dynamic scoping to the rescue
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
-(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
 ; Clocking Functions
 
@@ -1015,6 +867,163 @@
                      ("\\subsubsection{%s}" . "\\subsubsection{%s}")
                      ("\\paragraph{%s}" . "\\paragraph{%s}")
                      ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
+
+(require 'ox-latex)
+(require 'ob-js)
+(require 'color)
+
+;; (unless (package-installed-p 'ob-ipython)
+;;   (package-install 'ob-ipython))
+;; (require 'ob-ipython)
+
+(setq org-startup-shrink-all-tables t)
+(setq org-startup-folded t)
+(setq org-hide-block-startup t)
+
+;; Make babel results blocks lowercase
+;; (setq org-babel-results-keyword "results")
+
+;; Do not ask when evaluating source code blocks
+(defun bh/display-inline-images ()
+  (condition-case nil
+      (org-display-inline-images)
+    (error nil)))
+
+;; Highlight coloring export of source code block export
+(add-to-list 'org-latex-packages-alist '("" "minted"))
+(setq org-latex-listings 'minted)
+(setq org-src-fontify-natively t)
+
+(setq org-ditaa-jar-path "~/usr/share/ditaa/ditaa.jar")
+(setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
+;; Use fundamental mode when editing plantuml blocks with C-c '
+(add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
+(add-to-list 'exec-path "/usr/bin/magick")
+(use-package gnuplot
+  :init
+)
+
+(with-eval-after-load 'org
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       '((emacs-lisp . t)    ; 
+         (C          . t)    ; C, C++, D
+         (js         . t)    ; JavaScript
+         (org        , t)    ;
+         (ditaa      . t)    ; ditaa
+         (shell      . t)    ; shell, bash
+         (lisp       . t)    ; lisp
+         (latex      . t)    ; latex
+         (octave     . t)    ; octave
+         (gnuplot    . t)    ; gnuplot
+         (python     . t)    ; pyhon
+         (plantuml   . t)))  ; this line activate plantuml
+
+      (push '("conf-unix" . conf-unix) org-src-lang-modes))
+
+    ;; Use python lexer for ipython blocks
+;;  (ipython     . t)   ; pyhon
+;;  (setq python-shell-interpreter "python3")
+;;  (add-to-list 'org-latex-minted-langs '(ipython "python"))  
+
+  ;; Do not prompt to confirm evaluation
+  ;; This may be dangerous - make sure you understand the consequences
+  ;; of setting this -- see the docstring for details
+  (setq org-confirm-babel-evaluate nil)
+
+(unless (package-installed-p 'ox-reveal)
+  (package-install 'ox-reveal))
+(require 'ox-reveal)
+(setq ox-reveal-always-ensure t)
+(setq org-reveal-root "file:///home/christian/Daten/04 git/reveal.js")
+(setq Org-Reveal-title-slide nil)
+
+(use-package hide-mode-line
+  :ensure t)
+
+(defun my/org-tree-slide-setup ()
+  (interactive)
+  (org-display-inline-images)
+  (hide-mode-line-mode 1)
+  (setq text-scale-mode-amount 3)
+  (text-scale-mode 1))
+
+(defun my/org-tree-slide-end ()
+  (interactive)
+  (org-display-inline-images)
+  (hide-mode-line-mode 0)
+  (text-scale-mode 0)
+  (org-tree-slide-mode 0))
+
+(use-package org-tree-slide
+  :ensure t
+  :defer t
+  :custom
+  (org-image-actual-width nil)
+  (org-tree-slide-activate-message "Presentation started!")
+  (org-tree-slide-deactivate-message "Presentation finished!")
+  :hook ((org-tree-slide-play . my/org-tree-slide-setup)
+         (org-tree-slide-stop . my/org-tree-slide-end))
+  :bind (:map org-tree-slide-mode-map
+              ("<f6>" . org-tree-slide-move-previous-tree)
+              ("<f7>" . org-tree-slide-move-next-tree)
+              ("<f8>" . org-tree-slide-content)))
+
+(defun dw/org-present-prepare-slide ()
+  (org-overview)
+  (org-show-entry)
+  (org-show-children))
+
+(defun dw/org-present-hook ()
+  (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
+                                     (header-line (:height 4.5) variable-pitch)
+                                     (org-code (:height 1.55) org-code)
+                                     (org-verbatim (:height 1.55) org-verbatim)
+                                     (org-block (:height 1.25) org-block)
+                                     (org-block-begin-line (:height 0.7) org-block)))
+  (setq header-line-format " ")
+  (org-display-inline-images)
+  (dw/org-present-prepare-slide))
+
+(defun dw/org-present-quit-hook ()
+  (setq-local face-remapping-alist '((default variable-pitch default)))
+  (setq header-line-format nil)
+  (org-present-small)
+  (org-remove-inline-images))
+
+(defun dw/org-present-prev ()
+  (interactive)
+  (org-present-prev)
+  (dw/org-present-prepare-slide))
+
+(defun dw/org-present-next ()
+  (interactive)
+  (org-present-next)
+  (dw/org-present-prepare-slide))
+
+(use-package org-present
+  :bind (:map org-present-mode-keymap
+         ("C-c C-j" . dw/org-present-next)
+         ("C-c C-k" . dw/org-present-prev))
+  :hook ((org-present-mode . dw/org-present-hook)
+         (org-present-mode-quit . dw/org-present-quit-hook)))
+
+(with-eval-after-load 'org
+  ;; This is needed as of Org 9.2
+  (require 'org-tempo)
+
+  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python")))
+
+;; Automatically tangle our Emacs.org config file when we save it
+(defun efs/org-babel-tangle-config ()
+  (when (string-equal (file-name-directory (buffer-file-name))
+                      (expand-file-name user-emacs-directory))
+    ;; Dynamic scoping to the rescue
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
 (use-package htmlize
   :ensure t
