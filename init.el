@@ -21,29 +21,29 @@
 (add-hook 'emacs-startup-hook #'efs/display-startup-time)
 
 ;; Initialize package sources
-  (require 'package)
-  (setq package-archives
-        '(("GNU ELPA"	. "https://elpa.gnu.org/packages/")
-          ("Melpa"        . "https://melpa.org/packages/") 
-          ("Melpa Stable" . "https://stable.melpa.org/packages/")
-          ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+(require 'package)
+(setq package-archives
+      '(("GNU ELPA"	. "https://elpa.gnu.org/packages/")
+        ("Melpa"        . "https://melpa.org/packages/") 
+        ("Melpa Stable" . "https://stable.melpa.org/packages/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+        ))
+(setq   package-archive-priorities
+        '(("Melpa"        .  0)
+          ("GNU ELPA"	 .  5) 
+          ("Melpa Stable" .  10)
+          ("nongnu" .  10)
           ))
-  (setq   package-archive-priorities
-          '(("Melpa"        .  0)
-            ("GNU ELPA"	 .  5) 
-            ("Melpa Stable" .  10)
-            ("nongnu" .  10)
-            ))
 
-;;  (package-initialize)
-  (unless package-archive-contents (package-refresh-contents))
+;; (package-initialize) 
+;; (unless package-archive-contents (package-refresh-contents)) 
 
-  ;; Initialize use-package on non-Linux platforms
-  (unless (package-installed-p 'use-package) (package-install 'use-package))
+;; Initialize use-package on non-Linux platforms
+(unless (package-installed-p 'use-package) (package-install 'use-package))
 
-  (require 'use-package)
-  (setq use-package-always-ensure t)
-  (add-to-list 'load-path "~/.emacs.d/elpa/org-contrib-0.4.2")
+(require 'use-package)
+(setq use-package-always-ensure t)
+(add-to-list 'load-path "~/.emacs.d/elpa/org-contrib-0.4.2")
 
 (use-package auto-package-update
   :custom
@@ -51,8 +51,7 @@
   (auto-package-update-prompt-before-update t)
   (auto-package-update-hide-results t)
   :config
-  (auto-package-update-maybe)
-  (auto-package-update-at-time "09:00"))
+    (auto-package-update-at-time "09:00"))
 
 ;; NOTE: If you want to move everything out of the ~/.emacs.d folder
 ;; reliably, set `user-emacs-directory` before loading no-littering!
@@ -94,7 +93,8 @@
                 eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-(setq-default fill-column 80)
+(turn-on-auto-fill)
+(setq-default fill-column 70)
 
 (set-face-attribute 'default nil :font "Fira Code Retina" :height efs/default-font-size)
 ;; Set the fixed pitch face
@@ -472,7 +472,7 @@
                                  ;; "~/Daten/04-org-system/org-mode/duagon/Products"
                                  "~/Daten/04-org-system/org-mode/duagon/contracts")))
   (setq org-todo-keywords
-        (quote ((sequence "TODO(t)" "ONGOING(o)" "RISK(r)" "|" "DONE(d)")
+        (quote ((sequence "TODO(t)" "ONGOING(o)" "RISK(r)" "MEETING(M)" "|" "DONE(d)" "CANCELLED(C)")
                 (sequence "WP(W)" "WPon(O)" "|" "WPclose(C)")
                 (sequence "EC(0)" "RFEW(1)" "RFEX(2)" "G2(3)" "G2.1(4)" "G2.2(5)" "G3(6)" "Abnahme(7)" "|" "Closed(8)")
                 ;; (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")
@@ -480,10 +480,12 @@
 
   (setq org-todo-keyword-faces
         (quote (("TODO"      :foreground "red"          :weight bold)
+                ("MEETING"   :foreground "forest green" :weight bold)
                 ("NEXT"      :foreground "blue"         :weight bold)
                 ("ONGOING"   :foreground "blue"         :weight bold)
                 ("RISK"      :foreground "yellow"       :weight bold)
                 ("DONE"      :foreground "forest green" :weight bold)
+                ("CANCELLED" :foreground "forest green" :weight bold)
 
                 ("WP"        :foreground "blue"         :weight bold)
                 ("WPon"      :foreground "yellow"       :weight bold)
@@ -546,7 +548,7 @@
   (setq org-agenda-custom-commands
         '(
           ("d" "Dashboard" ((agenda "" ((org-deadline-warning-days 7)))
-                            (todo "NEXT"               ((org-agenda-overriding-header "Next Tasks")))
+                            (todo "MEETING"               ((org-agenda-overriding-header "Meeting")))
                             (todo "ONGOING"            ((org-agenda-overriding-header "All ongoing Action Items")))
                             (todo "WAITING"            ((org-agenda-overriding-header "Action Items, waiting for external input")))
                             (todo "HOLD"               ((org-agenda-overriding-header "Action Items on hold")))

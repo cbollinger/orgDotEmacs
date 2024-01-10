@@ -290,7 +290,6 @@ configuration of everything else we use.  [[https://elpa.nongnu.org/][Melpa NonG
 interface ox-taskjuggler needs to be activated in emacs customization
 ==org-export-backends==
 
-
 #+begin_src emacs-lisp
   ;; Initialize package sources
   (require 'package)
@@ -307,8 +306,8 @@ interface ox-taskjuggler needs to be activated in emacs customization
             ("nongnu" .  10)
             ))
 
-;;  (package-initialize)
-  (unless package-archive-contents (package-refresh-contents))
+  ;; (package-initialize) 
+  ;; (unless package-archive-contents (package-refresh-contents)) 
 
   ;; Initialize use-package on non-Linux platforms
   (unless (package-installed-p 'use-package) (package-install 'use-package))
@@ -317,6 +316,10 @@ interface ox-taskjuggler needs to be activated in emacs customization
   (setq use-package-always-ensure t)
   (add-to-list 'load-path "~/.emacs.d/elpa/org-contrib-0.4.2")
 #+end_src
+
+
+*** TODO Check how to use package-initialize correctly.
+- An error is thrown, when uncommented and system is already installed.
 
 ** Automatic Package Updates
 
@@ -333,8 +336,7 @@ You can also use =M-x auto-package-update-now= to update right now!
     (auto-package-update-prompt-before-update t)
     (auto-package-update-hide-results t)
     :config
-    (auto-package-update-maybe)
-    (auto-package-update-at-time "09:00"))
+      (auto-package-update-at-time "09:00"))
 #+end_src
 
 
@@ -365,6 +367,7 @@ This section configures basic UI settings that remove unneeded elements to make
 Emacs look a lot more minimal and modern.  If you're just getting started in
 Emacs, the menu bar might be helpful so you can remove the =(menu-bar-mode -1)=
 line if you'd like to still see that.
+Enables the =auto-fill= minor mode
 
 #+begin_src emacs-lisp
   (setq inhibit-startup-message t)
@@ -396,9 +399,11 @@ line if you'd like to still see that.
                   eshell-mode-hook))
     (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-  (setq-default fill-column 80)
+  (turn-on-auto-fill)
+  (setq-default fill-column 70)
 #+end_src
 
+*** TODO Setup auto-fill-mode correctly
 ** Font Configuration
 
 I am using the [[https://github.com/tonsky/FiraCode][Fira Code]], [[https://fonts.google.com/specimen/Cantarell][Cantarell]] and Iosevka Etoile fonts for this configuration which will
@@ -1088,7 +1093,7 @@ explanation.
                                    ;; "~/Daten/04-org-system/org-mode/duagon/Products"
                                    "~/Daten/04-org-system/org-mode/duagon/contracts")))
     (setq org-todo-keywords
-          (quote ((sequence "TODO(t)" "ONGOING(o)" "RISK(r)" "|" "DONE(d)")
+          (quote ((sequence "TODO(t)" "ONGOING(o)" "RISK(r)" "MEETING(M)" "|" "DONE(d)" "CANCELLED(C)")
                   (sequence "WP(W)" "WPon(O)" "|" "WPclose(C)")
                   (sequence "EC(0)" "RFEW(1)" "RFEX(2)" "G2(3)" "G2.1(4)" "G2.2(5)" "G3(6)" "Abnahme(7)" "|" "Closed(8)")
                   ;; (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")
@@ -1096,10 +1101,12 @@ explanation.
 
     (setq org-todo-keyword-faces
           (quote (("TODO"      :foreground "red"          :weight bold)
+                  ("MEETING"   :foreground "forest green" :weight bold)
                   ("NEXT"      :foreground "blue"         :weight bold)
                   ("ONGOING"   :foreground "blue"         :weight bold)
                   ("RISK"      :foreground "yellow"       :weight bold)
                   ("DONE"      :foreground "forest green" :weight bold)
+                  ("CANCELLED" :foreground "forest green" :weight bold)
 
                   ("WP"        :foreground "blue"         :weight bold)
                   ("WPon"      :foreground "yellow"       :weight bold)
@@ -1162,7 +1169,7 @@ explanation.
     (setq org-agenda-custom-commands
           '(
             ("d" "Dashboard" ((agenda "" ((org-deadline-warning-days 7)))
-                              (todo "NEXT"               ((org-agenda-overriding-header "Next Tasks")))
+                              (todo "MEETING"               ((org-agenda-overriding-header "Meeting")))
                               (todo "ONGOING"            ((org-agenda-overriding-header "All ongoing Action Items")))
                               (todo "WAITING"            ((org-agenda-overriding-header "Action Items, waiting for external input")))
                               (todo "HOLD"               ((org-agenda-overriding-header "Action Items on hold")))
