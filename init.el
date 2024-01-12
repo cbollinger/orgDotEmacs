@@ -187,6 +187,17 @@
   :config
   (counsel-mode 1))
 
+(use-package ivy-youtube
+    :config
+    (setq ivy-youtube-key "AIzaSyDcRYh7vI9QeUseXw5F3QbtZp8Nf0ms_l8")
+     (global-set-key (kbd "C-c y") 'ivy-youtube)
+     (setq ivy-youtube-play-at "browser")
+     (global-set-key (kbd "C-c c") 'org-capture)
+     ;; set chrome as browser
+     ;; (setq browse-url-browser-function 'browse-url-generic)
+     ;; (setq browse-url-generic-program "google-chrome-open-url")
+)
+
 (use-package ivy-prescient
   :after counsel
   :custom

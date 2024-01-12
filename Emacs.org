@@ -702,6 +702,26 @@ information about each item.
 
 #+end_src
 
+*** Ivy-Youtube
+
+Search for youtube videos in emacs and play them in the browser.
+
+[[https://github.com/squiter/ivy-youtube][Github repo of ivy-youtube]]
+
+#+begin_src emacs-lisp
+    (use-package ivy-youtube
+      :config
+      (setq ivy-youtube-key "AIzaSyDcRYh7vI9QeUseXw5F3QbtZp8Nf0ms_l8")
+       (global-set-key (kbd "C-c y") 'ivy-youtube)
+       (setq ivy-youtube-play-at "browser")
+       (global-set-key (kbd "C-c c") 'org-capture)
+       ;; set chrome as browser
+       ;; (setq browse-url-browser-function 'browse-url-generic)
+       ;; (setq browse-url-generic-program "google-chrome-open-url")
+  )
+#+end_src
+
+
 *** COMMENT Ivy Posframe
 #+begin_src emacs-lisp
 (use-package ivy-posframe
@@ -925,7 +945,7 @@ You can press any other key (or =f= specifically) to exit the transient key map.
 
 #+end_src
 
-
+ 
 * Org Mode
 
 [[https://orgmode.org/][Org Mode]] is one of the hallmark features of Emacs.  It is a rich document
@@ -2692,3 +2712,6 @@ see also [[https://www.emacswiki.org/emacs/ExternalDocumentation][EmacsWiki]]
 ** Home
 *** christian
   - path :: ~
+
+         
+         
