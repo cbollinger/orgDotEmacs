@@ -189,7 +189,7 @@
 
 (use-package ivy-youtube
     :config
-    (setq ivy-youtube-key "AIzaSyDcRYh7vI9QeUseXw5F3QbtZp8Nf0ms_l8")
+    (setq ivy-youtube-key "")
      (global-set-key (kbd "C-c y") 'ivy-youtube)
      (setq ivy-youtube-play-at "browser")
      (global-set-key (kbd "C-c c") 'org-capture)
