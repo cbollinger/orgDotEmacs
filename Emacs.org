@@ -319,6 +319,8 @@ interface ox-taskjuggler needs to be activated in emacs customization
   ;; Initialize use-package on non-Linux platforms
   (unless (package-installed-p 'use-package) (package-install 'use-package))
 
+  (setq package-install-upgrade-built-in t)
+  
   (require 'use-package)
   (setq use-package-always-ensure t)
   (add-to-list 'load-path "~/.emacs.d/elpa/org-contrib-0.4.2")
@@ -429,6 +431,22 @@ above.
 (set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height efs/default-font-size)
 ;; Set the variable pitch face
 (set-face-attribute 'variable-pitch nil :font "Cantarell" :height efs/default-variable-font-size :weight 'regular)
+#+end_src
+
+
+* Displaying ISO Week numbers
+
+#+begin_src emacs-lisp
+    (copy-face font-lock-constant-face 'calendar-iso-week-face)
+    (set-face-attribute 'calendar-iso-week-face nil
+                        :height 0.7)
+    (setq calendar-intermonth-text
+          '(propertize
+            (format "%2d"
+                    (car
+                     (calendar-iso-from-absolute
+                      (calendar-absolute-from-gregorian (list month day year)))))
+            'font-lock-face 'calendar-iso-week-face))
 #+end_src
 
 
@@ -812,7 +830,7 @@ It is very useful for figuring out how things work in Emacs.
 
 ** Treemacs
 
-#+begin_src emacs-lisp
+#+begin_src
   (use-package treemacs
     :ensure t
     :defer t
@@ -1597,6 +1615,29 @@ preference so you can remove the block below if you don't like the behavior.
 
 #+end_src
 
+
+** Org Export
+Change formatting TODO PDF output
+
+#+begin_src emacs-lisp 
+  (defun my-org-latex-format-headline-function
+      (todo todo-type priority text tags _info)
+    "Default format function for a headline.
+    See `org-latex-format-headline-function' for details."
+    (concat
+     (and todo (format "{\\bfseries\\sffamily\\color{%s} %s} "
+                       (pcase todo-type
+                         ('todo "red")
+                         ('done "green"))
+                       todo))
+     (and priority (format "\\framebox{\\#%c} " priority))
+     text
+     (and tags
+      (format "\\hfill{}\\textsc{%s}"
+          (mapconcat #'org-latex--protect-text tags ":")))))
+
+  (setq org-latex-format-headline-function 'my-org-latex-format-headline-function)
+#+end_src
 
 * Babel 
 ** Statup Settings
