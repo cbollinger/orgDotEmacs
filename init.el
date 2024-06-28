@@ -1,3 +1,6 @@
+;; Enable debugging
+(setq debug-on-error t)
+
 ;; NOTE: init.el is now generated from Emacs.org.  Please edit that file
 ;;       in Emacs and init.el will be generated automatically!
 
@@ -712,11 +715,26 @@
 (setq org-latex-format-headline-function 'my-org-latex-format-headline-function)
 
 (use-package org
+  :ensure t
   :config
-  (require 'org-tempo) ;; Stellt sicher, dass org-tempo geladen ist
+  ;; Load org-tempo for structure template expansion
+  (require 'org-tempo)
+
+  ;; Add commonly used templates
+  (add-to-list 'org-structure-template-alist '("s" . "src"))
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python")))
+  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+  (add-to-list 'org-structure-template-alist '("js" . "src javascript"))
+
+  ;; Other Org-mode configurations
+  (setq org-src-tab-acts-natively t)
+  (setq org-confirm-babel-evaluate nil)
+
+  ;; Set up org-tempo when entering org-mode
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (org-tempo-setup))))
 
 ;; Automatically tangle our Emacs.org config file when we save it
 (defun chb/org-babel-tangle-config ()
@@ -742,7 +760,18 @@
   (setq doom-modeline-time t)
   (setq doom-modeline-minor-modes nil)
   ;; Ensure doom-modeline faces are available
-  :config (doom-modeline-mode 1))
+  :config (doom-modeline-mode 1)
+  ;; Increase modeline width
+  (setq doom-modeline-bar-width 5) ;; Adjust this value as needed
+
+  ;; Modify segments to show essential information
+  (setq doom-modeline-buffer-file-name-style 'truncate-upto-root) ;; Truncate long file names
+
+  ;; Add or remove segments based on your preference
+  (setq doom-modeline-buffer-modification-icon t) ;; Show modified indicator
+  (setq doom-modeline-major-mode-icon t) ;; Show major mode icon
+  (setq doom-modeline-vcs-max-length 12) ;; Limit length of VCS branch name
+   )
 
 (use-package doom-themes
   :ensure t
@@ -929,13 +958,15 @@
   (setq coffee-args-compile '("-c" "-m")) ;; generating sourcemap file
   (add-hook 'coffee-after-compile-hook 'sourcemap-goto-corresponding-point))
 
-;; JavaScript: Debugging Mode and REPL
+;; Indium -- JavaScript: Debugging Mode and REPL
 (use-package indium
   :hook ((js2-mode . indium-interaction-mode))
   :config
   (setq indium-chrome-port 13840
         indium-verbosity "debug") ;; or "verbose"
-  )
+  (add-hook 'indium-connected-hook
+      (lambda ()
+        (message "Indium connected."))))
 
 (use-package company
   :ensure t
