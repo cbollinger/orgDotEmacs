@@ -2,46 +2,48 @@
 ;;       in Emacs and init.el will be generated automatically!
 
 ;; You will most likely need to adjust this font size for your system!
-(defvar efs/default-font-size 140)
-(defvar efs/default-variable-font-size 140)
+(defvar chb/default-font-size 140)
+(defvar chb/default-variable-font-size 140)
 
 ;; Make frame transparency overridable
-(defvar efs/frame-transparency '(100 . 100))
+(defvar chb/frame-transparency '(100 . 100))
 
 ;; The default is 800 kilobytes.  Measured in bytes.
 (setq gc-cons-threshold (* 50 1000 1000))
 
-(defun efs/display-startup-time ()
+(defun chb/display-startup-time ()
   (message "Emacs loaded in %s with %d garbage collections."
            (format "%.2f seconds"
                    (float-time
                      (time-subtract after-init-time before-init-time)))
            gcs-done))
 
-(add-hook 'emacs-startup-hook #'efs/display-startup-time)
+(add-hook 'emacs-startup-hook #'chb/display-startup-time)
 
 ;; Initialize package sources
 (require 'package)
-(setq package-archives
-      '(("GNU ELPA"	. "https://elpa.gnu.org/packages/")
-        ("Melpa"        . "https://melpa.org/packages/") 
-        ("Melpa Stable" . "https://stable.melpa.org/packages/")
-        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-        ))
-(setq   package-archive-priorities
-        '(("Melpa"        .  1)
-          ("GNU ELPA"     .  2) 
-          ("Melpa Stable" .  3)
-          ("nongnu" .        0)
-          ))
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+			 ("gnu" . "https://elpa.gnu.org/packages/")
+			 ("org" . "https://orgmode.org/elpa/")
+			 ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
 
-;; (package-initialize) 
-;; (unless package-archive-contents (package-refresh-contents)) 
+(setq package-archive-priorities
+      '(("melpa"        .  1)
+	("gnu"          .  2) 
+	("org"          .  3)
+	("nongnu" .        0)))
 
-;; Initialize use-package on non-Linux platforms
-(unless (package-installed-p 'use-package) (package-install 'use-package))
 
-(setq package-install-upgrade-built-in t)
+(package-initialize)
+
+(setq warning-suppress-types '((comp)))
+
+;; Alternatively, for more specific suppression:
+(setq warning-suppress-types '((comp) (docstring)))
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 
 (require 'use-package)
 (setq use-package-always-ensure t)
@@ -82,8 +84,8 @@
 (global-display-line-numbers-mode t)
 
 ;; Set frame transparency
-(set-frame-parameter (selected-frame) 'alpha efs/frame-transparency)
-(add-to-list 'default-frame-alist `(alpha . ,efs/frame-transparency))
+(set-frame-parameter (selected-frame) 'alpha chb/frame-transparency)
+(add-to-list 'default-frame-alist `(alpha . ,chb/frame-transparency))
 ;;  (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
@@ -98,35 +100,11 @@
 (turn-on-auto-fill)
 (setq-default fill-column 70)
 
-(set-face-attribute 'default nil :font "Fira Code Retina" :height efs/default-font-size)
+(set-face-attribute 'default nil :font "Fira Code Retina" :height chb/default-font-size)
 ;; Set the fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height efs/default-font-size)
+(set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height chb/default-font-size)
 ;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font "Cantarell" :height efs/default-variable-font-size :weight 'regular)
-
-(copy-face font-lock-constant-face 'calendar-iso-week-face)
-(set-face-attribute 'calendar-iso-week-face nil
-                    :height 0.7)
-(setq calendar-intermonth-text
-      '(propertize
-        (format "%2d"
-                (car
-                 (calendar-iso-from-absolute
-                  (calendar-absolute-from-gregorian (list month day year)))))
-        'font-lock-face 'calendar-iso-week-face))
-
-(unless (package-installed-p 'yasnippet)
-  (package-install 'yasnippet))
-(require 'yasnippet)
-
-(unless (package-installed-p 'yasnippet-snippets)
-  (package-install 'yasnippet-snippets))
-(require 'yasnippet-snippets)
-
-(setq yas-snippet-dirs
-      '("~/.emacs.d/snippets"                 ;; personal snippets
-        ))
-(yas-global-mode 1)
+(set-face-attribute 'variable-pitch nil :font "Cantarell" :height chb/default-variable-font-size :weight 'regular)
 
 (use-package undo-tree
   :init
@@ -138,6 +116,7 @@
   :commands command-log-mode)
 
 (use-package ivy
+  :ensure t
   :diminish
   :bind (("C-s" . swiper)
          :map ivy-minibuffer-map
@@ -148,22 +127,19 @@
          :map ivy-switch-buffer-map
          ("C-k" . ivy-previous-line)
          ("C-l" . ivy-done)
-         ("C-d" . ivy-switch-buffer-kill)
          :map ivy-reverse-i-search-map
          ("C-k" . ivy-previous-line)
          ("C-d" . ivy-reverse-i-search-kill))
   :config
   (ivy-mode 1))
 
-(use-package ivy-rich
-  :after ivy)
-
 (use-package counsel
-  :bind (("C-M-j" . 'counsel-switch-buffer)
+  :ensure t
+  :bind (("M-x" . counsel-M-x)
+         ("C-x b" . counsel-ibuffer)
+         ("C-x C-f" . counsel-find-file)
          :map minibuffer-local-map
          ("C-r" . 'counsel-minibuffer-history))
-  :custom
-  (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
   :config
   (counsel-mode 1))
 
@@ -198,7 +174,7 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
-(defun efs/org-font-setup ()
+(defun chb/org-font-setup ()
     ;; Replace list hyphen with dot
     (font-lock-add-keywords 'org-mode
                             '(("^ *\\([-]\\) "
@@ -238,23 +214,23 @@
 ;; (set-face-attribute 'org-column face nil :height 180 :width normal)
 ;; (set-face-attribute 'org-column nil :background "light gray" :foreground "dark red")
 
-(defun efs/org-mode-setup ()
-      (org-indent-mode 1)
-      ;; (variable-pitch-mode 1)
-      ;; (visual-line-mode 1)
-      )
+(defun chb/org-mode-setup ()
+  (org-indent-mode 1)
+  ;; (variable-pitch-mode 1)
+  ;; (visual-line-mode 1)
+  )
 
 
- (use-package org
-:mode (("\\.org$" . org-mode))
-:bind (("C-c l" . org-store-link)
-       ("C-c b" . org-iswitchb))
-:hook (org-mode . efs/org-mode-setup)
-:config 
-(progn
+(use-package org
+  :ensure t
+  :mode (("\\.org$" . org-mode))
+  :bind (("C-c l" . org-store-link)
+	 ("C-c b" . org-iswitchb))
+  :hook (org-mode . chb/org-mode-setup)
+  :config 
   ;; Custom functions setup
-  (efs/org-font-setup)
-  (efs/org-mode-setup)
+  (chb/org-font-setup)
+  (chb/org-mode-setup)
 
   ;; Org-mode configurations
   (setq org-ellipsis " ▾")
@@ -280,7 +256,7 @@
   (unbind-key "\C-c[" org-mode-map)
   (unbind-key "\C-c]" org-mode-map)
   (unbind-key "\C-c;" org-mode-map)
-  (unbind-key "\C-c\C-x\C-q" org-mode-map)))
+  (unbind-key "\C-c\C-x\C-q" org-mode-map))
 
 (setq org-hide-emphasis-markers t)
 
@@ -494,20 +470,6 @@
                    ("h" "Habit" entry (file "~/Daten/04-org-system/org-mode/refile/habit.org")
                     "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 )
-
-(use-package org
-  :ensure t ; Ensure org is installed
-  :config
-  (progn
-    (require 'org-habit) ; Require org-habit module
-    (add-to-list 'org-modules 'org-habit) ; Add org-habit to org-modules
-    
-    ;; Customize org-habit settings
-    (setq org-habit-graph-column 60)
-    
-    ;; Turn on habit display at 6AM each morning
-    (run-at-time "06:00" 86400
-                 (lambda () (setq org-habit-show-habits t)))))
 
 (use-package org-attach-screenshot
   :bind ("<f6> s" . org-attach-screenshot)
@@ -749,41 +711,43 @@
 
 (setq org-latex-format-headline-function 'my-org-latex-format-headline-function)
 
+(use-package org
+  :config
+  (require 'org-tempo) ;; Stellt sicher, dass org-tempo geladen ist
+  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python")))
+
+;; Automatically tangle our Emacs.org config file when we save it
+(defun chb/org-babel-tangle-config ()
+  (when (string-equal (file-name-directory (buffer-file-name))
+                      (expand-file-name user-emacs-directory))
+    ;; Dynamic scoping to the rescue
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'chb/org-babel-tangle-config)))
+
+(use-package nerd-icons
+:if (display-graphic-p))
+
 ;; Load and configure doom-modeline
-    (use-package doom-modeline
-      :ensure t
-      :hook (after-init . doom-modeline-mode)
-      :config
-      ;; Ensure doom-modeline faces are available
-      (doom-modeline-mode 1))
+(use-package doom-modeline
+  :ensure t
+  :hook (after-init . doom-modeline-mode)
+  :init
+  (setq doom-modeline-height 45)
+  (setq doom-modeline-icons t)
+  (setq doom-modeline-major-mode-color-icon t)
+  (setq doom-modeline-time-icon t)
+  (setq doom-modeline-time t)
+  (setq doom-modeline-minor-modes nil)
+  ;; Ensure doom-modeline faces are available
+  :config (doom-modeline-mode 1))
 
 (use-package doom-themes
   :ensure t
   :after (ivy org doom-modeline)
-  :config
-  (load-theme 'doom-palenight t)
-
-  ;; Set face attributes to avoid warnings
-  (set-face-attribute 'ivy-minibuffer-match-face-1 nil :background 'unspecified)
-  (set-face-attribute 'org-ellipsis nil :background 'unspecified)
-  (set-face-attribute 'doom-modeline-bar-inactive nil :background 'unspecified))
-
-(use-package nerd-icons
-  :if (display-graphic-p)
-)
-
-
-(use-package doom-modeline
-      :ensure t
-      :hook (after-init . doom-modeline-mode)
-      :init
-      (setq doom-modeline-height 45)
-      (setq doom-modeline-icons t)
-      (setq doom-modeline-major-mode-color-icon t)
-      (setq doom-modeline-time-icon t)
-      (setq doom-modeline-time t)
-      (setq doom-modeline-minor-modes nil)
-)
+  :config (load-theme 'doom-palenight t))
 
 (use-package which-key
   :defer 
@@ -855,100 +819,6 @@
   ;; of setting this -- see the docstring for details
   (setq org-confirm-babel-evaluate nil)
 
-(unless (package-installed-p 'ox-reveal)
-  (package-install 'ox-reveal))
-(require 'ox-reveal)
-(setq ox-reveal-always-ensure t)
-(setq org-reveal-root "file:///home/christian/Daten/04 git/reveal.js")
-(setq Org-Reveal-title-slide nil)
-
-(use-package hide-mode-line
-  :ensure t)
-
-(defun my/org-tree-slide-setup ()
-  (interactive)
-  (org-display-inline-images)
-  (hide-mode-line-mode 1)
-  (setq text-scale-mode-amount 3)
-  (text-scale-mode 1))
-
-(defun my/org-tree-slide-end ()
-  (interactive)
-  (org-display-inline-images)
-  (hide-mode-line-mode 0)
-  (text-scale-mode 0)
-  (org-tree-slide-mode 0))
-
-(use-package org-tree-slide
-  :ensure t
-  :defer t
-  :custom
-  (org-image-actual-width nil)
-  (org-tree-slide-activate-message "Presentation started!")
-  (org-tree-slide-deactivate-message "Presentation finished!")
-  :hook ((org-tree-slide-play . my/org-tree-slide-setup)
-         (org-tree-slide-stop . my/org-tree-slide-end))
-  :bind (:map org-tree-slide-mode-map
-              ("<f6>" . org-tree-slide-move-previous-tree)
-              ("<f7>" . org-tree-slide-move-next-tree)
-              ("<f8>" . org-tree-slide-content)))
-
-(defun dw/org-present-prepare-slide ()
-  (org-overview)
-  (org-show-entry)
-  (org-show-children))
-
-(defun dw/org-present-hook ()
-  (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
-                                     (header-line (:height 4.5) variable-pitch)
-                                     (org-code (:height 1.55) org-code)
-                                     (org-verbatim (:height 1.55) org-verbatim)
-                                     (org-block (:height 1.25) org-block)
-                                     (org-block-begin-line (:height 0.7) org-block)))
-  (setq header-line-format " ")
-  (org-display-inline-images)
-  (dw/org-present-prepare-slide))
-
-(defun dw/org-present-quit-hook ()
-  (setq-local face-remapping-alist '((default variable-pitch default)))
-  (setq header-line-format nil)
-  (org-present-small)
-  (org-remove-inline-images))
-
-(defun dw/org-present-prev ()
-  (interactive)
-  (org-present-prev)
-  (dw/org-present-prepare-slide))
-
-(defun dw/org-present-next ()
-  (interactive)
-  (org-present-next)
-  (dw/org-present-prepare-slide))
-
-(use-package org-present
-  :bind (:map org-present-mode-keymap
-         ("C-c C-j" . dw/org-present-next)
-         ("C-c C-k" . dw/org-present-prev))
-  :hook ((org-present-mode . dw/org-present-hook)
-         (org-present-mode-quit . dw/org-present-quit-hook)))
-
-(with-eval-after-load 'org
-  ;; This is needed as of Org 9.2
-  (require 'org-tempo)
-
-  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python")))
-
-;; Automatically tangle our Emacs.org config file when we save it
-(defun efs/org-babel-tangle-config ()
-  (when (string-equal (file-name-directory (buffer-file-name))
-                      (expand-file-name user-emacs-directory))
-    ;; Dynamic scoping to the rescue
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
-(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
-
 (use-package cl-lib
   :defer t)
 
@@ -959,34 +829,37 @@
       (setq byte-compile-warnings '(not cl-functions obsolete)))
 
 (use-package lsp-mode
-    :diminish "L"
-    :commands (lsp lsp-deferred)
-    :init (setq lsp-keymap-prefix "C-p p"
-                lsp-enable-file-watchers nil
-                lsp-enable-on-type-formatting nil
-                lsp-enable-snippet nil
-                lsp-lens-enable nil)
-    :config
-    (lsp-enable-which-key-integration t)
-    (setq read-process-output-max (* 1024 1024))
+  :ensure t
+  :hook (((c-mode c++-mode python-mode) . lsp))
+  :commands lsp
+  :commands (lsp lsp-deferred)
+  :init (setq lsp-keymap-prefix "C-p p"
+              lsp-enable-file-watchers nil
+              lsp-enable-on-type-formatting nil
+              lsp-enable-snippet nil
+              lsp-lens-enable t)
+  :config
+  (setq lsp-prefer-flymake nil) ;; Use flycheck instead of flymake
 )
 
 (use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom
-  (lsp-ui-doc-position 'bottom))
+    :ensure t
+    :hook ((c-mode c++-mode python-mode) . lsp)
+    :commands lsp
+    :config
+    (setq lsp-prefer-flymake nil) ;; Use flycheck instead of flymake
+    )
+    ;; (setq
+    ;; 	  lsp-ui-doc-position 'bottom
+    ;; 	  lsp-ui-doc-enable t
+    ;; 	  lsp-ui-peek-enable t
+    ;; 	  lsp-ui-sideline-enable t
+    ;; 	  lsp-ui-imenu-enable t
+    ;; 	  lsp-prefer-flymake nil))
 
 (use-package lsp-treemacs
     :after lsp
     :commands lsp-treemacs-references
-)
-
-(use-package helm-xref
-    :after lsp
-    :config 
-    (define-key global-map [remap find-file] #'helm-find-files)
-    (define-key global-map [remap execute-extended-command] #'helm-M-x)
-    (define-key global-map [remap switch-to-buffer] #'helm-mini)
 )
 
 (use-package typescript-mode
@@ -1017,85 +890,72 @@
     :config(setq ccls-initialization-options '(:index (:comments 2) :completion (:detailedLabel t)))
 )
 
-;; JavaScript
-;; JavaScript: MinorMode
+(defun my-setup-js2-mode ()
+  "Setup for `js2-mode`."
+  (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))
 
-;; Ensure use-package is installed and required
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(require 'use-package)
 
-;; JavaScript: MinorMode
 (use-package js2-mode
-  :ensure t
-  :config
-  ;; Optionally add auto-mode-alist
-  ;; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-  ;; Better imenu
-  ;; (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
-  )
+    :ensure t
+    :mode (("\\.js\\'" . js2-mode))
+    :hook (js2-mode . my-setup-js2-mode)
+    :config
+    ;; Set indentation level
+    (setq-default js2-basic-offset 2))
 
-;; JavaScript: Refactor Package
+(use-package xref-js2
+  :ensure t
+  :after js2-mode
+  :config
+  ;; Bind xref-find-references to M-.
+  (define-key js2-mode-map (kbd "M-.") #'xref-find-references))
+
 (use-package js2-refactor
   :ensure t
+  :after js2-mode
+  :hook (js2-mode . js2-refactor-mode)
   :config
-  (use-package xref-js2
-    :ensure t)
-  (add-hook 'js2-mode-hook #'js2-refactor-mode)
-  (js2r-add-keybindings-with-prefix "C-c C-r")
-  ;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so unbind it.
-  (define-key js-mode-map (kbd "M-.") nil)
-  (add-hook 'js2-mode-hook (lambda ()
-                             (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
-  )
+  ;; Bind js2-refactor keybindings
+  (js2r-add-keybindings-with-prefix "C-c C-r"))
+
+;; For example, unbind M-. in js-mode
+(add-hook 'js2-mode-hook (lambda ()
+   (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
 
 ;; JavaScript: Debugging aid
 (use-package sourcemap
   :ensure t
   :config
   (setq coffee-args-compile '("-c" "-m")) ;; generating sourcemap file
-  (add-hook 'coffee-after-compile-hook 'sourcemap-goto-corresponding-point)
-  )
+  (add-hook 'coffee-after-compile-hook 'sourcemap-goto-corresponding-point))
 
 ;; JavaScript: Debugging Mode and REPL
 (use-package indium
   :hook ((js2-mode . indium-interaction-mode))
   :config
-  (setq indium-chrome-port 13840)
+  (setq indium-chrome-port 13840
+        indium-verbosity "debug") ;; or "verbose"
   )
 
 (use-package company
-   :after lsp-mode
-   :hook (lsp-mode . company-mode)
-   :bind (:map company-active-map
-          ("<tab>" . company-complete-selection))
-         (:map lsp-mode-map
-          ("<tab>" . company-indent-or-complete-common))
-   :custom
-   (company-minimum-prefix-length 1)
-   (company-idle-delay 0.0)
-   (setq company-show-numbers t)
-   :config
-   (add-to-list 'company-backends #'company-tabnine)
-)
-
-  ;; (use-package company-box
-  ;;  :hook (company-mode . company-box-mode))
+  :ensure t
+  :config
+  (setq company-minimum-prefix-length 1
+	company-idle-delay 0.0)
+  (global-company-mode t))
 
 (use-package company-tabnine :ensure t)
 
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+
 (use-package projectile
-  :diminish projectile-mode
-  :config (projectile-mode)
+  :ensure t
+  :config
+  (projectile-mode +1)
   :custom ((projectile-completion-system 'ivy))
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :init
-  ;; NOTE: Set this to the folder where you keep your Git repos!
-  (when (file-directory-p "~/Projects/Code")
-    (setq projectile-project-search-path '("~/Projects/Code")))
-  (setq projectile-switch-project-action #'projectile-dired))
+  :bind-keymap (("C-c p" . projectile-command-map)))
 
 (use-package counsel-projectile
   :after projectile
@@ -1111,9 +971,6 @@
 ;; - https://magit.vc/manual/ghub/Getting-Started.html#Getting-Started
 (use-package forge
   :after magit)
-
-(use-package evil-nerd-commenter
-  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
@@ -1141,7 +998,7 @@
   (setq explicit-shell-file-name "powershell.exe")
   (setq explicit-powershell.exe-args '()))
 
-(defun efs/configure-eshell ()
+(defun chb/configure-eshell ()
   ;; Save command history when commands are entered
   (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
 
@@ -1162,7 +1019,7 @@
   :after eshell)
 
 (use-package eshell
-  :hook (eshell-first-time-mode . efs/configure-eshell)
+  :hook (eshell-first-time-mode . chb/configure-eshell)
   :config
 
   (with-eval-after-load 'esh-opt
@@ -1203,37 +1060,5 @@
   ;;   "H" 'dired-hide-dotfiles-mode)
   )
 
-(use-package json-mode
-  :ensure t
-)
-
-(use-package request)
-(use-package json)
-
-(use-package restclient
-  :ensure t
-  :mode (("\\.http\\'" . restclient-mode))
-   :bind (:map restclient-mode-map
-               ("C-c C-f" . json-mode-beautify)))
-
 ;; Make gc pauses faster by decreasing the threshold.
 (setq gc-cons-threshold (* 2 1000 1000))
-
-;; To make this directory available to Emacs 
-(add-to-list 'Info-additional-directory-list "~/.local/share/info")
-
-;; Configure Elfeed
-(use-package elfeed
-  :ensure t
-  :config
-  (setq elfeed-db-directory (expand-file-name "elfeed" user-emacs-directory)
-        elfeed-show-entry-switch 'display-buffer)
-  :bind
-  ("C-x w" . elfeed ))
-
-(use-package elfeed-org
-  :ensure t
-  :config
-  (elfeed-org)
-  (setq rmh-elfeed-org-files (list "~/Daten/04-org-system/org-mode/refile/elfeed.org"))
-)
