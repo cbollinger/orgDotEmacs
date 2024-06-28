@@ -24,15 +24,15 @@
 (require 'package)
 (setq package-archives
       '(("GNU ELPA"	. "https://elpa.gnu.org/packages/")
-        ;; ("Melpa"        . "https://melpa.org/packages/") 
+        ("Melpa"        . "https://melpa.org/packages/") 
         ("Melpa Stable" . "https://stable.melpa.org/packages/")
         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
         ))
 (setq   package-archive-priorities
-        '(("Melpa"        .  0)
-          ("GNU ELPA"	 .  5) 
-          ("Melpa Stable" .  10)
-          ("nongnu" .  10)
+        '(("Melpa"        .  1)
+          ("GNU ELPA"     .  2) 
+          ("Melpa Stable" .  3)
+          ("nongnu" .        0)
           ))
 
 ;; (package-initialize) 
