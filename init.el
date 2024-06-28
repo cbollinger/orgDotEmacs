@@ -24,7 +24,7 @@
 (require 'package)
 (setq package-archives
       '(("GNU ELPA"	. "https://elpa.gnu.org/packages/")
-        ("Melpa"        . "https://melpa.org/packages/") 
+        ;; ("Melpa"        . "https://melpa.org/packages/") 
         ("Melpa Stable" . "https://stable.melpa.org/packages/")
         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
         ))
@@ -137,39 +137,6 @@
 (use-package command-log-mode
   :commands command-log-mode)
 
-(use-package doom-themes
-  :init
-  (load-theme 'doom-palenight t)
-  ;; (load-theme 'doom-challenger-deep)
-  :config
-  (doom-themes-treemacs-config)
-  (doom-themes-org-config)
-  )
-
-(use-package nerd-icons
-  :if (display-graphic-p)
-)
-
-
-(use-package doom-modeline
-      :ensure t
-      :hook (after-init . doom-modeline-mode)
-      :init
-      (setq doom-modeline-height 45)
-      (setq doom-modeline-icons t)
-      (setq doom-modeline-major-mode-color-icon t)
-      (setq doom-modeline-time-icon t)
-      (setq doom-modeline-time t)
-      (setq doom-modeline-minor-modes nil)
-)
-
-(use-package which-key
-  :defer 
-  :diminish which-key-mode
-  :config
-  (which-key-mode)
-  (setq which-key-idle-delay 1))
-
 (use-package ivy
   :diminish
   :bind (("C-s" . swiper)
@@ -231,18 +198,6 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
-(use-package hydra
-  :defer t)
-
-(defhydra hydra-text-scale (:timeout 4)
-  "scale text"
-  ("j" text-scale-increase "in")
-  ("k" text-scale-decrease "out")
-  ("f" nil "finished" :exit t))
-
-;; (efs/leader-keys
-;;  "ts" '(hydra-text-scale/body :which-key "scale text"))
-
 (defun efs/org-font-setup ()
     ;; Replace list hyphen with dot
     (font-lock-add-keywords 'org-mode
@@ -265,17 +220,18 @@
 
 
     ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-    (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
-    (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
-    (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-    (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-    (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
-    (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
-    (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch))
+   (set-face-attribute 'org-block nil :foreground 'unspecified :inherit 'fixed-pitch)
+   (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
+   (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+   (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
+   (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
+   (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+   (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+   (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
+   (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
+   (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch)
+     )
 
 ;; Get rid of the background on column views
 ;; (set-face-attribute 'org-column-title nil :background "light gray")
@@ -283,65 +239,48 @@
 ;; (set-face-attribute 'org-column nil :background "light gray" :foreground "dark red")
 
 (defun efs/org-mode-setup ()
-  (org-indent-mode)
-  ;; (variable-pitch-mode 1)
-  ;; (visual-line-mode 1)
-  )
+      (org-indent-mode 1)
+      ;; (variable-pitch-mode 1)
+      ;; (visual-line-mode 1)
+      )
 
-(use-package org
-  :mode (("\\.org$" . org-mode))
-  :bind
-  (("\C-cl" . org-store-link)
-  ("\C-cb" . org-iswitchb))
-  :hook (org-mode . efs/org-mode-setup)
-  :config
+
+ (use-package org
+:mode (("\\.org$" . org-mode))
+:bind (("C-c l" . org-store-link)
+       ("C-c b" . org-iswitchb))
+:hook (org-mode . efs/org-mode-setup)
+:config 
+(progn
+  ;; Custom functions setup
   (efs/org-font-setup)
   (efs/org-mode-setup)
+
+  ;; Org-mode configurations
   (setq org-ellipsis " ▾")
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
+  (setq org-fast-tag-selection-single-key 'expert)
+  (setq org-agenda-tags-todo-honor-ignore-options t)
 
-  (setq org-fast-tag-selection-single-key (quote expert)) ;; Allow setting single tags without the menu
-  (setq org-agenda-tags-todo-honor-ignore-options t)      ;; For tag searches ignore tasks with scheduled and deadline dates
-  (add-hook 'org-mode-hook 'turn-on-flyspell 'append)     ;; flyspell mode for spell checking everywhere
+  ;; Enable flyspell mode for spell checking
+  (add-hook 'org-mode-hook #'turn-on-flyspell 'append)
 
-
-  (with-eval-after-load "ispell"                         ;; Setting up spell checking with multiple dictionaries
-    ;;Configure `LANG`, otherwise ispell.el cannot find a 'default
-    ;;dictionary' even though multiple dictionaries will be configured
-    ;;in next line.
+  ;; Configure spell checking with multiple dictionaries
+  (with-eval-after-load "ispell"
     (setenv "LANG" "en_US.UTF-8")
     (setq ispell-program-name "hunspell")
-    ;;Configure German, Swiss German, and two variants of English.
     (setq ispell-dictionary "de_CH,en_GB,en_US")
-    ;;ispell-set-spellchecker-params has to be called
-    ;;before ispell-hunspell-add-multi-dic will work
     (ispell-set-spellchecker-params)
     (ispell-hunspell-add-multi-dic "de_CH,en_GB,en_US")
-    ;;For saving words to the personal dictionary, don't infer it from
-    ;;the locale, otherwise it would save to ~/.hunspell_de_DE.
     (setq ispell-personal-dictionary "~/.hunspell_personal"))
 
-  ;; Disable keys in org-mode
-  ;;    C-c [
-  ;;    C-c ]
-  ;;    C-c ;
-  ;;    C-c C-x C-q  cancelling the clock (we never want this)
-  (add-hook 'org-mode-hook
-  '(lambda ()
-               ;; Undefine C-c [ and C-c ] since this breaks my
-               ;; org-agenda files when directories are include It
-               ;; expands the files in the directories individually
-               (org-defkey org-mode-map "\C-c[" 'undefined)
-               (org-defkey org-mode-map "\C-c]" 'undefined)
-               (org-defkey org-mode-map "\C-c;" 'undefined)
-               (org-defkey org-mode-map "\C-c\C-x\C-q" 'undefined))
-               'append)
-
-
-  ;; Download the sound at https://freesound.org/people/.Andre_Onate/sounds/484665/
+  ;; Disable keys in org-mode using :config
   (setq org-clock-sound "~/.emacs.d/wav/mixkit-slot-machine-win-siren-1929.wav")
-  )
+  (unbind-key "\C-c[" org-mode-map)
+  (unbind-key "\C-c]" org-mode-map)
+  (unbind-key "\C-c;" org-mode-map)
+  (unbind-key "\C-c\C-x\C-q" org-mode-map)))
 
 (setq org-hide-emphasis-markers t)
 
@@ -556,11 +495,19 @@
                     "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 )
 
-(require 'org-habit)
-(add-to-list 'org-modules 'org-habit)
-(setq org-habit-graph-column 60)
-;; This turns the habit display on again at 6AM each morning. 
-(run-at-time "06:00" 86400 '(lambda () (setq org-habit-show-habits t)))
+(use-package org
+  :ensure t ; Ensure org is installed
+  :config
+  (progn
+    (require 'org-habit) ; Require org-habit module
+    (add-to-list 'org-modules 'org-habit) ; Add org-habit to org-modules
+    
+    ;; Customize org-habit settings
+    (setq org-habit-graph-column 60)
+    
+    ;; Turn on habit display at 6AM each morning
+    (run-at-time "06:00" 86400
+                 (lambda () (setq org-habit-show-habits t)))))
 
 (use-package org-attach-screenshot
   :bind ("<f6> s" . org-attach-screenshot)
@@ -802,6 +749,49 @@
 
 (setq org-latex-format-headline-function 'my-org-latex-format-headline-function)
 
+;; Load and configure doom-modeline
+    (use-package doom-modeline
+      :ensure t
+      :hook (after-init . doom-modeline-mode)
+      :config
+      ;; Ensure doom-modeline faces are available
+      (doom-modeline-mode 1))
+
+(use-package doom-themes
+  :ensure t
+  :after (ivy org doom-modeline)
+  :config
+  (load-theme 'doom-palenight t)
+
+  ;; Set face attributes to avoid warnings
+  (set-face-attribute 'ivy-minibuffer-match-face-1 nil :background 'unspecified)
+  (set-face-attribute 'org-ellipsis nil :background 'unspecified)
+  (set-face-attribute 'doom-modeline-bar-inactive nil :background 'unspecified))
+
+(use-package nerd-icons
+  :if (display-graphic-p)
+)
+
+
+(use-package doom-modeline
+      :ensure t
+      :hook (after-init . doom-modeline-mode)
+      :init
+      (setq doom-modeline-height 45)
+      (setq doom-modeline-icons t)
+      (setq doom-modeline-major-mode-color-icon t)
+      (setq doom-modeline-time-icon t)
+      (setq doom-modeline-time t)
+      (setq doom-modeline-minor-modes nil)
+)
+
+(use-package which-key
+  :defer 
+  :diminish which-key-mode
+  :config
+  (which-key-mode)
+  (setq which-key-idle-delay 1))
+
 (require 'ox-latex)
 (require 'ob-js)
 (require 'color)
@@ -959,9 +949,14 @@
       (org-babel-tangle))))
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
-(use-package htmlize
-  :ensure t
-  )
+(use-package cl-lib
+  :defer t)
+
+  (use-package htmlize
+      :ensure t
+      :config
+      ;; Suppress cl package obsolete warnings
+      (setq byte-compile-warnings '(not cl-functions obsolete)))
 
 (use-package lsp-mode
     :diminish "L"
@@ -1024,42 +1019,51 @@
 
 ;; JavaScript
 ;; JavaScript: MinorMode
-(unless (package-installed-p 'js2-mode)
-  (package-install 'js2-mode))
-(require 'js2-mode)
-;; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-;; ;; Better imenu
-;; (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
+
+;; Ensure use-package is installed and required
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
+
+;; JavaScript: MinorMode
+(use-package js2-mode
+  :ensure t
+  :config
+  ;; Optionally add auto-mode-alist
+  ;; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+  ;; Better imenu
+  ;; (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
+  )
 
 ;; JavaScript: Refactor Package
-(unless (package-installed-p 'js2-refactor)
-  (package-install 'js2-refactor))
-(require 'js2-refactor)
-(unless (package-installed-p 'xref-js2)
-  (package-install 'xref-js2))
-
-;; JavaScript: Jumping to function definitions
-(require 'xref-js2)
-(add-hook 'js2-mode-hook #'js2-refactor-mode)
-(js2r-add-keybindings-with-prefix "C-c C-r")
-(define-key js2-mode-map (kbd "C-k") #'js2r-kill)
-;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so
-;; unbind it.
-(define-key js-mode-map (kbd "M-.") nil)
-
-(add-hook 'js2-mode-hook (lambda ()
-                           (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+(use-package js2-refactor
+  :ensure t
+  :config
+  (use-package xref-js2
+    :ensure t)
+  (add-hook 'js2-mode-hook #'js2-refactor-mode)
+  (js2r-add-keybindings-with-prefix "C-c C-r")
+  ;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so unbind it.
+  (define-key js-mode-map (kbd "M-.") nil)
+  (add-hook 'js2-mode-hook (lambda ()
+                             (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+  )
 
 ;; JavaScript: Debugging aid
-(unless (package-installed-p 'sourcemap)
-  (package-install 'sourcemap))
-(require 'sourcemap)
-(setq coffee-args-compile '("-c" "-m")) ;; generating sourcemap file
-(add-hook 'coffee-after-compile-hook 'sourcemap-goto-corresponding-point)
-
+(use-package sourcemap
+  :ensure t
+  :config
+  (setq coffee-args-compile '("-c" "-m")) ;; generating sourcemap file
+  (add-hook 'coffee-after-compile-hook 'sourcemap-goto-corresponding-point)
+  )
 
 ;; JavaScript: Debugging Mode and REPL
-(use-package indium :hook ((js2-mode . indium-interaction-mode)))
+(use-package indium
+  :hook ((js2-mode . indium-interaction-mode))
+  :config
+  (setq indium-chrome-port 13840)
+  )
 
 (use-package company
    :after lsp-mode
