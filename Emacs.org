@@ -9,6 +9,7 @@
 (setq debug-on-error t)
 #+end_src
 
+
 * Prerequisite - Before you start
 
 Issue the following the steps before =emacs= loads =init.el= tangled from this file. 
@@ -306,34 +307,36 @@ interface ox-taskjuggler needs to be activated in emacs customization
 ==org-export-backends==
 
 #+begin_src emacs-lisp
-  ;; Initialize package sources
-  (require 'package)
-  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			   ("gnu" . "https://elpa.gnu.org/packages/")
-			   ("org" . "https://orgmode.org/elpa/")
-			   ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+      ;; Initialize package sources
+      (require 'package)
+      (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                               ("gnu" . "https://elpa.gnu.org/packages/")
+                               ("org" . "https://orgmode.org/elpa/")
+                               ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                               ("melpa-stable" . "https://stable.melpa.org/packages/")))
 
-  (setq package-archive-priorities
-	'(("melpa"        .  1)
-	  ("gnu"          .  2) 
-	  ("org"          .  3)
-	  ("nongnu" .        0)))
+      (setq package-archive-priorities
+            '(("melpa"        .  4)
+              ("gnu"          .  3) 
+              ("org"          .  2)
+              ("nongnu" .        1)
+              ("melpa-stable".   0)))
 
 
-  (package-initialize)
+      (package-initialize)
 
-  (setq warning-suppress-types '((comp)))
+      (setq warning-suppress-types '((comp)))
 
-  ;; Alternatively, for more specific suppression:
-  (setq warning-suppress-types '((comp) (docstring)))
+      ;; Alternatively, for more specific suppression:
+      (setq warning-suppress-types '((comp) (docstring)))
 
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
+      (unless (package-installed-p 'use-package)
+        (package-refresh-contents)
+        (package-install 'use-package))
 
-  (require 'use-package)
-  (setq use-package-always-ensure t)
-  (add-to-list 'load-path "~/.emacs.d/elpa/org-contrib-0.4.2")
+      (require 'use-package)
+      (setq use-package-always-ensure t)
+      (add-to-list 'load-path "~/.emacs.d/elpa/org-contrib-0.4.2")
 #+end_src
 
 
@@ -2221,7 +2224,7 @@ path to your virtual environment before loading your project.
   (use-package indium
     :hook ((js2-mode . indium-interaction-mode))
     :config
-    (setq indium-chrome-port 13840
+    (setq ;;indium-chrome-port 13840
           indium-verbosity "debug") ;; or "verbose"
     (add-hook 'indium-connected-hook
         (lambda ()

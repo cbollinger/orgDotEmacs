@@ -23,15 +23,17 @@
 ;; Initialize package sources
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			 ("gnu" . "https://elpa.gnu.org/packages/")
-			 ("org" . "https://orgmode.org/elpa/")
-			 ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+                         ("gnu" . "https://elpa.gnu.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                         ("melpa-stable" . "https://stable.melpa.org/packages/")))
 
 (setq package-archive-priorities
-      '(("melpa"        .  1)
-	("gnu"          .  2) 
-	("org"          .  3)
-	("nongnu" .        0)))
+      '(("melpa"        .  4)
+        ("gnu"          .  3) 
+        ("org"          .  2)
+        ("nongnu" .        1)
+        ("melpa-stable".   0)))
 
 
 (package-initialize)
@@ -959,7 +961,7 @@
 (use-package indium
   :hook ((js2-mode . indium-interaction-mode))
   :config
-  (setq indium-chrome-port 13840
+  (setq ;;indium-chrome-port 13840
         indium-verbosity "debug") ;; or "verbose"
   (add-hook 'indium-connected-hook
       (lambda ()
