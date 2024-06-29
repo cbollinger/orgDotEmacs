@@ -339,10 +339,6 @@ interface ox-taskjuggler needs to be activated in emacs customization
       (add-to-list 'load-path "~/.emacs.d/elpa/org-contrib-0.4.2")
 #+end_src
 
-
-*** TODO Check how to use package-initialize correctly.
-- An error is thrown, when uncommented and system is already installed.
-
 ** Automatic Package Updates
 
 The auto-package-update package helps us keep our Emacs packages up to date!  It
@@ -2218,6 +2214,51 @@ path to your virtual environment before loading your project.
 
 
 ** Indium
+=Debug with indium:=
+- node --inspect --enable-source-maps server.js
+- from server.js M-x indium-connect
+
+=Trouble Shouting:= If the repl does not open automatically or if any other issue occur:
+- Demote the following packages to the version of Melap stable
+  - indium
+  - js2-mode-20140114
+  - js2-refactor-0.9.0
+  - company-0.9.0
+  - json-process-client-0.2.0
+
+#+Name: .indium.json
+#+begin_src bash 
+{
+    "configurations": [
+      {
+	"type": "node",
+	"name": "test",
+        "program": "node",
+        "args": "server.js",
+	"inspect-brk": false
+      }
+    ]
+}
+#+end_src
+
+#+Name: server.js
+#+begin_src javascript
+const { createServer } = require('node:http');
+
+const hostname = '127.0.0.1';
+const port = 3000;
+
+const server = createServer((req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Hello World');
+});
+
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
+});
+
+#+end_src
 
 #+begin_src emacs-lisp
   ;; Indium -- JavaScript: Debugging Mode and REPL
@@ -2230,64 +2271,7 @@ path to your virtual environment before loading your project.
         (lambda ()
           (message "Indium connected."))))
  #+end_src
-** COMMENT Indium - Test
 
-#+begin_src emacs-lisp
-  ;; Ensure use-package is installed
-  (require 'use-package)
-
-  ;; Configure Indium
-  (use-package indium
-    :ensure t
-    :init
-    (setq indium-verbosity "debug")  ;; Set verbosity to debug for detailed logging
-    :hook (js2-mode . indium-interaction-mode)
-    :config
-    ;; Function to start Indium client
-
-    (defun my-start-indium-client ()
-      "Start the Indium client and send a request to list configurations."
-      (interactive)
-      (unless (indium-client-process-live-p)
-        (indium-start-process)) ;; Start the Indium process if not already started
-
-      ;; Wait for the process to be fully initialized
-      (while (not (indium-client-process-live-p))
-        (sleep-for 0.1))
-
-      (let* ((request `((type . "configurations")
-                        (payload (action . "list")
-                                 (directory . ,(projectile-project-root)))))
-             (callback (lambda (configurations)
-                         (message "Configurations: %s" configurations))))
-        (indium-client-send request callback)))
-    ;; Keybinding to start Indium client
-    (global-set-key (kbd "C-c i") 'my-start-indium-client))
-
-  ;; Configure js2-mode
-  (use-package js2-mode
-    :ensure t
-    :mode "\\.js\\'"
-    :config
-    (define-key js2-mode-map (kbd "M-.") nil)
-    (add-hook 'js2-mode-hook #'js2-imenu-extras-mode))
-
-  ;; Set up xref-js2
-  (use-package xref-js2
-    :ensure t
-    :config
-    (add-hook 'js2-mode-hook
-              (lambda ()
-                (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))))
-
-  ;; Set up js2-refactor
-  (use-package js2-refactor
-    :ensure t
-    :hook (js2-mode . js2-refactor-mode)
-    :config
-    (js2r-add-keybindings-with-prefix "C-c C-m"))
-
-#+end_src
 ** Company Mode
 
 [[http://company-mode.github.io/][Company Mode]] provides a nicer in-buffer completion interface than
