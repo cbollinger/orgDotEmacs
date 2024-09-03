@@ -388,6 +388,8 @@ Emacs, the menu bar might be helpful so you can remove the =(menu-bar-mode -1)=
 line if you'd like to still see that.
 Enables the =auto-fill= minor mode
 
+Also sets the command =C-x X-b= to ibuffer!
+
 #+begin_src emacs-lisp
   (setq inhibit-startup-message t)
 
@@ -420,6 +422,8 @@ Enables the =auto-fill= minor mode
 
   (turn-on-auto-fill)
   (setq-default fill-column 70)
+
+  (global-set-key [remap list-buffers] 'ibuffer)
 #+end_src
 
 *** TODO Setup auto-fill-mode correctly
@@ -905,6 +909,9 @@ more like we're editing a document in =org-mode=.  We switch back to fixed width
   ;; (set-face-attribute 'org-column face nil :height 180 :width normal)
   ;; (set-face-attribute 'org-column nil :background "light gray" :foreground "dark red")
 
+(custom-set-faces
+ '(org-column ((t (:height 140 :background "gray30")))))
+  
 
 #+end_src
 
@@ -1227,7 +1234,7 @@ explanation.
 		org-attach-screenshot-command-line "gnome-screenshot -a -f %f"))
 #+end_src
 
-** COMMENT Org Contribution
+** Org Contribution
 
    #+begin_src emacs-lisp 
      (use-package org
@@ -1730,7 +1737,7 @@ possible key bindings in the mode of your current buffer.
 #+end_src
 ** Utils Ditaa, Planuml, imagemagick 
 #+begin_src emacs-lisp
-  (setq org-ditaa-jar-path "~/usr/share/ditaa/ditaa.jar")
+  (setq org-ditaa-jar-path "/usr/share/ditaa/ditaa.jar")
   (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
   ;; Use fundamental mode when editing plantuml blocks with C-c '
   (add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
@@ -2535,6 +2542,7 @@ how you would set up =shell-mode= to run PowerShell on Windows:
     (setq explicit-powershell.exe-args '()))
 
 #+end_src
+
 
 ** Eshell
 [[https://www.gnu.org/software/emacs/manual/html_mono/eshell.html#Contributors-to-Eshell][Eshell]] is Emacs' own shell implementation written in Emacs Lisp.  It provides

@@ -103,6 +103,8 @@
 (turn-on-auto-fill)
 (setq-default fill-column 70)
 
+(global-set-key [remap list-buffers] 'ibuffer)
+
 (set-face-attribute 'default nil :font "Fira Code Retina" :height chb/default-font-size)
 ;; Set the fixed pitch face
 (set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height chb/default-font-size)
@@ -178,44 +180,52 @@
   ([remap describe-key] . helpful-key))
 
 (defun chb/org-font-setup ()
-    ;; Replace list hyphen with dot
-    (font-lock-add-keywords 'org-mode
-                            '(("^ *\\([-]\\) "
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+      ;; Replace list hyphen with dot
+      (font-lock-add-keywords 'org-mode
+                              '(("^ *\\([-]\\) "
+                                 (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-  ;; Set face for org
-   (set-face-attribute 'org-document-title nil :font "Iosevka Etoile" :weight 'bold :height 2.0)
-   ;; Set faces for heading levels
-    (dolist (face '((org-level-1 . 1.4)
-                    (org-level-2 . 1.3)
-                    (org-level-3 . 1.2)
-                    (org-level-4 . 1.1)
-                    (org-level-5 . 1.1)
-                    (org-level-6 . 1.1)
-                    (org-level-7 . 1.1)
-                    (org-level-8 . 1.1)))
-      (set-face-attribute (car face) nil :font "Iosevka Etoile" :weight 'medium :height (cdr face)))
+    ;; Set face for org
+     (set-face-attribute 'org-document-title nil :font "Iosevka Etoile" :weight 'bold :height 2.0)
+     ;; Set faces for heading levels
+      (dolist (face '((org-level-1 . 1.4)
+                      (org-level-2 . 1.3)
+                      (org-level-3 . 1.2)
+                      (org-level-4 . 1.1)
+                      (org-level-5 . 1.1)
+                      (org-level-6 . 1.1)
+                      (org-level-7 . 1.1)
+                      (org-level-8 . 1.1)))
+        (set-face-attribute (car face) nil :font "Iosevka Etoile" :weight 'medium :height (cdr face)))
 
 
 
-    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-   (set-face-attribute 'org-block nil :foreground 'unspecified :inherit 'fixed-pitch)
-   (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
-   (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-   (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
-   (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
-   (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-   (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-   (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
-   (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
-   (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch)
-     )
+      ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+     (set-face-attribute 'org-block nil :foreground 'unspecified :inherit 'fixed-pitch)
+     (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
+     (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+     (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
+     (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
+     (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+     (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+     (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+     (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
+     (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
+     (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch)
+       )
 
-;; Get rid of the background on column views
-;; (set-face-attribute 'org-column-title nil :background "light gray")
-;; (set-face-attribute 'org-column face nil :height 180 :width normal)
-;; (set-face-attribute 'org-column nil :background "light gray" :foreground "dark red")
+  ;; Get rid of the background on column views
+  ;; (set-face-attribute 'org-column-title nil :background "light gray")
+  ;; (set-face-attribute 'org-column face nil :height 180 :width normal)
+  ;; (set-face-attribute 'org-column nil :background "light gray" :foreground "dark red")
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-column ((t (:background "grey30" :strike-through nil :underline nil :slant normal :weight normal :height 1.0))))
+ '(org-level-2 ((t (:inherit outline-2 :extend nil :slant normal :weight medium :height 1.3 :width normal :foundry "UKWN" :family "Iosevka Etoile")))))
 
 (defun chb/org-mode-setup ()
   (org-indent-mode 1)
@@ -482,6 +492,13 @@
 			 (concat (file-name-sans-extension (buffer-file-name))
 				 "-att")))
 		org-attach-screenshot-command-line "gnome-screenshot -a -f %f"))
+
+(use-package org
+  :ensure org-contrib
+  :after ox-taskjugger
+  :config
+  (add-to-list 'org-export-backends 'ox-taskjuggler)
+  )
 
 (use-package org-bullets
   :hook (org-mode . org-bullets-mode)
@@ -811,7 +828,7 @@
 (setq org-latex-listings 'minted)
 (setq org-src-fontify-natively t)
 
-(setq org-ditaa-jar-path "~/usr/share/ditaa/ditaa.jar")
+(setq org-ditaa-jar-path "/usr/share/ditaa/ditaa.jar")
 (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
 ;; Use fundamental mode when editing plantuml blocks with C-c '
 (add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
@@ -1093,3 +1110,11 @@
 
 ;; Make gc pauses faster by decreasing the threshold.
 (setq gc-cons-threshold (* 2 1000 1000))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-export-backends '(ascii html icalendar latex odt taskjuggler))
+ '(package-selected-packages
+   '(xref-js2 which-key vterm undo-tree typescript-mode sourcemap rainbow-delimiters org-contrib org-bullets org-attach-screenshot no-littering lsp-ui lsp-treemacs loccur ivy-youtube ivy-prescient indium htmlize helpful gnuplot forge flycheck eterm-256color eshell-git-prompt doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles counsel-projectile company-tabnine command-log-mode cmake-mode ccls auto-package-update all-the-icons-dired)))
