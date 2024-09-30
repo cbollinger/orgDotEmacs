@@ -1961,13 +1961,13 @@ mini-buffer and the source code.
     :hook ((js-mode . indium-interaction-mode)
            (js2-mode . indium-interaction-mode))
     ;;indium-chrome-port 13840
-    :config (;; (setq indium-verbosity "debug") ;; or "verbose"
+    :config ;; (setq indium-verbosity "debug") ;; or "verbose"
              (define-key indium-interaction-mode-map (kbd "C-c C-r") 'indium-repl)
              (define-key indium-interaction-mode-map (kbd "C-c C-d") 'indium-debugger)
 
              (add-hook 'indium-connected-hook
                        (lambda ()
-                        (message "Indium connected."))))
+                        (message "Indium connected.")))
    )
  #+end_src
 

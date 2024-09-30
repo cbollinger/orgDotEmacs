@@ -935,13 +935,13 @@
   :hook ((js-mode . indium-interaction-mode)
          (js2-mode . indium-interaction-mode))
   ;;indium-chrome-port 13840
-  :config (;; (setq indium-verbosity "debug") ;; or "verbose"
+  :config ;; (setq indium-verbosity "debug") ;; or "verbose"
            (define-key indium-interaction-mode-map (kbd "C-c C-r") 'indium-repl)
            (define-key indium-interaction-mode-map (kbd "C-c C-d") 'indium-debugger)
 
            (add-hook 'indium-connected-hook
                      (lambda ()
-                      (message "Indium connected."))))
+                      (message "Indium connected.")))
  )
 
 (use-package typescript-mode
@@ -1160,18 +1160,3 @@
     (setq eshell-visual-commands '("htop" "zsh" "vim")))
 
   (eshell-git-prompt-use-theme 'powerline))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ede-project-directories
-   '("/home/christian/Daten/01-develop/cpp/state/inc" "/home/christian/Daten/01-develop/cpp/state/src" "/home/christian/Daten/01-develop/cpp/state"))
- '(package-selected-packages
-   '(yasnippet-snippets xref-js2 which-key web-mode vterm vertico undo-tree typescript-mode sourcemap rainbow-delimiters pyvenv python-mode org-bullets org-attach-screenshot no-littering lsp-ui lsp-treemacs lsp-pyright ivy-youtube ivy-prescient indium htmlize helpful gnuplot forge flycheck eterm-256color eshell-git-prompt doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles counsel-projectile company-tabnine company-box command-log-mode ccls auto-package-update all-the-icons-dired)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
