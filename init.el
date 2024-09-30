@@ -225,7 +225,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(org-column ((t (:background "grey30" :strike-through nil :underline nil :slant normal :weight normal :height 1.0))))
- '(org-level-2 ((t (:inherit outline-2 :extend nil :slant normal :weight medium :height 1.3 :width normal :foundry "UKWN" :family "Iosevka Etoile")))))
+ '(org-level-2 ((t (:inherit outline-2 :extend nil :slant normal :weight medium :height 1.0 :width normal :foundry "UKWN" :family "Iosevka Etoile"))))
+ '(org-level-3 ((t (:inherit outline-3 :extend nil :slant normal :weight medium :height 1.0 :width normal :foundry "UKWN" :family "Iosevka Etoile"))))
+ '(org-level-4 ((t (:inherit outline-4 :extend nil :slant normal :weight medium :height 1.0 :width normal :foundry "UKWN" :family "Iosevka Etoile"))))
+ '(org-level-5 ((t (:inherit outline-5 :extend nil :slant normal :weight medium :height 1.0 :width normal :foundry "UKWN" :family "Iosevka Etoile")))))
 
 (defun chb/org-mode-setup ()
   (org-indent-mode 1)
@@ -1117,4 +1120,4 @@
  ;; If there is more than one, they won't work right.
  '(org-export-backends '(ascii html icalendar latex odt taskjuggler))
  '(package-selected-packages
-   '(xref-js2 which-key vterm undo-tree typescript-mode sourcemap rainbow-delimiters org-contrib org-bullets org-attach-screenshot no-littering lsp-ui lsp-treemacs loccur ivy-youtube ivy-prescient indium htmlize helpful gnuplot forge flycheck eterm-256color eshell-git-prompt doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles counsel-projectile company-tabnine command-log-mode cmake-mode ccls auto-package-update all-the-icons-dired)))
+   '(yasnippet-snippets xref-js2 which-key vterm undo-tree typescript-mode sourcemap rainbow-delimiters org-contrib org-bullets org-attach-screenshot no-littering lsp-ui lsp-treemacs loccur ivy-youtube ivy-prescient indium htmlize helpful gnuplot forge flycheck eterm-256color eshell-git-prompt doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles counsel-projectile company-tabnine command-log-mode cmake-mode ccls auto-package-update all-the-icons-dired)))
