@@ -2052,6 +2052,8 @@ package.
 
 ** JavaScript
 
+[[https://github.com/typescript-language-server/typescript-language-server][typescript-Language-server]] is installed with the TypeScript settings
+
 *** JS2-Mode
 
 #+begin_src emacs-lisp
