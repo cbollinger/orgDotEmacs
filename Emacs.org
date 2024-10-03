@@ -1040,13 +1040,14 @@ more like we're editing a document in =org-mode=.  We switch back to fixed width
     (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch)
     )
 
-
-   ;; Get rid of the background on column views
-   ;; (set-face-attribute 'org-column-title nil :background "light gray")
-   ;; (set-face-attribute 'org-column face nil :height 180 :width normal)
-   ;; (set-face-attribute 'org-column nil :background "light gray" :foreground "dark red")
-
-
+  (set-face-attribute 'org-column nil
+                    :inherit 'default  ;; Inherit default face, not org-level-* faces
+                    :height 1.0        ;; Ensure uniform text height
+                    :weight 'normal    ;; Set uniform weight
+                    :underline nil     ;; No underline
+                    :box nil           ;; No box around text
+                    :background "#d0e4f5"  ;; Softer light blue-gray background
+                    :foreground "#005b96") ;; Medium blue foreground
 #+end_src
 
 ** Basic Config
@@ -1846,23 +1847,23 @@ should be able to learn a lot just by pressing =C-c l= in a =lsp-mode= buffer
 and trying different things that you find there.
 
 #+begin_src emacs-lisp
-    (use-package lsp-mode
-      :ensure t
-      :hook (
-             ((c-mode c++-mode python-mode) . lsp)
-             ((js-mode js2-mode) . lsp)    
-             ((typescript-mode web-mode) . lsp)
-             )
-      :commands lsp
-      :commands (lsp lsp-deferred)
-      :init (setq lsp-keymap-prefix "C-p p"
-                  lsp-enable-file-watchers nil
-                  lsp-enable-on-type-formatting nil
-                  lsp-enable-snippet nil
-                  lsp-lens-enable t)
-      :config
-      (setq lsp-prefer-flymake nil) ;; Use flycheck instead of flymake
-    )
+  (use-package lsp-mode
+    :ensure t
+    :hook (
+           ((c-mode c++-mode python-mode) . lsp)
+           ((js-mode js2-mode) . lsp)    
+           ((typescript-mode web-mode) . lsp)
+           )
+    :commands lsp
+    :commands (lsp lsp-deferred)
+    :init (setq lsp-keymap-prefix "C-p p"
+                lsp-enable-file-watchers nil
+                lsp-enable-on-type-formatting nil
+                lsp-enable-snippet nil
+                lsp-lens-enable t)
+    :config
+    (setq lsp-prefer-flymake nil) ;; Use flycheck instead of flymake
+  )
 #+end_src
 
 
@@ -1885,7 +1886,7 @@ feel even more like an IDE.  Check out the screenshots on the =lsp-ui= homepage
 #+end_src
 
 
-** lsp-treemacs
+** COMMENT lsp-treemacs
 
 [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]] provides nice tree views for different aspects of your code like
 symbols in a file, references of a symbol, or diagnostic messages (errors and
@@ -2029,7 +2030,7 @@ get LSP features every time we edit TypeScript code.
 #+begin_src emacs-lisp
 
   (use-package typescript-mode
-    :mode "\\.ts\\'"
+    :mode ("\\.ts\\'" . typescript-mode)
     :hook (typescript-mode . lsp-deferred)
     :config
     (setq typescript-indent-level 2))
@@ -2060,8 +2061,7 @@ package.
 ;; js2-mode for enhanced JavaScript editing
 (use-package js2-mode
   :ensure t
-  :mode ("\\.js\\'")
-  :hook (js2-mode . lsp)
+  :mode ("\\.js\\'" . js2-mode)
   :config
   (setq js2-basic-offset 2
         js2-bounce-indent-p nil))
@@ -2070,15 +2070,13 @@ package.
 
 
 #+begin_src emacs-lisp
-;; xref-js2 for better jump-to-definition
-(use-package xref-js2
-  :ensure t
-  :after js2-mode
-  :config
-  (define-key js2-mode-map (kbd "M-.") nil)
-  (add-hook 'js2-mode-hook (lambda ()
-                             (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))))
-
+  ;; xref-js2 for better jump-to-definition
+  (use-package xref-js2
+    :ensure t
+    :after js2-mode
+    :hook (js2-mode . (lambda ()
+                       (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+    :config (define-key js2-mode-map (kbd "M-.") nil))
 #+end_src
 
 
@@ -2094,17 +2092,16 @@ package.
 
  
 #+begin_src emacs-lisp
-      (use-package js2-refactor
-        :ensure t
-        :after js2-mode
-        :hook (js2-mode . js2-refactor-mode)
-        :config
-        ;; Bind js2-refactor keybindings
-        (js2r-add-keybindings-with-prefix "C-c C-r"))
+  (use-package js2-refactor
+    :ensure t
+    :after js2-mode
+    :config
+    ;; Bind js2-refactor keybindings
+    (js2r-add-keybindings-with-prefix "C-c C-r"))
 
-      ;; For example, unbind M-. in js-mode
-      (add-hook 'js2-mode-hook (lambda ()
-         (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+  ;; For example, unbind M-. in js-mode
+  (add-hook 'js2-mode-hook (lambda ()
+     (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
 #+end_src
 
 
@@ -2232,7 +2229,7 @@ path to your virtual environment before loading your project.
 ;; Optional: Web mode for HTML and embedded JavaScript
 (use-package web-mode
   :ensure t
-  :mode ("\\.html\\'" "\\.jsx?\\'" "\\.tsx?\\'")
+  :mode ("\\.html\\'")
   :config
   (add-hook 'web-mode-hook (lambda ()
                              (when (string-equal "jsx" (file-name-extension buffer-file-name))

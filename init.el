@@ -282,11 +282,14 @@
   (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch)
   )
 
-
- ;; Get rid of the background on column views
- ;; (set-face-attribute 'org-column-title nil :background "light gray")
- ;; (set-face-attribute 'org-column face nil :height 180 :width normal)
- ;; (set-face-attribute 'org-column nil :background "light gray" :foreground "dark red")
+(set-face-attribute 'org-column nil
+                  :inherit 'default  ;; Inherit default face, not org-level-* faces
+                  :height 1.0        ;; Ensure uniform text height
+                  :weight 'normal    ;; Set uniform weight
+                  :underline nil     ;; No underline
+                  :box nil           ;; No box around text
+                  :background "#d0e4f5"  ;; Softer light blue-gray background
+                  :foreground "#005b96") ;; Medium blue foreground
 
 (defun chb/org-mode-setup ()
   (org-indent-mode 1)
@@ -924,11 +927,6 @@
         lsp-ui-sideline-enable t
         lsp-ui-sideline-ignore-duplicate t))
 
-(use-package lsp-treemacs
-    :after lsp
-    :commands lsp-treemacs-references
-)
-
 ;; Indium -- JavaScript: Debugging Mode and REPL
 (use-package indium
   :ensure t
@@ -945,7 +943,7 @@
  )
 
 (use-package typescript-mode
-  :mode "\\.ts\\'"
+  :mode ("\\.ts\\'" . typescript-mode)
   :hook (typescript-mode . lsp-deferred)
   :config
   (setq typescript-indent-level 2))
@@ -953,8 +951,7 @@
 ;; js2-mode for enhanced JavaScript editing
 (use-package js2-mode
   :ensure t
-  :mode ("\\.js\\'")
-  :hook (js2-mode . lsp)
+  :mode ("\\.js\\'" . js2-mode)
   :config
   (setq js2-basic-offset 2
         js2-bounce-indent-p nil))
@@ -963,10 +960,9 @@
 (use-package xref-js2
   :ensure t
   :after js2-mode
-  :config
-  (define-key js2-mode-map (kbd "M-.") nil)
-  (add-hook 'js2-mode-hook (lambda ()
-                             (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))))
+  :hook (js2-mode . (lambda ()
+                     (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+  :config (define-key js2-mode-map (kbd "M-.") nil))
 
 ;; js2-refactor for JavaScript refactoring
 (use-package js2-refactor
@@ -979,7 +975,6 @@
 (use-package js2-refactor
   :ensure t
   :after js2-mode
-  :hook (js2-mode . js2-refactor-mode)
   :config
   ;; Bind js2-refactor keybindings
   (js2r-add-keybindings-with-prefix "C-c C-r"))
@@ -1045,7 +1040,7 @@
 ;; Optional: Web mode for HTML and embedded JavaScript
 (use-package web-mode
   :ensure t
-  :mode ("\\.html\\'" "\\.jsx?\\'" "\\.tsx?\\'")
+  :mode ("\\.html\\'")
   :config
   (add-hook 'web-mode-hook (lambda ()
                              (when (string-equal "jsx" (file-name-extension buffer-file-name))
