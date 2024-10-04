@@ -249,7 +249,7 @@ if you try to use this configuration directly.
 #+end_src
 
 
-* Tips for Use
+* Tipps for Use
 
 In this document I've added links in many places that lead you to documentation
 for the various packages we use.  If you're looking at this file in Emacs, you
@@ -277,7 +277,7 @@ to open the link in your web browser.
 #+end_src
 
 
-* Package System Setup
+* Package System Setup 
 
 Emacs has a built in package manager but it doesn't make it easy to
 automatically install packages on a new system the first time you pull down your
