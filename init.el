@@ -250,20 +250,20 @@
 (defun chb/org-font-setup ()
    ;; Replace list hyphen with dot
    (font-lock-add-keywords 'org-mode
-			   '(("^ *\\([-]\\) "
-			      (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+                           '(("^ *\\([-]\\) "
+                              (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
    ;; Set face for org
    (set-face-attribute 'org-document-title nil :font "Iosevka Etoile" :weight 'bold :height 2.0)
    ;; Set faces for heading levels
    (dolist (face '((org-level-1 . 1.4)
-		   (org-level-2 . 1.3)
-		   (org-level-3 . 1.2)
-		   (org-level-4 . 1.1)
-		   (org-level-5 . 1.1)
-		   (org-level-6 . 1.1)
-		   (org-level-7 . 1.1)
-		   (org-level-8 . 1.1)))
+                   (org-level-2 . 1.3)
+                   (org-level-3 . 1.2)
+                   (org-level-4 . 1.1)
+                   (org-level-5 . 1.1)
+                   (org-level-6 . 1.1)
+                   (org-level-7 . 1.1)
+                   (org-level-8 . 1.1)))
      (set-face-attribute (car face) nil :font "Iosevka Etoile" :weight 'medium :height (cdr face)))
 
 
@@ -282,13 +282,20 @@
    (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch)
 
    (set-face-attribute 'org-column nil
-	       :inherit 'default  ;; Inherit default face, not org-level-* faces
-	       :height 1.0        ;; Ensure uniform text height
-	       :weight 'normal    ;; Set uniform weight
-	       :underline nil     ;; No underline
-	       :box nil           ;; No box around text
-	       :background "#d0e4f5"  ;; Softer light blue-gray background
-	       :foreground "#005b96") ;; Medium blue foreground
+               :inherit 'default  ;; Inherit default face, not org-level-* faces
+               :height 1.0        ;; Ensure uniform text height
+               :weight 'normal    ;; Set uniform weight
+               :underline nil     ;; No underline
+               :box nil           ;; No box around text
+               :background "#d0e4f5"  ;; Softer light blue-gray background
+               :foreground "#005b96") ;; Medium blue foreground
+
+   ;; Customize the face of the Org mode title
+   (set-face-attribute 'org-document-title nil
+                       :foreground "white"
+                       :background "midnight blue"
+                       :weight 'bold
+                       :height 2.5)
 
 )
 
