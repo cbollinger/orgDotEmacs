@@ -77,8 +77,8 @@
   ;;     "l" 'dired-single-buffer)
   )
 
-(use-package dired-single
-  :commands (dired dired-jump))
+;; (use-package dired-single
+;;   :commands (dired dired-jump))
 
 (use-package all-the-icons-dired
   :hook (dired-mode . all-the-icons-dired-mode))
@@ -89,7 +89,7 @@
   ;; Doesn't work as expected!
   ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
   (setq dired-open-extensions '(("png" . "feh")
-                                ("mkv" . "mpv"))))
+				("mkv" . "mpv"))))
 
 (use-package dired-hide-dotfiles
   :hook (dired-mode . dired-hide-dotfiles-mode)
@@ -860,8 +860,12 @@
 (setq org-latex-listings 'minted)
 (setq org-src-fontify-natively t)
 
-(setq org-ditaa-jar-path "~/usr/share/ditaa/ditaa.jar")
-(setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
+;: Ubuntu
+;; (setq org-ditaa-jar-path "~/usr/share/ditaa/ditaa.jar")
+;; (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
+;; Opensuse
+(setq org-ditaa-jar-path "/home/christian/bin/ditaa0_9/ditaa0_9.jar")
+(setq org-plantuml-jar-path "/usr/bin/plantuml")
 ;; Use fundamental mode when editing plantuml blocks with C-c '
 (add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
 (add-to-list 'exec-path "/usr/bin/magick")
@@ -1009,7 +1013,9 @@
   (dap-python-debugger 'debugpy)
   :config
   (setq py-python-command "python3")
-  (require 'dap-python)
+
+  ;; (require 'dap-python)
+  ;; (setq dap-python-debugger 'debugpy)
   )
 
   ;; Optional: Additional configuration for Python (using pyls or other server)
@@ -1163,3 +1169,17 @@
     (setq eshell-visual-commands '("htop" "zsh" "vim")))
 
   (eshell-git-prompt-use-theme 'powerline))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(delete-selection-mode nil)
+ '(package-selected-packages
+   '(all-the-icons-ivy yasnippet-snippets xref-js2 which-key web-mode vterm vertico undo-tree typescript-mode sourcemap rainbow-delimiters pyvenv python-mode org-bullets org-attach-screenshot no-littering lsp-ui lsp-pyright ivy-youtube ivy-prescient indium htmlize helpful gnuplot forge flycheck eterm-256color eshell-git-prompt doom-themes doom-modeline dired-open dired-hide-dotfiles counsel-projectile company-tabnine company-box command-log-mode ccls auto-package-update all-the-icons-gnus all-the-icons-dired)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

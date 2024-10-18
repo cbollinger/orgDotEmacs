@@ -21,6 +21,7 @@ cp -r ~/latex/files/latex/texmf .
 
 ** Call this shell scripts to install all the required system packages
 
+*** Ubuntu
 This script is a collection I did during fixing all the occured issues.
 #+begin_src 
 #!/usr/bin/bash
@@ -56,8 +57,27 @@ sudo apt install cmake -y
 sudo apt install libtool-bin
 #+end_src
 
+*** Opensuse Tumbleweed
+#+begin_src 
+#!/usr/bin/bash
 
-** Call this shell script to install the iosevka-fonts
+# org-essentials.sh
+sudo zypper install python311-Pygments
+sudo zypper install fira-code-fonts
+sudo zypper in iosevka-etoile-fonts
+sudo zypper install plocate
+sudo zypper install ispell ispell-ngerman ispell-british
+udo zypper install hunspell hunspell-tools
+sudo zypper install graphviz
+sudo zypper install plantuml
+# download ditaa to /home/christian/bin/ditaa_09
+sudo zypper install octave
+sudo zypper install nodejs-common
+sudo zypper install myspell-en_US myspell-en_GB myspell-de_CH 
+#+end_src
+
+
+** UBUNTU Only Call this shell script to install the iosevka-fonts
 
 This script is from =Programster's Blog=
 #+begin_src 
@@ -436,8 +456,8 @@ Here are some key bindings you should try out:
     ;;     "l" 'dired-single-buffer)
     )
 
-  (use-package dired-single
-    :commands (dired dired-jump))
+  ;; (use-package dired-single
+  ;;   :commands (dired dired-jump))
 
   (use-package all-the-icons-dired
     :hook (dired-mode . all-the-icons-dired-mode))
@@ -448,8 +468,8 @@ Here are some key bindings you should try out:
     ;; Doesn't work as expected!
     ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
     (setq dired-open-extensions '(("png" . "feh")
-                                  ("mkv" . "mpv"))))
- 
+				  ("mkv" . "mpv"))))
+
   (use-package dired-hide-dotfiles
     :hook (dired-mode . dired-hide-dotfiles-mode)
     ;; :config
@@ -1719,7 +1739,7 @@ preference so you can remove the block below if you don't like the behavior.
     :hook (org-mode . chb/org-mode-visual-fill))
 
 #+end_src
-
+q
 
 * Which Key
 
@@ -1777,8 +1797,12 @@ possible key bindings in the mode of your current buffer.
 #+end_src
 ** Utils Ditaa, Planuml, imagemagick 
 #+begin_src emacs-lisp
-  (setq org-ditaa-jar-path "~/usr/share/ditaa/ditaa.jar")
-  (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
+  ;: Ubuntu
+  ;; (setq org-ditaa-jar-path "~/usr/share/ditaa/ditaa.jar")
+  ;; (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
+  ;; Opensuse
+  (setq org-ditaa-jar-path "/home/christian/bin/ditaa0_9/ditaa0_9.jar")
+  (setq org-plantuml-jar-path "/usr/bin/plantuml")
   ;; Use fundamental mode when editing plantuml blocks with C-c '
   (add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
   (add-to-list 'exec-path "/usr/bin/magick")
@@ -2156,7 +2180,9 @@ documentation]] to try the others!
     (dap-python-debugger 'debugpy)
     :config
     (setq py-python-command "python3")
-    (require 'dap-python)
+
+    ;; (require 'dap-python)
+    ;; (setq dap-python-debugger 'debugpy)
     )
 
     ;; Optional: Additional configuration for Python (using pyls or other server)
