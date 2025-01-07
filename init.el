@@ -496,7 +496,7 @@
                                         ;Configure custom agenda views
   (setq org-agenda-custom-commands
         '(
-          ("d" "Dashboard" ((agenda "" ((org-deadline-warning-days 7)))
+          ("d" "Dashboard" ((agenda "" ((org-deadline-warning-days 2)))
                             (todo "MEETING"               ((org-agenda-overriding-header "Meeting")))
                             (todo "ONGOING"            ((org-agenda-overriding-header "All ongoing Action Items")))
                             (todo "WAITING"            ((org-agenda-overriding-header "Action Items, waiting for external input")))
@@ -505,7 +505,7 @@
                             (todo "CANCELLED"          ((org-agenda-overriding-header "Action Item CANCELLED")))
                             (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
 
-          ("c" "EC-Overview" ((agenda "" ((org-deadline-warning-days 7)))
+          ("c" "EC-Overview" ((agenda "" ((org-deadline-warning-days 2)))
                               (todo "RISK"                 ((org-agenda-overriding-header "Risk Evaluation")))
                               (todo "EC"                   ((org-agenda-overriding-header "EC Setup")))
                               (todo "RFEW"                 ((org-agenda-overriding-header "RFEW: Request for Work")))
@@ -523,8 +523,28 @@
           ("N" "Notes" tags "NOTE"
            ( (org-agenda-overriding-header "Notes") (org-tags-match-list-sublevels t)))
 
+          ("1" "Events" agenda "display tasks with a deadline"
+           (
+            (org-agenda-span 'year)
+            (org-agenda-time-grid nil)
+            (org-agenda-show-all-dates nil)
+            (org-agenda-entry-types '(:deadline)) ;; this entry excludes :scheduled
+            (org-deadline-warning-days 0) )
+           )
+
+          ("2" "Tasks" agenda "display scheduled tasks"
+           (
+            (org-agenda-span 'year)
+            (org-agenda-time-grid nil)
+            (org-agenda-show-all-dates nil)
+            (org-agenda-entry-types '(:scheduled)) ;; this entry excludes :scheduled
+            (org-deadline-warning-days 0)
+            )
+           )
+
           ("h" "Habits" tags-todo "STYLE=\"habit\""
-           ((org-agenda-overriding-header "Habits")
+           (
+            (org-agenda-overriding-header "Habits")
             (org-agenda-sorting-strategy
              '(todo-state-down effort-up category-keep))))
           )))
@@ -860,7 +880,7 @@
 (setq org-latex-listings 'minted)
 (setq org-src-fontify-natively t)
 
-(setq org-ditaa-jar-path "~/usr/share/ditaa/ditaa.jar")
+(setq org-ditaa-jar-path "/usr/share/ditaa/ditaa.jar")
 (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
 ;; Use fundamental mode when editing plantuml blocks with C-c '
 (add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
