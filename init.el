@@ -50,7 +50,7 @@
 
 (require 'use-package)
 (setq use-package-always-ensure t)
-(add-to-list 'load-path "~/.emacs.d/elpa/org-contrib-0.4.2")
+(add-to-list 'load-path "~/.emacs.d/elpa/org-contrib-0.6")
 
 (use-package auto-package-update
   :custom
@@ -827,6 +827,13 @@
       (org-babel-tangle))))
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'chb/org-babel-tangle-config)))
 
+(use-package org
+  :ensure org-contrib
+  :after ox-taskjugger
+  :config
+  (add-to-list 'org-export-backends 'ox-taskjuggler)
+  )
+
 (use-package which-key
   :defer 
   :diminish which-key-mode
@@ -1175,8 +1182,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(delete-selection-mode nil)
+ '(org-export-backends '(ascii html icalendar latex odt taskjuggler))
+ '(org-latex-src-block-backend 'minted)
  '(package-selected-packages
-   '(all-the-icons-ivy yasnippet-snippets xref-js2 which-key web-mode vterm vertico undo-tree typescript-mode sourcemap rainbow-delimiters pyvenv python-mode org-bullets org-attach-screenshot no-littering lsp-ui lsp-pyright ivy-youtube ivy-prescient indium htmlize helpful gnuplot forge flycheck eterm-256color eshell-git-prompt doom-themes doom-modeline dired-open dired-hide-dotfiles counsel-projectile company-tabnine company-box command-log-mode ccls auto-package-update all-the-icons-gnus all-the-icons-dired)))
+   '(ox-pandoc pandoc-mode auctex yasnippet-snippets xref-js2 which-key web-mode vterm vertico undo-tree typescript-mode sourcemap rainbow-delimiters pyvenv python-mode org-contrib org-bullets org-attach-screenshot no-littering lsp-ui lsp-pyright ivy-youtube ivy-prescient indium htmlize helpful gnuplot forge flycheck eterm-256color eshell-git-prompt doom-themes doom-modeline dired-open dired-hide-dotfiles counsel-projectile company-tabnine company-box command-log-mode ccls auto-package-update all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
