@@ -60,6 +60,9 @@
   :config
     (auto-package-update-at-time "09:00"))
 
+(use-package transient
+    :defer t)
+
 (use-package undo-tree
   :init
   (global-undo-tree-mode 1)
@@ -1176,19 +1179,3 @@
     (setq eshell-visual-commands '("htop" "zsh" "vim")))
 
   (eshell-git-prompt-use-theme 'powerline))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(delete-selection-mode nil)
- '(org-export-backends '(ascii html icalendar latex odt taskjuggler))
- '(org-latex-src-block-backend 'minted)
- '(package-selected-packages
-   '(ox-pandoc pandoc-mode auctex yasnippet-snippets xref-js2 which-key web-mode vterm vertico undo-tree typescript-mode sourcemap rainbow-delimiters pyvenv python-mode org-contrib org-bullets org-attach-screenshot no-littering lsp-ui lsp-pyright ivy-youtube ivy-prescient indium htmlize helpful gnuplot forge flycheck eterm-256color eshell-git-prompt doom-themes doom-modeline dired-open dired-hide-dotfiles counsel-projectile company-tabnine company-box command-log-mode ccls auto-package-update all-the-icons-dired)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
