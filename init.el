@@ -155,24 +155,24 @@
   :ensure t
   :hook (after-init . doom-modeline-mode)
   :init
-  (setq doom-modeline-height 45)
+  ;; (setq doom-modeline-height 45)
   (setq doom-modeline-icons t)
-  (setq doom-modeline-major-mode-color-icon t)
-  (setq doom-modeline-time-icon t)
-  (setq doom-modeline-time t)
-  (setq doom-modeline-minor-modes nil)
+  ;; (setq doom-modeline-major-mode-color-icon t)
+  ;; (setq doom-modeline-time-icon t)
+  ;; (setq doom-modeline-time t)
+    (setq doom-modeline-minor-modes nil)
   ;; Ensure doom-modeline faces are available
-  :config (doom-modeline-mode 1)
+  ;; :config (doom-modeline-mode 1)
   ;; Increase modeline width
-  (setq doom-modeline-bar-width 5) ;; Adjust this value as needed
+  ;; (setq doom-modeline-bar-width 5) ;; Adjust this value as needed
 
   ;; Modify segments to show essential information
-  (setq doom-modeline-buffer-file-name-style 'truncate-upto-root) ;; Truncate long file names
+  ;; (setq doom-modeline-buffer-file-name-style 'truncate-upto-root) ;; Truncate long file names
 
   ;; Add or remove segments based on your preference
-  (setq doom-modeline-buffer-modification-icon t) ;; Show modified indicator
-  (setq doom-modeline-major-mode-icon t) ;; Show major mode icon
-  (setq doom-modeline-vcs-max-length 12) ;; Limit length of VCS branch name
+  ;; (setq doom-modeline-buffer-modification-icon t) ;; Show modified indicator
+  ;; (setq doom-modeline-major-mode-icon t) ;; Show major mode icon
+  ;; (setq doom-modeline-vcs-max-length 12) ;; Limit length of VCS branch name
    )
 
 (use-package doom-themes
@@ -199,7 +199,9 @@
          ("C-k" . ivy-previous-line)
          ("C-d" . ivy-reverse-i-search-kill))
   :config
-  (ivy-mode 1))
+  (ivy-mode 1)
+  (setopt ivy-use-virtual-buffers t)
+  (setopt ivy-count-format "(%d/%d) "))
 
 (use-package counsel
   :ensure t
@@ -310,7 +312,7 @@
   :ensure t
   :mode (("\\.org$" . org-mode))
   :bind (("C-c l" . org-store-link)
-	 ("C-c b" . org-iswitchb))
+	    ("C-c b" . org-iswitchb))
   :hook (org-mode . chb/org-mode-setup)
   :config 
   ;; Custom functions setup
@@ -895,7 +897,8 @@
        '((emacs-lisp . t)    ; 
          (C          . t)    ; C, C++, D
          (js         . t)    ; JavaScript
-         (org        , t)    ;
+         (org        . t)    ;
+	 (spice      . t)    ; asymptote
          (ditaa      . t)    ; ditaa
          (shell      . t)    ; shell, bash
          (lisp       . t)    ; lisp
@@ -903,6 +906,7 @@
          (octave     . t)    ; octave
          (gnuplot    . t)    ; gnuplot
          (python     . t)    ; pyhon
+	 (asymptote  . t)    ; asymptote
          (plantuml   . t)))  ; this line activate plantuml
 
       (push '("conf-unix" . conf-unix) org-src-lang-modes))
@@ -944,6 +948,24 @@
   (setq lsp-prefer-flymake nil) ;; Use flycheck instead of flymake
 )
 
+(use-package lsp-mode
+   :ensure t
+   :hook (
+          ((c-mode c++-mode python-mode) . lsp)
+          ((js-mode js2-mode) . lsp)    
+          ((typescript-mode web-mode) . lsp)
+          )
+   :commands lsp
+   :commands (lsp lsp-deferred)
+   :init (setq lsp-keymap-prefix "C-p p"
+               lsp-enable-file-watchers nil
+               lsp-enable-on-type-formatting nil
+               lsp-enable-snippet nil
+               lsp-lens-enable t)
+;;   :config
+   (setq lsp-prefer-flymake nil) ;; Use flycheck instead of flymake
+ )
+
 (use-package lsp-ui
   :ensure t
   :commands lsp-ui-mode
@@ -954,6 +976,14 @@
         lsp-ui-doc-include-signature t
         lsp-ui-sideline-enable t
         lsp-ui-sideline-ignore-duplicate t))
+
+(if init-file-debug
+      (setq use-package-verbose t
+            use-package-expand-minimally nil
+            use-package-compute-statistics t
+            debug-on-error t)
+    (setq use-package-verbose nil
+          use-package-expand-minimally t))
 
 ;; Indium -- JavaScript: Debugging Mode and REPL
 (use-package indium
@@ -1084,12 +1114,6 @@
 
 (use-package company-box
 :hook (company-mode . company-box-mode))
-
-(use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode)
-  :hook (lsp-mode . flycheck-mode)
-  )
 
 (use-package projectile
   :ensure t
