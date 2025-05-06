@@ -578,24 +578,24 @@ correctly.
           :ensure t
           :hook (after-init . doom-modeline-mode)
           :init
-          (setq doom-modeline-height 45)
+          ;; (setq doom-modeline-height 45)
           (setq doom-modeline-icons t)
-          (setq doom-modeline-major-mode-color-icon t)
-          (setq doom-modeline-time-icon t)
-          (setq doom-modeline-time t)
-          (setq doom-modeline-minor-modes nil)
+          ;; (setq doom-modeline-major-mode-color-icon t)
+          ;; (setq doom-modeline-time-icon t)
+          ;; (setq doom-modeline-time t)
+            (setq doom-modeline-minor-modes nil)
           ;; Ensure doom-modeline faces are available
-          :config (doom-modeline-mode 1)
+          ;; :config (doom-modeline-mode 1)
           ;; Increase modeline width
-          (setq doom-modeline-bar-width 5) ;; Adjust this value as needed
+          ;; (setq doom-modeline-bar-width 5) ;; Adjust this value as needed
 
           ;; Modify segments to show essential information
-          (setq doom-modeline-buffer-file-name-style 'truncate-upto-root) ;; Truncate long file names
+          ;; (setq doom-modeline-buffer-file-name-style 'truncate-upto-root) ;; Truncate long file names
 
           ;; Add or remove segments based on your preference
-          (setq doom-modeline-buffer-modification-icon t) ;; Show modified indicator
-          (setq doom-modeline-major-mode-icon t) ;; Show major mode icon
-          (setq doom-modeline-vcs-max-length 12) ;; Limit length of VCS branch name
+          ;; (setq doom-modeline-buffer-modification-icon t) ;; Show modified indicator
+          ;; (setq doom-modeline-major-mode-icon t) ;; Show major mode icon
+          ;; (setq doom-modeline-vcs-max-length 12) ;; Limit length of VCS branch name
            )
 
         (use-package doom-themes
@@ -636,33 +636,35 @@ for each of the default completion commands.
 information about each item.
 
 #+begin_src emacs-lisp
-(use-package ivy
-  :ensure t
-  :diminish
-  :bind (("C-s" . swiper)
-         :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)
-         ("C-l" . ivy-alt-done)
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map ivy-switch-buffer-map
-         ("C-k" . ivy-previous-line)
-         ("C-l" . ivy-done)
-         :map ivy-reverse-i-search-map
-         ("C-k" . ivy-previous-line)
-         ("C-d" . ivy-reverse-i-search-kill))
-  :config
-  (ivy-mode 1))
+    (use-package ivy
+      :ensure t
+      :diminish
+      :bind (("C-s" . swiper)
+             :map ivy-minibuffer-map
+             ("TAB" . ivy-alt-done)
+             ("C-l" . ivy-alt-done)
+             ("C-j" . ivy-next-line)
+             ("C-k" . ivy-previous-line)
+             :map ivy-switch-buffer-map
+             ("C-k" . ivy-previous-line)
+             ("C-l" . ivy-done)
+             :map ivy-reverse-i-search-map
+             ("C-k" . ivy-previous-line)
+             ("C-d" . ivy-reverse-i-search-kill))
+      :config
+      (ivy-mode 1)
+      (setopt ivy-use-virtual-buffers t)
+      (setopt ivy-count-format "(%d/%d) "))
 
-(use-package counsel
-  :ensure t
-  :bind (("M-x" . counsel-M-x)
-         ("C-x b" . counsel-ibuffer)
-         ("C-x C-f" . counsel-find-file)
-         :map minibuffer-local-map
-         ("C-r" . 'counsel-minibuffer-history))
-  :config
-  (counsel-mode 1))
+    (use-package counsel
+      :ensure t
+      :bind (("M-x" . counsel-M-x)
+             ("C-x b" . counsel-ibuffer)
+             ("C-x C-f" . counsel-find-file)
+             :map minibuffer-local-map
+             ("C-r" . 'counsel-minibuffer-history))
+      :config
+      (counsel-mode 1))
 
 
 #+end_src
@@ -1814,33 +1816,35 @@ To execute or export code in =org-mode= code blocks, you'll need to set up
 documents all of the languages that you can use with =org-babel=.
 
 #+begin_src emacs-lisp
-    (with-eval-after-load 'org
-      (org-babel-do-load-languages
-       'org-babel-load-languages
-       '((emacs-lisp . t)    ; 
-         (C          . t)    ; C, C++, D
-         (js         . t)    ; JavaScript
-         (org        , t)    ;
-         (ditaa      . t)    ; ditaa
-         (shell      . t)    ; shell, bash
-         (lisp       . t)    ; lisp
-         (latex      . t)    ; latex
-         (octave     . t)    ; octave
-         (gnuplot    . t)    ; gnuplot
-         (python     . t)    ; pyhon
-         (plantuml   . t)))  ; this line activate plantuml
+      (with-eval-after-load 'org
+        (org-babel-do-load-languages
+         'org-babel-load-languages
+         '((emacs-lisp . t)    ; 
+           (C          . t)    ; C, C++, D
+           (js         . t)    ; JavaScript
+           (org        . t)    ;
+  	 (spice      . t)    ; asymptote
+           (ditaa      . t)    ; ditaa
+           (shell      . t)    ; shell, bash
+           (lisp       . t)    ; lisp
+           (latex      . t)    ; latex
+           (octave     . t)    ; octave
+           (gnuplot    . t)    ; gnuplot
+           (python     . t)    ; pyhon
+  	 (asymptote  . t)    ; asymptote
+           (plantuml   . t)))  ; this line activate plantuml
 
-      (push '("conf-unix" . conf-unix) org-src-lang-modes))
+        (push '("conf-unix" . conf-unix) org-src-lang-modes))
 
-    ;; Use python lexer for ipython blocks
-;;  (ipython     . t)   ; pyhon
-;;  (setq python-shell-interpreter "python3")
-;;  (add-to-list 'org-latex-minted-langs '(ipython "python"))  
+      ;; Use python lexer for ipython blocks
+  ;;  (ipython     . t)   ; pyhon
+  ;;  (setq python-shell-interpreter "python3")
+  ;;  (add-to-list 'org-latex-minted-langs '(ipython "python"))  
 
-  ;; Do not prompt to confirm evaluation
-  ;; This may be dangerous - make sure you understand the consequences
-  ;; of setting this -- see the docstring for details
-  (setq org-confirm-babel-evaluate nil)
+    ;; Do not prompt to confirm evaluation
+    ;; This may be dangerous - make sure you understand the consequences
+    ;; of setting this -- see the docstring for details
+    (setq org-confirm-babel-evaluate nil)
 #+end_src
 
 
@@ -1877,24 +1881,45 @@ should be able to learn a lot just by pressing =C-c l= in a =lsp-mode= buffer
 and trying different things that you find there.
 
 #+begin_src emacs-lisp
-  (use-package lsp-mode
-    :ensure t
-    :hook (
-           ((c-mode c++-mode python-mode) . lsp)
-           ((js-mode js2-mode) . lsp)    
-           ((typescript-mode web-mode) . lsp)
-           )
-    :commands lsp
-    :commands (lsp lsp-deferred)
-    :init (setq lsp-keymap-prefix "C-p p"
-                lsp-enable-file-watchers nil
-                lsp-enable-on-type-formatting nil
-                lsp-enable-snippet nil
-                lsp-lens-enable t)
-    :config
-    (setq lsp-prefer-flymake nil) ;; Use flycheck instead of flymake
-  )
+    (use-package lsp-mode
+      :ensure t
+      :hook (
+             ((c-mode c++-mode python-mode) . lsp)
+             ((js-mode js2-mode) . lsp)    
+             ((typescript-mode web-mode) . lsp)
+             )
+      :commands lsp
+      :commands (lsp lsp-deferred)
+      :init (setq lsp-keymap-prefix "C-p p"
+                  lsp-enable-file-watchers nil
+                  lsp-enable-on-type-formatting nil
+                  lsp-enable-snippet nil
+                  lsp-lens-enable t)
+      :config
+      (setq lsp-prefer-flymake nil) ;; Use flycheck instead of flymake
+    )
 #+end_src
+
+#+begin_src emacs-lisp
+    (use-package lsp-mode
+      :ensure t
+      :hook (
+             ((c-mode c++-mode python-mode) . lsp)
+             ((js-mode js2-mode) . lsp)    
+             ((typescript-mode web-mode) . lsp)
+             )
+      :commands lsp
+      :commands (lsp lsp-deferred)
+      :init (setq lsp-keymap-prefix "C-p p"
+                  lsp-enable-file-watchers nil
+                  lsp-enable-on-type-formatting nil
+                  lsp-enable-snippet nil
+                  lsp-lens-enable t)
+   ;;   :config
+      (setq lsp-prefer-flymake nil) ;; Use flycheck instead of flymake
+    )
+#+end_src
+
 
 
 ** LSP-UI
@@ -1915,6 +1940,15 @@ feel even more like an IDE.  Check out the screenshots on the =lsp-ui= homepage
         lsp-ui-sideline-ignore-duplicate t))
 #+end_src
 
+#+begin_src emacs-lisp
+(if init-file-debug
+      (setq use-package-verbose t
+            use-package-expand-minimally nil
+            use-package-compute-statistics t
+            debug-on-error t)
+    (setq use-package-verbose nil
+          use-package-expand-minimally t))
+#+end_src
 
 ** COMMENT lsp-treemacs
 
@@ -2301,7 +2335,7 @@ not pop up immediately!!!!
 
 [[https://www.flycheck.org/en/latest/][Flycheck]] Syntax checking for GNU Emacs
 
-#+begin_src emacs-lisp
+#+begin_src
   (use-package flycheck
     :ensure t
     :init (global-flycheck-mode)

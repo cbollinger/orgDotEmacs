@@ -1,6 +1,3 @@
-;; Enable debugging
-(setq debug-on-error t)
-
 ;; NOTE: init.el is now generated from Emacs.org.  Please edit that file
 ;;       in Emacs and init.el will be generated automatically!
 
@@ -11,7 +8,8 @@
 ;; Make frame transparency overridable
 (defvar chb/frame-transparency '(100 . 100))
 
-;; The default is 800 kilobytes.  Measured in bytes.
+;; Dial the GC threshold back down so that garbage collection happens more
+;; frequently but in less time.
 (setq gc-cons-threshold (* 50 1000 1000))
 
 (defun chb/display-startup-time ()
@@ -26,15 +24,17 @@
 ;; Initialize package sources
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			 ("gnu" . "https://elpa.gnu.org/packages/")
-			 ("org" . "https://orgmode.org/elpa/")
-			 ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+                         ("gnu" . "https://elpa.gnu.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                         ("melpa-stable" . "https://stable.melpa.org/packages/")))
 
 (setq package-archive-priorities
-      '(("melpa"        .  1)
-	("gnu"          .  2) 
-	("org"          .  3)
-	("nongnu" .        0)))
+      '(("melpa"        .  4)
+        ("gnu"          .  3) 
+        ("org"          .  2)
+        ("nongnu" .        1)
+        ("melpa-stable".   0)))
 
 
 (package-initialize)
@@ -59,6 +59,44 @@
   (auto-package-update-hide-results t)
   :config
     (auto-package-update-at-time "09:00"))
+
+(use-package undo-tree
+  :init
+  (global-undo-tree-mode 1)
+  (setq undo-tree-auto-save-history nil)
+)
+
+(use-package dired
+  :ensure nil
+  :commands (dired dired-jump)
+  :bind (("C-x C-j" . dired-jump))
+  :custom ((dired-listing-switches "-agho --group-directories-first"))
+  ;;   :config
+  ;;   (evil-collection-define-key 'normal 'dired-mode-map
+  ;;     "h" 'dired-single-up-directory
+  ;;     "l" 'dired-single-buffer)
+  )
+
+(use-package dired-single
+  :commands (dired dired-jump))
+
+(use-package all-the-icons-dired
+  :hook (dired-mode . all-the-icons-dired-mode))
+
+(use-package dired-open
+  :commands (dired dired-jump)
+  :config
+  ;; Doesn't work as expected!
+  ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
+  (setq dired-open-extensions '(("png" . "feh")
+                                ("mkv" . "mpv"))))
+
+(use-package dired-hide-dotfiles
+  :hook (dired-mode . dired-hide-dotfiles-mode)
+  ;; :config
+  ;; (evil-collection-define-key 'normal 'dired-mode-map
+  ;;   "H" 'dired-hide-dotfiles-mode)
+  )
 
 ;; NOTE: If you want to move everything out of the ~/.emacs.d folder
 ;; reliably, set `user-emacs-directory` before loading no-littering!
@@ -103,19 +141,44 @@
 (turn-on-auto-fill)
 (setq-default fill-column 70)
 
-(global-set-key [remap list-buffers] 'ibuffer)
-
 (set-face-attribute 'default nil :font "Fira Code Retina" :height chb/default-font-size)
 ;; Set the fixed pitch face
 (set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height chb/default-font-size)
 ;; Set the variable pitch face
 (set-face-attribute 'variable-pitch nil :font "Cantarell" :height chb/default-variable-font-size :weight 'regular)
 
-(use-package undo-tree
+(use-package nerd-icons
+:if (display-graphic-p))
+
+;; Load and configure doom-modeline
+(use-package doom-modeline
+  :ensure t
+  :hook (after-init . doom-modeline-mode)
   :init
-  (global-undo-tree-mode 1)
-  (setq undo-tree-auto-save-history nil)
-)
+  ;; (setq doom-modeline-height 45)
+  (setq doom-modeline-icons t)
+  ;; (setq doom-modeline-major-mode-color-icon t)
+  ;; (setq doom-modeline-time-icon t)
+  ;; (setq doom-modeline-time t)
+    (setq doom-modeline-minor-modes nil)
+  ;; Ensure doom-modeline faces are available
+  ;; :config (doom-modeline-mode 1)
+  ;; Increase modeline width
+  ;; (setq doom-modeline-bar-width 5) ;; Adjust this value as needed
+
+  ;; Modify segments to show essential information
+  ;; (setq doom-modeline-buffer-file-name-style 'truncate-upto-root) ;; Truncate long file names
+
+  ;; Add or remove segments based on your preference
+  ;; (setq doom-modeline-buffer-modification-icon t) ;; Show modified indicator
+  ;; (setq doom-modeline-major-mode-icon t) ;; Show major mode icon
+  ;; (setq doom-modeline-vcs-max-length 12) ;; Limit length of VCS branch name
+   )
+
+(use-package doom-themes
+  :ensure t
+  :after (ivy org doom-modeline)
+  :config (load-theme 'doom-palenight t))
 
 (use-package command-log-mode
   :commands command-log-mode)
@@ -136,7 +199,9 @@
          ("C-k" . ivy-previous-line)
          ("C-d" . ivy-reverse-i-search-kill))
   :config
-  (ivy-mode 1))
+  (ivy-mode 1)
+  (setopt ivy-use-virtual-buffers t)
+  (setopt ivy-count-format "(%d/%d) "))
 
 (use-package counsel
   :ensure t
@@ -179,56 +244,62 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
+(use-package vertico
+:ensure t
+:init
+(vertico-mode))
+
 (defun chb/org-font-setup ()
-      ;; Replace list hyphen with dot
-      (font-lock-add-keywords 'org-mode
-                              '(("^ *\\([-]\\) "
-                                 (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+   ;; Replace list hyphen with dot
+   (font-lock-add-keywords 'org-mode
+                           '(("^ *\\([-]\\) "
+                              (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-    ;; Set face for org
-     (set-face-attribute 'org-document-title nil :font "Iosevka Etoile" :weight 'bold :height 2.0)
-     ;; Set faces for heading levels
-      (dolist (face '((org-level-1 . 1.4)
-                      (org-level-2 . 1.3)
-                      (org-level-3 . 1.2)
-                      (org-level-4 . 1.1)
-                      (org-level-5 . 1.1)
-                      (org-level-6 . 1.1)
-                      (org-level-7 . 1.1)
-                      (org-level-8 . 1.1)))
-        (set-face-attribute (car face) nil :font "Iosevka Etoile" :weight 'medium :height (cdr face)))
+   ;; Set face for org
+   (set-face-attribute 'org-document-title nil :font "Iosevka Etoile" :weight 'bold :height 2.0)
+   ;; Set faces for heading levels
+   (dolist (face '((org-level-1 . 1.4)
+                   (org-level-2 . 1.3)
+                   (org-level-3 . 1.2)
+                   (org-level-4 . 1.1)
+                   (org-level-5 . 1.1)
+                   (org-level-6 . 1.1)
+                   (org-level-7 . 1.1)
+                   (org-level-8 . 1.1)))
+     (set-face-attribute (car face) nil :font "Iosevka Etoile" :weight 'medium :height (cdr face)))
 
 
 
-      ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-     (set-face-attribute 'org-block nil :foreground 'unspecified :inherit 'fixed-pitch)
-     (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
-     (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-     (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
-     (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
-     (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-     (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-     (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-     (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
-     (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
-     (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch)
-       )
+   ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+   (set-face-attribute 'org-block nil :foreground 'unspecified :inherit 'fixed-pitch)
+   (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
+   (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+   (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
+   (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
+   (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+   (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+   (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
+   (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
+   (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch)
 
-  ;; Get rid of the background on column views
-  ;; (set-face-attribute 'org-column-title nil :background "light gray")
-  ;; (set-face-attribute 'org-column face nil :height 180 :width normal)
-  ;; (set-face-attribute 'org-column nil :background "light gray" :foreground "dark red")
+   (set-face-attribute 'org-column nil
+               :inherit 'default  ;; Inherit default face, not org-level-* faces
+               :height 1.0        ;; Ensure uniform text height
+               :weight 'normal    ;; Set uniform weight
+               :underline nil     ;; No underline
+               :box nil           ;; No box around text
+               :background "#d0e4f5"  ;; Softer light blue-gray background
+               :foreground "#005b96") ;; Medium blue foreground
 
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(org-column ((t (:background "grey30" :strike-through nil :underline nil :slant normal :weight normal :height 1.0))))
- '(org-level-2 ((t (:inherit outline-2 :extend nil :slant normal :weight medium :height 1.0 :width normal :foundry "UKWN" :family "Iosevka Etoile"))))
- '(org-level-3 ((t (:inherit outline-3 :extend nil :slant normal :weight medium :height 1.0 :width normal :foundry "UKWN" :family "Iosevka Etoile"))))
- '(org-level-4 ((t (:inherit outline-4 :extend nil :slant normal :weight medium :height 1.0 :width normal :foundry "UKWN" :family "Iosevka Etoile"))))
- '(org-level-5 ((t (:inherit outline-5 :extend nil :slant normal :weight medium :height 1.0 :width normal :foundry "UKWN" :family "Iosevka Etoile")))))
+   ;; Customize the face of the Org mode title
+   (set-face-attribute 'org-document-title nil
+                       :foreground "white"
+                       :background "midnight blue"
+                       :weight 'bold
+                       :height 2.5)
+
+)
 
 (defun chb/org-mode-setup ()
   (org-indent-mode 1)
@@ -241,7 +312,7 @@
   :ensure t
   :mode (("\\.org$" . org-mode))
   :bind (("C-c l" . org-store-link)
-	 ("C-c b" . org-iswitchb))
+	    ("C-c b" . org-iswitchb))
   :hook (org-mode . chb/org-mode-setup)
   :config 
   ;; Custom functions setup
@@ -427,7 +498,7 @@
                                         ;Configure custom agenda views
   (setq org-agenda-custom-commands
         '(
-          ("d" "Dashboard" ((agenda "" ((org-deadline-warning-days 7)))
+          ("d" "Dashboard" ((agenda "" ((org-deadline-warning-days 2)))
                             (todo "MEETING"               ((org-agenda-overriding-header "Meeting")))
                             (todo "ONGOING"            ((org-agenda-overriding-header "All ongoing Action Items")))
                             (todo "WAITING"            ((org-agenda-overriding-header "Action Items, waiting for external input")))
@@ -436,7 +507,7 @@
                             (todo "CANCELLED"          ((org-agenda-overriding-header "Action Item CANCELLED")))
                             (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
 
-          ("c" "EC-Overview" ((agenda "" ((org-deadline-warning-days 7)))
+          ("c" "EC-Overview" ((agenda "" ((org-deadline-warning-days 2)))
                               (todo "RISK"                 ((org-agenda-overriding-header "Risk Evaluation")))
                               (todo "EC"                   ((org-agenda-overriding-header "EC Setup")))
                               (todo "RFEW"                 ((org-agenda-overriding-header "RFEW: Request for Work")))
@@ -454,8 +525,28 @@
           ("N" "Notes" tags "NOTE"
            ( (org-agenda-overriding-header "Notes") (org-tags-match-list-sublevels t)))
 
+          ("1" "Events" agenda "display tasks with a deadline"
+           (
+            (org-agenda-span 'year)
+            (org-agenda-time-grid nil)
+            (org-agenda-show-all-dates nil)
+            (org-agenda-entry-types '(:deadline)) ;; this entry excludes :scheduled
+            (org-deadline-warning-days 0) )
+           )
+
+          ("2" "Tasks" agenda "display scheduled tasks"
+           (
+            (org-agenda-span 'year)
+            (org-agenda-time-grid nil)
+            (org-agenda-show-all-dates nil)
+            (org-agenda-entry-types '(:scheduled)) ;; this entry excludes :scheduled
+            (org-deadline-warning-days 0)
+            )
+           )
+
           ("h" "Habits" tags-todo "STYLE=\"habit\""
-           ((org-agenda-overriding-header "Habits")
+           (
+            (org-agenda-overriding-header "Habits")
             (org-agenda-sorting-strategy
              '(todo-state-down effort-up category-keep))))
           )))
@@ -475,8 +566,8 @@
                     "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
                    ("n" "note" entry (file "~/Daten/04-org-system/org-mode/refile/note.org")
                     "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-                   ("j" "Journal" entry (file+datetree "~/Daten/04-org-system/org-mode/refile/journal.org")
-                    "* %?\n%U\n" :clock-in t :clock-resume t :tree-type month)
+                   ("j" "Journal" entry (file+olp+datetree "~/Daten/04-org-system/org-mode/refile/journal.org")
+                    "* %?\n%U\n" :clock-in t :clock-resume t :tree-type day)
                    ("w" "org-protocol" entry (file "~/Daten/04-org-system/org-mode/refile/refile.org")
                     "* TODO Review %c\n%U\n" :immediate-finish t)
                    ("m" "Meeting" entry (file "~/Daten/04-org-system/org-mode/refile/meeting.org")
@@ -495,13 +586,6 @@
 			 (concat (file-name-sans-extension (buffer-file-name))
 				 "-att")))
 		org-attach-screenshot-command-line "gnome-screenshot -a -f %f"))
-
-(use-package org
-  :ensure org-contrib
-  :after ox-taskjugger
-  :config
-  (add-to-list 'org-export-backends 'ox-taskjuggler)
-  )
 
 (use-package org-bullets
   :hook (org-mode . org-bullets-mode)
@@ -765,39 +849,6 @@
       (org-babel-tangle))))
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'chb/org-babel-tangle-config)))
 
-(use-package nerd-icons
-:if (display-graphic-p))
-
-;; Load and configure doom-modeline
-(use-package doom-modeline
-  :ensure t
-  :hook (after-init . doom-modeline-mode)
-  :init
-  (setq doom-modeline-height 45)
-  (setq doom-modeline-icons t)
-  (setq doom-modeline-major-mode-color-icon t)
-  (setq doom-modeline-time-icon t)
-  (setq doom-modeline-time t)
-  (setq doom-modeline-minor-modes nil)
-  ;; Ensure doom-modeline faces are available
-  :config (doom-modeline-mode 1)
-  ;; Increase modeline width
-  (setq doom-modeline-bar-width 5) ;; Adjust this value as needed
-
-  ;; Modify segments to show essential information
-  (setq doom-modeline-buffer-file-name-style 'truncate-upto-root) ;; Truncate long file names
-
-  ;; Add or remove segments based on your preference
-  (setq doom-modeline-buffer-modification-icon t) ;; Show modified indicator
-  (setq doom-modeline-major-mode-icon t) ;; Show major mode icon
-  (setq doom-modeline-vcs-max-length 12) ;; Limit length of VCS branch name
-   )
-
-(use-package doom-themes
-  :ensure t
-  :after (ivy org doom-modeline)
-  :config (load-theme 'doom-palenight t))
-
 (use-package which-key
   :defer 
   :diminish which-key-mode
@@ -846,7 +897,8 @@
        '((emacs-lisp . t)    ; 
          (C          . t)    ; C, C++, D
          (js         . t)    ; JavaScript
-         (org        , t)    ;
+         (org        . t)    ;
+	 (spice      . t)    ; asymptote
          (ditaa      . t)    ; ditaa
          (shell      . t)    ; shell, bash
          (lisp       . t)    ; lisp
@@ -854,6 +906,7 @@
          (octave     . t)    ; octave
          (gnuplot    . t)    ; gnuplot
          (python     . t)    ; pyhon
+	 (asymptote  . t)    ; asymptote
          (plantuml   . t)))  ; this line activate plantuml
 
       (push '("conf-unix" . conf-unix) org-src-lang-modes))
@@ -879,7 +932,11 @@
 
 (use-package lsp-mode
   :ensure t
-  :hook (((c-mode c++-mode python-mode) . lsp))
+  :hook (
+         ((c-mode c++-mode python-mode) . lsp)
+         ((js-mode js2-mode) . lsp)    
+         ((typescript-mode web-mode) . lsp)
+         )
   :commands lsp
   :commands (lsp lsp-deferred)
   :init (setq lsp-keymap-prefix "C-p p"
@@ -891,78 +948,91 @@
   (setq lsp-prefer-flymake nil) ;; Use flycheck instead of flymake
 )
 
-(use-package lsp-ui
-    :ensure t
-    :hook ((c-mode c++-mode python-mode) . lsp)
-    :commands lsp
-    :config
-    (setq lsp-prefer-flymake nil) ;; Use flycheck instead of flymake
-    )
-    ;; (setq
-    ;; 	  lsp-ui-doc-position 'bottom
-    ;; 	  lsp-ui-doc-enable t
-    ;; 	  lsp-ui-peek-enable t
-    ;; 	  lsp-ui-sideline-enable t
-    ;; 	  lsp-ui-imenu-enable t
-    ;; 	  lsp-prefer-flymake nil))
+(use-package lsp-mode
+   :ensure t
+   :hook (
+          ((c-mode c++-mode python-mode) . lsp)
+          ((js-mode js2-mode) . lsp)    
+          ((typescript-mode web-mode) . lsp)
+          )
+   :commands lsp
+   :commands (lsp lsp-deferred)
+   :init (setq lsp-keymap-prefix "C-p p"
+               lsp-enable-file-watchers nil
+               lsp-enable-on-type-formatting nil
+               lsp-enable-snippet nil
+               lsp-lens-enable t)
+;;   :config
+   (setq lsp-prefer-flymake nil) ;; Use flycheck instead of flymake
+ )
 
-(use-package lsp-treemacs
-    :after lsp
-    :commands lsp-treemacs-references
-)
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode
+  :config
+  (setq lsp-ui-doc-enable t
+        lsp-ui-doc-use-childframe t
+        lsp-ui-doc-position 'at-point
+        lsp-ui-doc-include-signature t
+        lsp-ui-sideline-enable t
+        lsp-ui-sideline-ignore-duplicate t))
+
+(if init-file-debug
+      (setq use-package-verbose t
+            use-package-expand-minimally nil
+            use-package-compute-statistics t
+            debug-on-error t)
+    (setq use-package-verbose nil
+          use-package-expand-minimally t))
+
+;; Indium -- JavaScript: Debugging Mode and REPL
+(use-package indium
+  :ensure t
+  :hook ((js-mode . indium-interaction-mode)
+         (js2-mode . indium-interaction-mode))
+  ;;indium-chrome-port 13840
+  :config ;; (setq indium-verbosity "debug") ;; or "verbose"
+           (define-key indium-interaction-mode-map (kbd "C-c C-r") 'indium-repl)
+           (define-key indium-interaction-mode-map (kbd "C-c C-d") 'indium-debugger)
+
+           (add-hook 'indium-connected-hook
+                     (lambda ()
+                      (message "Indium connected.")))
+ )
 
 (use-package typescript-mode
-  :mode "\\.ts\\'"
+  :mode ("\\.ts\\'" . typescript-mode)
   :hook (typescript-mode . lsp-deferred)
   :config
   (setq typescript-indent-level 2))
 
-(use-package python-mode
-    :ensure nil
-    :hook (python-mode . lsp-deferred)
-    :custom
-    ;; NOTE: Set these if Python 3 is called "python3" on your system!
-    (python-shell-interpreter "python")
-    (dap-python-executable "python")
-    (dap-python-debugger 'debugpy)
-    :config
-    (setq py-python-command "python3")
-     (require 'dap-python)
-)
-
-(setq c-default-style "linux")
-(setq c-basic-offset 4)
-
-(use-package ccls
-    :init (setq ccls-sem-highlight-method 'font-lock)
-    :hook ((c-mode c++-mode objc-mode cuda-mode) . (lambda () (require 'ccls) (lsp-deferred)))
-    :config(setq ccls-initialization-options '(:index (:comments 2) :completion (:detailedLabel t)))
-)
-
-(defun my-setup-js2-mode ()
-  "Setup for `js2-mode`."
-  (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t))
-
-
+;; js2-mode for enhanced JavaScript editing
 (use-package js2-mode
-    :ensure t
-    :mode (("\\.js\\'" . js2-mode))
-    :hook (js2-mode . my-setup-js2-mode)
-    :config
-    ;; Set indentation level
-    (setq-default js2-basic-offset 2))
+  :ensure t
+  :mode ("\\.js\\'" . js2-mode)
+  :config
+  (setq js2-basic-offset 2
+        js2-bounce-indent-p nil))
 
+;; xref-js2 for better jump-to-definition
 (use-package xref-js2
   :ensure t
   :after js2-mode
-  :config
-  ;; Bind xref-find-references to M-.
-  (define-key js2-mode-map (kbd "M-.") #'xref-find-references))
+  :hook (js2-mode . (lambda ()
+                     (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+  :config (define-key js2-mode-map (kbd "M-.") nil))
 
+;; js2-refactor for JavaScript refactoring
 (use-package js2-refactor
   :ensure t
   :after js2-mode
   :hook (js2-mode . js2-refactor-mode)
+  :config
+  (js2r-add-keybindings-with-prefix "C-c C-r"))
+
+(use-package js2-refactor
+  :ensure t
+  :after js2-mode
   :config
   ;; Bind js2-refactor keybindings
   (js2r-add-keybindings-with-prefix "C-c C-r"))
@@ -978,28 +1048,72 @@
   (setq coffee-args-compile '("-c" "-m")) ;; generating sourcemap file
   (add-hook 'coffee-after-compile-hook 'sourcemap-goto-corresponding-point))
 
-;; Indium -- JavaScript: Debugging Mode and REPL
-(use-package indium
-  :hook ((js2-mode . indium-interaction-mode))
+;; Python mode setup
+(use-package python-mode
+  :ensure t
+  :hook (python-mode . lsp-deferred)
+  :custom
+  ;; NOTE: Set these if Python 3 is called "python3" on your system!
+  (python-shell-interpreter "python")
+  (dap-python-executable "python")
+  (dap-python-debugger 'debugpy)
   :config
-  (setq indium-chrome-port 13840
-        indium-verbosity "debug") ;; or "verbose"
-  (add-hook 'indium-connected-hook
-      (lambda ()
-        (message "Indium connected."))))
+  (setq py-python-command "python3")
+  (require 'dap-python)
+  )
+
+  ;; Optional: Additional configuration for Python (using pyls or other server)
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp))))
+
+(use-package pyvenv
+  :after python-mode
+  :config
+  (pyvenv-mode 1))
+
+(setq c-default-style "linux")
+(setq c-basic-offset 4)
+
+;; C/C++ mode setup
+(use-package ccls
+  :ensure t
+  :hook ((c-mode . (lambda () (require 'ccls) (lsp)))
+         (c++-mode . (lambda () (require 'ccls) (lsp))))
+  :config
+  (setq ccls-executable "/path/to/ccls")) ;; Adjust this path
+
+;; Optional: Configure clangd as the language server for C/C++
+(use-package lsp-clangd
+  :ensure lsp-mode
+  :hook ((c-mode . (lambda () (require 'lsp-clangd) (lsp)))
+         (c++-mode . (lambda () (require 'lsp-clangd) (lsp))))
+  ;; :config
+  ;; (setq lsp-clangd-executable "/path/to/clangd") ;; Adjust this path if needed
+
+  )
+
+;; Optional: Web mode for HTML and embedded JavaScript
+(use-package web-mode
+  :ensure t
+  :mode ("\\.html\\'")
+  :config
+  (add-hook 'web-mode-hook (lambda ()
+                             (when (string-equal "jsx" (file-name-extension buffer-file-name))
+                               (setup-tide-mode)))))
 
 (use-package company
   :ensure t
+  :hook (lsp-mode . company-mode)
   :config
   (setq company-minimum-prefix-length 1
-	company-idle-delay 0.0)
+        company-idle-delay 0.0)
   (global-company-mode t))
 
-(use-package company-tabnine :ensure t)
-
-(use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode))
+(use-package company-box
+:hook (company-mode . company-box-mode))
 
 (use-package projectile
   :ensure t
@@ -1011,6 +1125,8 @@
 (use-package counsel-projectile
   :after projectile
   :config (counsel-projectile-mode))
+
+(use-package company-tabnine :ensure t)
 
 (use-package magit
   :commands magit-status
@@ -1025,6 +1141,19 @@
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
+
+(unless (package-installed-p 'yasnippet)
+  (package-install 'yasnippet))
+(require 'yasnippet)
+
+(unless (package-installed-p 'yasnippet-snippets)
+  (package-install 'yasnippet-snippets))
+(require 'yasnippet-snippets)
+
+(setq yas-snippet-dirs
+      '("~/.emacs.d/snippets"                 ;; personal snippets
+        ))
+(yas-global-mode 1)
 
 (use-package term
   :commands term
@@ -1078,46 +1207,3 @@
     (setq eshell-visual-commands '("htop" "zsh" "vim")))
 
   (eshell-git-prompt-use-theme 'powerline))
-
-(use-package dired
-  :ensure nil
-  :commands (dired dired-jump)
-  :bind (("C-x C-j" . dired-jump))
-  :custom ((dired-listing-switches "-agho --group-directories-first"))
-  ;;   :config
-  ;;   (evil-collection-define-key 'normal 'dired-mode-map
-  ;;     "h" 'dired-single-up-directory
-  ;;     "l" 'dired-single-buffer)
-  )
-
-(use-package dired-single
-  :commands (dired dired-jump))
-
-(use-package all-the-icons-dired
-  :hook (dired-mode . all-the-icons-dired-mode))
-
-(use-package dired-open
-  :commands (dired dired-jump)
-  :config
-  ;; Doesn't work as expected!
-  ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
-  (setq dired-open-extensions '(("png" . "feh")
-                                ("mkv" . "mpv"))))
-
-(use-package dired-hide-dotfiles
-  :hook (dired-mode . dired-hide-dotfiles-mode)
-  ;; :config
-  ;; (evil-collection-define-key 'normal 'dired-mode-map
-  ;;   "H" 'dired-hide-dotfiles-mode)
-  )
-
-;; Make gc pauses faster by decreasing the threshold.
-(setq gc-cons-threshold (* 2 1000 1000))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(org-export-backends '(ascii html icalendar latex odt taskjuggler))
- '(package-selected-packages
-   '(yasnippet-snippets xref-js2 which-key vterm undo-tree typescript-mode sourcemap rainbow-delimiters org-contrib org-bullets org-attach-screenshot no-littering lsp-ui lsp-treemacs loccur ivy-youtube ivy-prescient indium htmlize helpful gnuplot forge flycheck eterm-256color eshell-git-prompt doom-themes doom-modeline dired-single dired-open dired-hide-dotfiles counsel-projectile company-tabnine command-log-mode cmake-mode ccls auto-package-update all-the-icons-dired)))
