@@ -141,6 +141,8 @@
 (turn-on-auto-fill)
 (setq-default fill-column 70)
 
+(global-set-key [remap list-buffers] 'ibuffer)
+
 (set-face-attribute 'default nil :font "Fira Code Retina" :height chb/default-font-size)
 ;; Set the fixed pitch face
 (set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height chb/default-font-size)
@@ -292,13 +294,13 @@
                :background "#d0e4f5"  ;; Softer light blue-gray background
                :foreground "#005b96") ;; Medium blue foreground
 
+
    ;; Customize the face of the Org mode title
    (set-face-attribute 'org-document-title nil
                        :foreground "white"
                        :background "midnight blue"
                        :weight 'bold
                        :height 2.5)
-
 )
 
 (defun chb/org-mode-setup ()
