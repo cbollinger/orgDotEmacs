@@ -387,150 +387,153 @@
         ("~" org-code verbatim)
         ("+" (:strike-through t))))
 
+;;; Package --- Summary: Emacs for notes, tasks, and literate programming
+
+;;; Commentary:
+                                        ; Org-mode is a powerful plain text markup and organization tool for
+                                        ; Emacs, used for note-taking, project management, task tracking, and
+                                        ; literate programming.
+
+;;; Code:
 (use-package org
-  :bind ("\C-ca" . org-agenda)  
+  :bind ("\C-ca" . org-agenda)  ;; Bind C-c a to org-agenda
   :commands org-agenda
+  :ensure t
+  :init
+  :custom
+  (org-agenda-start-with-log-mode nil)
+  (org-agenda-window-setup 'current-window)           		     ;; Open agenda in current window
+  (org-deadline-warning-days 7)                       		     ;; Warn of deadlines in the next 7 days
+  (org-agenda-span 'week)                             		     ;; Show tasks scheduled/due in the next week
+  (org-agenda-skip-scheduled-if-deadline-is-shown t)  		     ;; Don't show scheduled tasks if they have deadlines
+  (org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled)  ;; Don't warn about deadlines if scheduled
+  (org-agenda-todo-ignore-deadlines 'all)                            ;; Ignore deadlines in TODO list
+  (org-agenda-todo-ignore-scheduled 'all)                            ;; Ignore scheduled tasks in TODO list
+
+  (org-agenda-sorting-strategy
+   '((agenda deadline-up priority-down)
+     (todo priority-down category-keep)
+     (tags priority-down category-keep)
+     (search category-keep)))
+  (org-refile-targets '((nil :maxlevel . 9) (org-agenda-files :maxlevel . 9)))  ;; Allow refiling up to 9 levels deep
+
+  (org-todo-state-tags-triggers
+   '(("CANCELLED" ("CANCELLED" . t))
+     ("WAITING" ("WAITING" . t))
+     ("HOLD" ("WAITING") ("HOLD" . t))
+     ("DONE" ("WAITING") ("HOLD"))
+     ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
+     ("ONGOING" ("WAITING") ("CANCELLED") ("HOLD"))
+     ("DONE" ("WAITING") ("CANCELLED") ("HOLD"))))
+
+  (org-tag-alist
+   '((:startgroup)
+     ("Projekte" . ?P) (:grouptags)
+     ("D521_PDM" . ?a) ("D522_BT" . ?b) ("D522_NLD" . ?c) ("RemoteIO" . ?d)
+     (:endgroup)
+     (:startgroup)
+     ("Private" . ?V) (:grouptags)
+     ("Training" . ?t) ("DSP" . ?d) ("NOTE" . ?n) ("ORG" . ?o) ("PERSONAL" . ?p)
+     (:endgroup)
+     ("FLAGGED" . ??)))
+
+  (setq org-agenda-custom-commands
+        (append
+         ;; Dashboard section
+         '(("d" "Dashboard"
+            ((agenda "" ((org-deadline-warning-days 7)))
+             (todo "MEETING" ((org-agenda-overriding-header "Meeting")))
+             (todo "ONGOING" ((org-agenda-overriding-header "All ongoing Action Items")))
+             (todo "WAITING" ((org-agenda-overriding-header "Waiting for input")))
+             (todo "HOLD" ((org-agenda-overriding-header "On hold")))
+             (todo "TODO" ((org-agenda-overriding-header "Backlog")))
+             (todo "CANCELLED" ((org-agenda-overriding-header "Cancelled")))
+             (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects"))))))
+
+         ;; Conditional section based on system name
+         (if (string-equal (system-name) "ws-b550")
+             '(("c" "EC-Overview"
+                ((agenda "" ((org-deadline-warning-days 7)))
+                 (todo "RISK" ((org-agenda-overriding-header "Risk Evaluation")))
+                 (todo "EC" ((org-agenda-overriding-header "EC Setup")))
+                 (todo "RFEW" ((org-agenda-overriding-header "Request for Work")))
+                 (todo "RFEX" ((org-agenda-overriding-header "Request for Execution")))
+                 (todo "G2" ((org-agenda-overriding-header "G2 Planning")))
+                 (todo "G2.1" ((org-agenda-overriding-header "G2.1 Development")))
+                 (todo "G2.2" ((org-agenda-overriding-header "G2.2 Validation")))
+                 (todo "G3" ((org-agenda-overriding-header "G3 Validation")))
+                 (todo "Abnahme" ((org-agenda-overriding-header "Abnahmeprotokoll")))
+                 (todo "Closed" ((org-agenda-overriding-header "Closed Contracts")))
+                 (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects"))))))
+
+           '(("c" "General Overview"
+              ((agenda "" ((org-deadline-warning-days 7)))
+               (todo "TASK" ((org-agenda-overriding-header "General Tasks")))
+               (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))))
+
+         ;; Additional sections
+         '(("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))
+           ("N" "Notes" tags "NOTE" ((org-agenda-overriding-header "Notes")))
+           ("h" "Habits" tags-todo "STYLE=\"habit\""
+            ((org-agenda-overriding-header "Habits")
+             (org-agenda-sorting-strategy '(todo-state-down effort-up category-keep)))))))
   :config
-  (setq org-agenda-start-with-log-mode nil)                          
-  (setq org-agenda-window-setup (quote current-window))              ;; open agenda in current window
-  (setq org-deadline-warning-days 7)                                 ;; warn me of any deadlines in next 7 days
-  (setq org-agenda-span (quote week))                                ;; show me tasks scheduled or due in next week, fortnight
-  (setq org-agenda-skip-scheduled-if-deadline-is-shown t)            ;; don't show tasks as scheduled if they are already shown as a deadline
-  (setq org-agenda-skip-deadline-prewarning-if-scheduled             ;; don't give awarning colour to tasks with impending deadlines
-        (quote pre-scheduled))                                       ;; if they are scheduled to be done
+  ;; Ensure correct org-agenda files based on the system name
+  (setq org-agenda-files
+        (if (string-equal (system-name) "ws-b550")
+            '("~/Daten/04-org-system/org-mode/refile"
+              "~/Daten/04-org-system/org-mode/private"
+              "~/Daten/04-org-system/org-mode/gnu-software"
+              )
+          '("~/Daten/04-org-system/org-mode/refile"
+            "~/Daten/04-org-system/org-mode/duagon/General"
+            "~/Daten/04-org-system/org-mode/duagon/contracts")))
 
-  (setq org-agenda-todo-ignore-deadlines (quote all))                ;; don't show tasks that are scheduled or have deadlines in the
-  (setq org-agenda-todo-ignore-scheduled (quote all))                ;; normal todo list
-
-  (add-hook 'org-finalize-agenda-hook 'place-agenda-tags)            ;; Place tags close to the right-hand side of the window
-  (defun place-agenda-tags ()
-    "Put the agenda tags by the right border of the agenda window."
-    (setq org-agenda-tags-column (/(* 2 (window-width)) 4 ))
-    (org-agenda-align-tags))
-
-  (setq org-agenda-sorting-strategy                                  ;; sort tasks in order of when they are due and then by priority
-        (quote
-         ((agenda deadline-up priority-down)
-          (todo priority-down category-keep)
-          (tags priority-down category-keep)
-          (search category-keep))))
-
-
-  (setq org-agenda-files (quote ("~/Daten/04-org-system/org-mode/refile"
-                                 "~/Daten/04-org-system/org-mode/private"
-                                 ;; "~/Daten/04-org-system/org-mode/gnu-software"
-                                 "~/Daten/04-org-system/org-mode/duagon/General"
-                                 ;; "~/Daten/04-org-system/org-mode/duagon/Clients"
-                                 ;; "~/Daten/04-org-system/org-mode/duagon/Products"
-                                 "~/Daten/04-org-system/org-mode/duagon/contracts")))
+  ;; Set TODO keywords and colors
   (setq org-todo-keywords
-        (quote ((sequence "TODO(t)" "ONGOING(o)" "RISK(r)" "MEETING(M)" "|" "DONE(d)" "CANCELLED(C)")
-                (sequence "WP(W)" "WPon(O)" "|" "WPclose(C)")
-                (sequence "EC(0)" "RFEW(1)" "RFEX(2)" "G2(3)" "G2.1(4)" "G2.2(5)" "G3(6)" "Abnahme(7)" "|" "Closed(8)")
-                ;; (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")
-                )))
+        (if (string-equal (system-name) "ws-b550")
+            '((sequence "TODO(t)" "ONGOING(o)" "RISK(r)" "MEETING(M)" "|" "DONE(d)" "CANCELLED(C)")
+              )
+          '((sequence "TODO(t)" "ONGOING(o)" "RISK(r)" "MEETING(M)" "|" "DONE(d)" "CANCELLED(C)")
+            (sequence "WP(W)" "WPon(O)" "|" "WPclose(C)")
+            (sequence "EC(0)" "RFEW(1)" "RFEX(2)" "G2(3)" "G2.1(4)" "G2.2(5)" "G3(6)" "Abnahme(7)" "|" "Closed(8)")
+            (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")
+            )))
 
   (setq org-todo-keyword-faces
-        (quote (("TODO"      :foreground "red"          :weight bold)
-                ("MEETING"   :foreground "forest green" :weight bold)
-                ("NEXT"      :foreground "blue"         :weight bold)
-                ("ONGOING"   :foreground "blue"         :weight bold)
-                ("RISK"      :foreground "yellow"       :weight bold)
-                ("DONE"      :foreground "forest green" :weight bold)
-                ("CANCELLED" :foreground "forest green" :weight bold)
+        '(("TODO" :foreground "red" :weight bold)
+          ("ONGOING" :foreground "blue" :weight bold)
+          ("MEETING" :foreground "forest green" :weight bold)
+          ("RISK" :foreground "yellow" :weight bold)
+          ("DONE" :foreground "forest green" :weight bold)
+          ("CANCELLED" :foreground "forest green" :weight bold)
+          ("WP" :foreground "blue" :weight bold)
+          ("WPon" :foreground "yellow" :weight bold)
+          ("WPclose" :foreground "brown" :weight bold)
+          ("EC" :foreground "red" :weight bold)
+          ("RFEW" :foreground "blue" :weight bold)
+          ("RFEX" :foreground "magenta" :weight bold)
+          ("G2" :foreground "magenta" :weight bold)
+          ("G2.1" :foreground "yellow" :weight bold)
+          ("G2.2" :foreground "brown" :weight bold)
+          ("G3" :foreground "forest green" :weight bold)
+          ("Abnahme" :foreground "green" :weight bold)
+          ("Closed" :foreground "brown" :weight bold)
+          ("WAITING" :foreground "orange" :weight bold)
+          ("HOLD" :foreground "magenta" :weight bold)
+          ("PHONE" :foreground "forest green" :weight bold)))
 
-                ("WP"        :foreground "blue"         :weight bold)
-                ("WPon"      :foreground "yellow"       :weight bold)
-                ("WPclose"   :foreground "brown"        :weight bold)
+  ;; Align tags to the right in the agenda view
+  (defun place-agenda-tags ()
+    "Align tags by the right border."
+    (setq org-agenda-tags-column (- (window-width) 25))
+    (org-agenda-align-tags))
 
-                ("EC"        :foreground "red"          :weight bold)
-                ("RFEW"      :foreground "blue"         :weight bold)
-                ("RFEX"      :foreground "magenta"      :weight bold)
-                ("G2"        :foreground "magenta"      :weight bold)
-                ("G2.1"      :foreground "yellow"       :weight bold)
-                ("G2.2"      :foreground "brown"        :weight bold)
-                ("G3"        :foreground "forest green" :weight bold)
-                ("Abnahme"   :foreground "green"        :weight bold)
-                ("Closed"    :foreground "brown"        :weight bold)
+  (add-hook 'org-finalize-agenda-hook #'place-agenda-tags)
 
-                ;; ("WAITING"   :foreground "orange"       :weight bold)
-                ;; ("HOLD"      :foreground "magenta"      :weight bold)
-                ;; ("CANCELLED" :foreground "forest green" :weight bold)
-                ;; ("MEETING"   :foreground "forest green" :weight bold)
-                ;; ("PHONE"     :foreground "forest green" :weight bold)
-                )))
-
-  ;; (setq org-todo-state-tags-triggers
-  ;;       (quote (("CANCELLED" ("CANCELLED" . t))
-  ;;               ("WAITING" ("WAITING" . t))
-  ;;               ("HOLD" ("WAITING") ("HOLD" . t))
-  ;;               ("DONE" ("WAITING") ("HOLD"))
-  ;;               ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
-  ;;               ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
-  ;;               ("ONGOING" ("WAITING") ("CANCELLED") ("HOLD"))
-  ;;               ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
-
-                                        ;Targets include this file and any file contributing to the agenda - up to 9 levels deep
-  (setq org-refile-targets (quote ((nil :maxlevel . 9)
-                                   (org-agenda-files :maxlevel . 9))))
-
-                                        ;Save Org buffers after refiling!
+  ;; Save org buffers after refiling
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
-
-  (setq org-tag-alist (quote ((:startgroup)
-                              ("Projekte" . ?P)
-                              (:grouptags)
-                              ("D521_PDM" . ?a)
-                              ("D522_BT" . ?b)
-                              ("D522_NLD" . ?c)
-                              ("RemoteIO" . ?c)
-                              (:endgroup)
-                              (:startgroup)
-                              ("Private" . ?V)
-                              (:grouptags)
-                              ("Training" . ?t)
-                              ("DSP" . ?d)
-                              ("NOTE" . ?n)
-                              ("ORG" . ?o)
-                              ("PERSONAL" . ?p)
-                              (:endgroup)
-                              ("FLAGGED" . ??))))
-
-                                        ;Configure custom agenda views
-  (setq org-agenda-custom-commands
-        '(
-          ("d" "Dashboard" ((agenda "" ((org-deadline-warning-days 7)))
-                            (todo "MEETING"               ((org-agenda-overriding-header "Meeting")))
-                            (todo "ONGOING"            ((org-agenda-overriding-header "All ongoing Action Items")))
-                            (todo "WAITING"            ((org-agenda-overriding-header "Action Items, waiting for external input")))
-                            (todo "HOLD"               ((org-agenda-overriding-header "Action Items on hold")))
-                            (todo "TODO"               ((org-agenda-overriding-header "Action Itmes Backlog")))
-                            (todo "CANCELLED"          ((org-agenda-overriding-header "Action Item CANCELLED")))
-                            (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
-
-          ("c" "EC-Overview" ((agenda "" ((org-deadline-warning-days 7)))
-                              (todo "RISK"                 ((org-agenda-overriding-header "Risk Evaluation")))
-                              (todo "EC"                   ((org-agenda-overriding-header "EC Setup")))
-                              (todo "RFEW"                 ((org-agenda-overriding-header "RFEW: Request for Work")))
-                              (todo "RFEX"                 ((org-agenda-overriding-header "RFEX: Request for Execution")))
-                              (todo "G2"                   ((org-agenda-overriding-header "G2: Planning")))
-                              (todo "G2.1"                 ((org-agenda-overriding-header "G2.1: Development")))
-                              (todo "G2.2"                 ((org-agenda-overriding-header "G2.2: G2 Validation")))
-                              (todo "G3"                   ((org-agenda-overriding-header "G3: G3 Validation")))
-                              (todo "Abnahme"              ((org-agenda-overriding-header "Abnahmeprotokoll")))
-                              (todo "Closed"               ((org-agenda-overriding-header "Geschlossene Contracts")))
-                              (tags-todo "agenda/ACTIVE"   ((org-agenda-overriding-header "Active Projects")))))
-
-          ("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))
-
-          ("N" "Notes" tags "NOTE"
-           ( (org-agenda-overriding-header "Notes") (org-tags-match-list-sublevels t)))
-
-          ("h" "Habits" tags-todo "STYLE=\"habit\""
-           ((org-agenda-overriding-header "Habits")
-            (org-agenda-sorting-strategy
-             '(todo-state-down effort-up category-keep))))
-          )))
+  )
 
 (use-package org
     :commands org-capture
@@ -666,6 +669,41 @@
 
 (add-hook 'org-clock-out-hook 'bh/clock-out-maybe 'append)
 
+;; (setq org-latex-compiler "lualatex")   ;; or "pdflatex", "xelatex"
+(setq org-latex-compiler "xelatex")   ;; or "pdflatex", "xelatex"
+
+;; This are the packages usually loaded from EMACS Defaults
+;; (setq org-latex-default-packages-alist
+;;       '(("AUTO" "inputenc" t ("pdflatex"))
+;;         ("T1" "fontenc" t ("pdflatex"))
+;;         ("" "graphicx" t ("pdflatex" "xelatex"))
+;;         ("" "longtable" t ("pdflatex" "xelatex"))
+;;         ("" "wrapfig" t ("pdflatex" "xelatex"))
+;;         ("" "rotating" t ("pdflatex" "xelatex"))
+;;         ("normalem" "ulem" t ("pdflatex" "xelatex"))
+;;         ("" "amsmath" t ("pdflatex" "xelatex"))
+;;         ("" "amssymb" t ("pdflatex" "xelatex"))
+;;         ("" "capt-of" t ("pdflatex" "xelatex"))
+;;         ("" "hyperref" t ("pdflatex" "xelatex"))
+;; 	))
+
+(setq org-latex-default-packages-alist
+      '(("AUTO" "inputenc" t ("pdflatex"))
+        ("T1" "fontenc"    t ("pdflatex"))
+        ("" "fontspec"     t ("lualatex" "xelatex"))
+        ("" "hyperref"     t ("pdflatex" "lualatex" "xelatex"))
+        ("table" "xcolor"       t ("pdflatex" "lualatex" "xelatex"))
+        ("" "bclogo"       t ("pdflatex" "lualatex" "xelatex"))
+        ("" "lipsum"       t ("pdflatex" "lualatex" "xelatex"))
+        ("" "amssymb"      t ("pdflatex" "lualatex" "xelatex"))
+        ("" "titlesec"     t ("pdflatex" "lualatex" "xelatex"))
+        ("" "enumitem"     t ("pdflatex" "lualatex" "xelatex"))
+        ("" "lastpage"     t ("pdflatex" "lualatex" "xelatex"))
+        ("" "hyperref"     t ("pdflatex" "lualatex" "xelatex"))
+        ("" "float"        t ("pdflatex" "lualatex" "xelatex"))
+        ("headsepline=true,footsepline=true" "scrlayer-scrpage" t ("pdflatex" "lualatex" "xelatex"))
+        ))
+
 (require 'ox-latex)
     ;; Latex search path
     (setq exec-path (append exec-path '("/usr/share/texmf")))
@@ -677,12 +715,12 @@
     ;;Allow reference to figures e.g. [@fig:label]
     (setq org-latex-prefer-user-labels t)
 
-    ;; KDE Setting  
+    ;; KDE Setting
     ;; Make org aware of the tex enginge
     ;; -8bit option avoids undifined white space characters in minted code blocks
     (setq org-latex-pdf-process
-          '("xelatex -8bit -shell-escape -interaction nonstopmode -output-directory %o %f"
-            "xelatex -8bit -shell-escape -interaction nonstopmode -output-directory %o %f"))
+           '("xelatex -8bit -shell-escape -interaction=nonstopmode -output-directory %o %f"
+             "xelatex -8bit -shell-escape -interaction=nonstopmode -output-directory %o %f"))
 
 
     ;; (setq org-latex-pdf-process
@@ -695,48 +733,52 @@
     ;;      "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
 
-    '(org-preview-latex-process-alist
-      (quote
-       (
-        (dvipng      :programs ("lualatex" "dvipng")
-                     :description "dvi > png"
-                     :message "you need to install the programs: latex and dvipng."
-                     :image-input-type "dvi"
-                     :image-output-type "png"
-                     :image-size-adjust (1.0 . 1.0)
-                     :latex-compiler ("lualatex -output-format dvi -interaction nonstopmode -output-directory %o %f")
-                     :image-converter ("dvipng -fg %F -bg %B -D %D -T tight -o %O %f"))
 
-        (dvisvgm     :programs ("latex" "dvisvgm")
-                     :description "dvi > svg"
-                     :message "you need to install the programs: latex and dvisvgm."
-                     :use-xcolor t
-                     :image-input-type "xdv"
-                     :image-output-type "svg"
-                     :image-size-adjust (1.7 . 1.5)
-                     :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
-                     :image-converter ("dvisvgm %f -n -b min -c %S -o %O"))
+(setq org-preview-latex-default-process 'xelatex)
 
-        (imagemagick :programs ("latex" "convert")
-                     :description "pdf > png"
-                     :message "you need to install the programs: latex and imagemagick."
-                     :use-xcolor t
-                     :image-input-type "pdf"
-                     :image-output-type "png"
-                     :image-size-adjust (1.0 . 1.0)
-                     :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
-                     :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))))
+(setq org-preview-latex-process-alist
+      '((xelatex
+         :programs ("xelatex" "dvisvgm")
+         :description "xdv > svg"
+         :message "you need to install the programs: xelatex and dvisvgm."
+         :image-input-type "xdv"
+         :image-output-type "svg"
+         :image-size-adjust (1.7 . 1.5)
+         :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
+         :image-converter ("dvisvgm %f -n -b min -c %S -o %O"))))
 
-(eval-after-load "ox-latex"
-  '(add-to-list 'org-latex-classes
-                `("beamer"
-                  ,(concat "\\documentclass[presentation]{beamer}\n"
-                           "[DEFAULT-PACKAGES]"
-                           "[PACKAGES]"
-                           "[EXTRA]\n")
-                  ("\\section{%s}" . "\\section*{%s}")
-                  ("\\subsection{%s}" . "\\subsection*{%s}")
-                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
+
+    ;; '(org-preview-latex-process-alist
+    ;;   (quote
+    ;;    (
+    ;;     (dvipng      :programs ("lualatex" "dvipng")
+    ;;                  :description "dvi > png"
+    ;;                  :message "you need to install the programs: latex and dvipng."
+    ;;                  :image-input-type "dvi"
+    ;;                  :image-output-type "png"
+    ;;                  :image-size-adjust (1.0 . 1.0)
+    ;;                  :latex-compiler ("lualatex -output-format dvi -interaction nonstopmode -output-directory %o %f")
+    ;;                  :image-converter ("dvipng -fg %F -bg %B -D %D -T tight -o %O %f"))
+
+    ;;     (dvisvgm     :programs ("latex" "dvisvgm")
+    ;;                  :description "dvi > svg"
+    ;;                  :message "you need to install the programs: latex and dvisvgm."
+    ;;                  :use-xcolor t
+    ;;                  :image-input-type "xdv"
+    ;;                  :image-output-type "svg"
+    ;;                  :image-size-adjust (1.7 . 1.5)
+    ;;                  :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
+    ;;                  :image-converter ("dvisvgm %f -n -b min -c %S -o %O"))
+
+    ;;     (imagemagick :programs ("latex" "convert")
+    ;;                  :description "pdf > png"
+    ;;                  :message "you need to install the programs: latex and imagemagick."
+    ;;                  :use-xcolor t
+    ;;                  :image-input-type "pdf"
+    ;;                  :image-output-type "png"
+    ;;                  :image-size-adjust (1.0 . 1.0)
+    ;;                  :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
+    ;;                  :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))))
 
 
   (with-eval-after-load "ox-latex"
@@ -865,11 +907,6 @@
       (org-display-inline-images)
     (error nil)))
 
-;; Highlight coloring export of source code block export
-(add-to-list 'org-latex-packages-alist '("" "minted"))
-(setq org-latex-listings 'minted)
-(setq org-src-fontify-natively t)
-
 ;: Ubuntu
 ;; (setq org-ditaa-jar-path "~/usr/share/ditaa/ditaa.jar")
 ;; (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
@@ -903,7 +940,7 @@
 
     ;; Use python lexer for ipython blocks
 ;;  (ipython     . t)   ; pyhon
-;;  (setq python-shell-interpreter "python3")
+(setq python-shell-interpreter "python3")
 ;;  (add-to-list 'org-latex-minted-langs '(ipython "python"))  
 
   ;; Do not prompt to confirm evaluation
@@ -1012,14 +1049,13 @@
   (setq coffee-args-compile '("-c" "-m")) ;; generating sourcemap file
   (add-hook 'coffee-after-compile-hook 'sourcemap-goto-corresponding-point))
 
-;; Python mode setup
 (use-package python-mode
   :ensure t
   :hook (python-mode . lsp-deferred)
   :custom
   ;; NOTE: Set these if Python 3 is called "python3" on your system!
-  (python-shell-interpreter "python")
-  (dap-python-executable "python")
+  (python-shell-interpreter "python3")
+  (dap-python-executable "python3")
   (dap-python-debugger 'debugpy)
   :config
   (setq py-python-command "python3")
@@ -1043,22 +1079,10 @@
 (setq c-default-style "linux")
 (setq c-basic-offset 4)
 
-;; C/C++ mode setup
-(use-package ccls
-  :ensure t
-  :hook ((c-mode . (lambda () (require 'ccls) (lsp)))
-         (c++-mode . (lambda () (require 'ccls) (lsp))))
-  :config
-  (setq ccls-executable "/path/to/ccls")) ;; Adjust this path
-
-;; Optional: Configure clangd as the language server for C/C++
 (use-package lsp-clangd
   :ensure lsp-mode
   :hook ((c-mode . (lambda () (require 'lsp-clangd) (lsp)))
          (c++-mode . (lambda () (require 'lsp-clangd) (lsp))))
-  ;; :config
-  ;; (setq lsp-clangd-executable "/path/to/clangd") ;; Adjust this path if needed
-
   )
 
 ;; Optional: Web mode for HTML and embedded JavaScript
