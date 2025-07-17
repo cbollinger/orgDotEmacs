@@ -2303,27 +2303,6 @@ path to your virtual environment before loading your project.
 #+end_src
 
 
-#+begin_src
-  ;; C/C++ mode setup
-  (use-package ccls
-    :ensure t
-    :hook ((c-mode . (lambda () (require 'ccls) (lsp)))
-           (c++-mode . (lambda () (require 'ccls) (lsp))))
-    :config
-    (setq ccls-executable "/path/to/ccls")) ;; Adjust this path
-
-  ;; Optional: Configure clangd as the language server for C/C++
-  (use-package lsp-clangd
-    :ensure lsp-mode
-    :hook ((c-mode . (lambda () (require 'lsp-clangd) (lsp)))
-           (c++-mode . (lambda () (require 'lsp-clangd) (lsp))))
-    ;; :config
-    ;; (setq lsp-clangd-executable "/path/to/clangd") ;; Adjust this path if needed
-    ) 
-#+end_src
-
-
-
 
 ** Web-Mode
 #+begin_src emacs-lisp
