@@ -92,7 +92,7 @@
   ;; Doesn't work as expected!
   ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
   (setq dired-open-extensions '(("png" . "feh")
-				("mkv" . "mpv"))))
+				  ("mkv" . "mpv"))))
 
 (use-package dired-hide-dotfiles
   :hook (dired-mode . dired-hide-dotfiles-mode)
@@ -313,7 +313,7 @@
   :ensure t
   :mode (("\\.org$" . org-mode))
   :bind (("C-c l" . org-store-link)
-	 ("C-c b" . org-iswitchb))
+	    ("C-c b" . org-iswitchb))
   :hook (org-mode . chb/org-mode-setup)
   :config 
   ;; Custom functions setup
@@ -669,164 +669,156 @@
 
 (add-hook 'org-clock-out-hook 'bh/clock-out-maybe 'append)
 
-;; (setq org-latex-compiler "lualatex")   ;; or "pdflatex", "xelatex"
-(setq org-latex-compiler "xelatex")   ;; or "pdflatex", "xelatex"
+(use-package ox-latex
+    :ensure nil
+    :after org
+    :config
 
-;; This are the packages usually loaded from EMACS Defaults
-;; (setq org-latex-default-packages-alist
-;;       '(("AUTO" "inputenc" t ("pdflatex"))
-;;         ("T1" "fontenc" t ("pdflatex"))
-;;         ("" "graphicx" t ("pdflatex" "xelatex"))
-;;         ("" "longtable" t ("pdflatex" "xelatex"))
-;;         ("" "wrapfig" t ("pdflatex" "xelatex"))
-;;         ("" "rotating" t ("pdflatex" "xelatex"))
-;;         ("normalem" "ulem" t ("pdflatex" "xelatex"))
-;;         ("" "amsmath" t ("pdflatex" "xelatex"))
-;;         ("" "amssymb" t ("pdflatex" "xelatex"))
-;;         ("" "capt-of" t ("pdflatex" "xelatex"))
-;;         ("" "hyperref" t ("pdflatex" "xelatex"))
-;; 	))
+    ;; Default packages for all LaTeX exports (depending on engine)
+    (setq org-latex-default-packages-alist
+          '(("AUTO" "inputenc"      t ("pdflatex"))
+            ("T1" "fontenc"         t ("pdflatex"))
+            ("" "fontspec"          t ("lualatex" "xelatex"))
+            ("" "hyperref"          t ("pdflatex" "lualatex" "xelatex"))
+            ("table, dvipsnames" "xcolor"       t ("pdflatex" "lualatex" "xelatex"))
+  	  ("" "pifont"            t ("pdflatex" "lualatex" "xelatex"))
+            ("tikz" "bclogo"        t ("pdflatex" "lualatex" "xelatex"))
+            ("" "lipsum"            t ("pdflatex" "lualatex" "xelatex"))
+            ("" "amssymb"           t ("pdflatex" "lualatex" "xelatex"))
+            ("" "enumitem"          t ("pdflatex" "lualatex" "xelatex"))
+            ("" "lastpage"          t ("pdflatex" "lualatex" "xelatex"))
+            ("" "rotfloat"          t ("pdflatex" "lualatex" "xelatex"))
+  	  ("" "minted"            t ("pdflatex" "lualatex" "xelatex"))
+  	  ("" "mathtools"         t ("pdflatex" "lualatex" "xelatex"))
+  	  ("" "unicode-math"      t ("pdflatex" "lualatex" "xelatex"))
+  	  ("" "comment"           t ("pdflatex" "lualatex" "xelatex"))
+  	  ("" "tcolorbox"            t ("pdflatex" "lualatex" "xelatex"))
+  	  ("customcolors" "hf-tikz"  t ("pdflatex" "lualatex" "xelatex"))
+  	  ("headsepline=true,footsepline=true" "scrlayer-scrpage"  t ("pdflatex" "lualatex" "xelatex"))
+            ))
 
-(setq org-latex-default-packages-alist
-      '(("AUTO" "inputenc" t ("pdflatex"))
-        ("T1" "fontenc"    t ("pdflatex"))
-        ("" "fontspec"     t ("lualatex" "xelatex"))
-        ("" "hyperref"     t ("pdflatex" "lualatex" "xelatex"))
-        ("table" "xcolor"       t ("pdflatex" "lualatex" "xelatex"))
-        ("" "bclogo"       t ("pdflatex" "lualatex" "xelatex"))
-        ("" "lipsum"       t ("pdflatex" "lualatex" "xelatex"))
-        ("" "amssymb"      t ("pdflatex" "lualatex" "xelatex"))
-        ("" "titlesec"     t ("pdflatex" "lualatex" "xelatex"))
-        ("" "enumitem"     t ("pdflatex" "lualatex" "xelatex"))
-        ("" "lastpage"     t ("pdflatex" "lualatex" "xelatex"))
-        ("" "hyperref"     t ("pdflatex" "lualatex" "xelatex"))
-        ("" "float"        t ("pdflatex" "lualatex" "xelatex"))
-        ("headsepline=true,footsepline=true" "scrlayer-scrpage" t ("pdflatex" "lualatex" "xelatex"))
-        ))
+    ;; Use minted for source code blocks
+    (setq org-latex-listings 'minted)
 
-(require 'ox-latex)
-    ;; Latex search path
-    (setq exec-path (append exec-path '("/usr/share/texmf")))
+    ;; Set default LaTeX compiler to xelatex
+    (setq org-latex-compiler "xelatex")
 
+    ;; Paths & shell escape for minted
+    (add-to-list 'exec-path "/usr/share/texmf")
     (with-eval-after-load 'tex
       (add-to-list 'safe-local-variable-values
                    '(TeX-command-extra-options . "-shell-escape")))
 
-    ;;Allow reference to figures e.g. [@fig:label]
-    (setq org-latex-prefer-user-labels t)
-
-    ;; KDE Setting
-    ;; Make org aware of the tex enginge
-    ;; -8bit option avoids undifined white space characters in minted code blocks
-    (setq org-latex-pdf-process
-           '("xelatex -8bit -shell-escape -interaction=nonstopmode -output-directory %o %f"
-             "xelatex -8bit -shell-escape -interaction=nonstopmode -output-directory %o %f"))
-
-
-    ;; (setq org-latex-pdf-process
-    ;;       '("lualatex -shell-escape -interaction nonstopmode %f"
-    ;;         "lualatex -shell-escape -interaction nonstopmode %f"))
-
-    ;; (setq org-latex-pdf-process
-    ;;    '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-    ;;      "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-    ;;      "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-
-
-
-(setq org-preview-latex-default-process 'xelatex)
-
-(setq org-preview-latex-process-alist
-      '((xelatex
-         :programs ("xelatex" "dvisvgm")
-         :description "xdv > svg"
-         :message "you need to install the programs: xelatex and dvisvgm."
-         :image-input-type "xdv"
-         :image-output-type "svg"
-         :image-size-adjust (1.7 . 1.5)
-         :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
-         :image-converter ("dvisvgm %f -n -b min -c %S -o %O"))))
-
-
-    ;; '(org-preview-latex-process-alist
-    ;;   (quote
-    ;;    (
-    ;;     (dvipng      :programs ("lualatex" "dvipng")
-    ;;                  :description "dvi > png"
-    ;;                  :message "you need to install the programs: latex and dvipng."
-    ;;                  :image-input-type "dvi"
-    ;;                  :image-output-type "png"
-    ;;                  :image-size-adjust (1.0 . 1.0)
-    ;;                  :latex-compiler ("lualatex -output-format dvi -interaction nonstopmode -output-directory %o %f")
-    ;;                  :image-converter ("dvipng -fg %F -bg %B -D %D -T tight -o %O %f"))
-
-    ;;     (dvisvgm     :programs ("latex" "dvisvgm")
-    ;;                  :description "dvi > svg"
-    ;;                  :message "you need to install the programs: latex and dvisvgm."
-    ;;                  :use-xcolor t
-    ;;                  :image-input-type "xdv"
-    ;;                  :image-output-type "svg"
-    ;;                  :image-size-adjust (1.7 . 1.5)
-    ;;                  :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
-    ;;                  :image-converter ("dvisvgm %f -n -b min -c %S -o %O"))
-
-    ;;     (imagemagick :programs ("latex" "convert")
-    ;;                  :description "pdf > png"
-    ;;                  :message "you need to install the programs: latex and imagemagick."
-    ;;                  :use-xcolor t
-    ;;                  :image-input-type "pdf"
-    ;;                  :image-output-type "png"
-    ;;                  :image-size-adjust (1.0 . 1.0)
-    ;;                  :latex-compiler ("xelatex -no-pdf -interaction nonstopmode -output-directory %o %f")
-    ;;                  :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O")))))
-
-
-  (with-eval-after-load "ox-latex"
+    ;; KOMA Report Class
     (add-to-list 'org-latex-classes
-              '("beamer" "\\documentclass[presentation]{beamer}
-    "
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
+                 `("koma-report"
+"%%
+\\documentclass[fontsize=11pt,DIV=12,headings=big]{scrreprt}
+\\AtBeginDocument{%%
+\\setlength\\parindent{0pt}%%
+\\setcounter{secnumdepth}{5}%%
+\\setminted{fontsize=\\small,breaklines=true,autogobble=true}%%
+\\pagestyle{scrheadings}%%
+\\renewcommand{\\chaptermark}[1]{\\markboth{#1}{}}
+\\renewcommand{\\sectionmark}[1]{\\markright{#1}}
+\\ihead{\\leftmark}%%
+\\ohead{}%%
+\\ifoot*{Ch. Bollinger}%%
+\\cfoot*{\\thepage}%%
+\\ofoot*{\\today}%%
+}%%
+"
+                   ("\\chapter{%s}"       . "\\chapter*{%s}")
+                   ("\\section{%s}"       . "\\section*{%s}")
+                   ("\\subsection{%s}"    . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}"     . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}"  . "\\subparagraph*{%s}")))
 
-    (with-eval-after-load "ox-latex"
-      (add-to-list 'org-latex-classes
-                   '("koma-article" "\\documentclass{scrartcl}
-           "
-                     ("\\section{%s}"       . "\\section{%s}")
-                     ("\\subsection{%s}"    . "\\subsection{%s}")
-                     ("\\subsubsection{%s}" . "\\subsubsection{%s}")
-                     ("\\paragraph{%s}"     . "\\paragraph{%s}")
-                     ("\\subparagraph{%s}"  . "\\subparagraph{%s}"))))
+    ;; KOMA Article Class
+    (add-to-list 'org-latex-classes
+                 `("koma-article"
+"%%
+\\documentclass[fontsize=11pt,DIV=12]{scrartcl}\n\
+\\pagestyle{scrheadings}\n\
+\\AtBeginDocument{%%
+\\setlength\\parindent{0pt}%%
+\\setcounter{secnumdepth}{5}%%
+\\setminted{fontsize=\\small,breaklines=true,autogobble=true}%%
+\\pagestyle{scrheadings}%%
+\\renewcommand{\\sectionmark}[1]{\\markboth{#1}{}}%%
+\\renewcommand{\\subsectionmark}[1]{\\markright{#1}}%%
+\\ihead{\\leftmark}%%
+\\ohead{\\rightmark}%%
+\\ifoot*{Ch. Bollinger}%%
+\\cfoot*{\\thepage}%%
+\\ofoot*{\\today}%%
+}%%
+"
+                   ("\\section{%s}"       . "\\section*{%s}")
+                   ("\\subsection{%s}"    . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}"     . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}"  . "\\subparagraph*{%s}")))
 
+    ;; duagon Class
+    (add-to-list 'org-latex-classes
+                 '("dg_public"
+              	 "
+                    \\documentclass{duagon_public}
+                  "
+                   ("\\section{%s}"       . "\\section{%s}")
+                   ("\\subsection{%s}"    . "\\subsection{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                   ("\\paragraph{%s}"     . "\\paragraph{%s}")
+                   ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
 
+    ;; define the minted format
+    (setq org-latex-header-extra "\\setminted{fontsize=\\\small,breaklines=true,autogobble=true}")
 
-    (with-eval-after-load "ox-latex"
-      (add-to-list 'org-latex-classes
-                   '("koma-report" "\\documentclass{scrreprt}
-           "
-                     ("\\chapter{%s}"       . "\\chapter{%s}")
-                     ("\\section{%s}"       . "\\section{%s}")
-                     ("\\subsection{%s}"    . "\\subsection{%s}")
-                     ("\\subsubsection{%s}" . "\\subsubsection{%s}")
-                     ("\\paragraph{%s}"     . "\\paragraph{%s}")
-                     ("\\subparagraph{%s}"  . "\\subparagraph{%s}"))))
+    ;; Override Org’s hypersetup so TOC links are blue & clickable
+    (setq org-latex-hyperref-template
+  	"\\hypersetup{
+          pdfauthor={%a},
+          pdftitle={%t},
+          pdfkeywords={%k},
+          pdfsubject={%d},
+          pdfcreator={%c},
+          pdflang={%L},
+          colorlinks=true,
+          linkcolor=blue,
+          urlcolor=blue
+        }")
+    
+    ;; PDF export process: use xelatex + shell escape
+    (setq org-latex-pdf-process
+          '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+            "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
+    ;; Preview settings
+    (setq org-preview-latex-default-process 'xelatex)
+    (setq org-preview-latex-process-alist
+          '((xelatex
+             :programs ("xelatex" "dvisvgm")
+             :description "xdv → svg"
+             :message "You need to install: xelatex and dvisvgm."
+             :image-input-type "xdv"
+             :image-output-type "svg"
+             :image-size-adjust (1.7 . 1.5)
+             :latex-compiler ("xelatex -no-pdf -shell-escape -interaction nonstopmode -output-directory %o %f")
+             :image-converter ("dvisvgm %f -n -b transparent -c %S -o %O"))))
 
-    (with-eval-after-load "ox-latex"
-      (add-to-list 'org-latex-classes
-                   '("dg_public" "\\documentclass{duagon_public}
-           "
-                     ("\\section{%s}" . "\\section{%s}")
-                     ("\\subsection{%s}" . "\\subsection{%s}")
-                     ("\\subsubsection{%s}" . "\\subsubsection{%s}")
-                     ("\\paragraph{%s}" . "\\paragraph{%s}")
-                     ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
+    ;; Ensure preview temp directory exists
+    (make-directory (concat temporary-file-directory "org-preview-latex") t))
 
-(defun my-org-latex-format-headline-function
-    (todo todo-type priority text tags _info)
+;; You cannot have *both* active at the same time, because
+;; `org-latex-format-headline-function` can only hold one function.
+;; But you *can* switch between them depending on context.
+
+;; Define both headline formatting functions
+(defun my-org-latex-format-headline-function (todo todo-type priority text tags _info)
   "Default format function for a headline.
-  See `org-latex-format-headline-function' for details."
+See `org-latex-format-headline-function' for details."
   (concat
    (and todo (format "{\\bfseries\\sffamily\\color{%s} %s} "
                      (pcase todo-type
@@ -836,10 +828,36 @@
    (and priority (format "\\framebox{\\#%c} " priority))
    text
    (and tags
-    (format "\\hfill{}\\textsc{%s}"
-        (mapconcat #'org-latex--protect-text tags ":")))))
+        (format "\\hfill{}\\textsc{%s}"
+                (mapconcat #'org-latex--protect-text tags ":")))))
 
-(setq org-latex-format-headline-function 'my-org-latex-format-headline-function)
+(defun my-org-koma-latex-format-headline (todo todo-type priority text tags _info)
+  "Format Org headlines for LaTeX export using KOMA classes."
+  (concat
+   (and todo
+        (format "{\\bfseries\\color{%s}\\textsf{%s}} "
+                (pcase todo-type
+                  ('todo "red")
+                  ('done "green")
+                  (_ "black"))
+                todo))
+   (and priority
+        (format "\\textsf{\\framebox{\\#%c}} " priority))
+   text
+   (and tags
+        (format "\\hfill{}\\normalfont\\textsc{%s}"
+                (mapconcat #'org-latex--protect-text tags ":")))))
+
+;; Hook to set correct function before export
+(defun my-org-set-headline-function-based-on-class (backend)
+  (when (eq backend 'latex)
+    (setq org-latex-format-headline-function
+          (if (and org-latex-default-class
+                   (string-match "koma" org-latex-default-class))
+              #'my-org-koma-latex-format-headline
+            #'my-org-latex-format-headline-function))))
+
+(add-hook 'org-export-before-processing-hook #'my-org-set-headline-function-based-on-class)
 
 (use-package org
   :ensure t
@@ -1203,17 +1221,15 @@
     (setq eshell-visual-commands '("htop" "zsh" "vim")))
 
   (eshell-git-prompt-use-theme 'powerline))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(delete-selection-mode nil)
- '(package-selected-packages
-   '(gnuplot-mode yasnippet-snippets xref-js2 which-key web-mode vterm vertico undo-tree typescript-mode sourcemap rainbow-delimiters pyvenv-auto python-mode pandoc-mode ox-pandoc org-contrib org-bullets org-attach-screenshot no-littering lsp-ui lsp-pyright ivy-youtube ivy-prescient indium htmlize helpful gnuplot forge flycheck eterm-256color eshell-git-prompt doom-themes doom-modeline dired-open dired-hide-dotfiles counsel-projectile company-tabnine company-box command-log-mode ccls auto-package-update auctex all-the-icons-dired)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
+(use-package ellama
+  :ensure t
+  :bind ("C-c e" . ellama)
+  ;; send last message in chat buffer with C-c C-c
+  :hook (org-ctrl-c-ctrl-c-final . ellama-chat-send-last-message)
+  :init (setopt ellama-auto-scroll t)
+  :config
+  ;; show ellama context in header line in all buffers
+  (ellama-context-header-line-global-mode +1)
+  ;; show ellama session id in header line in all buffers
+  (ellama-session-header-line-global-mode +1))
