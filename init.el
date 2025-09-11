@@ -302,49 +302,80 @@
 
 )
 
+;; ------------------------------
+;; Org & Multi-dictionary Hunspell Setup
+;; ------------------------------
+
+;; --- Custom Org setup function ---
 (defun chb/org-mode-setup ()
-  (org-indent-mode 1)
-  ;; (variable-pitch-mode 1)
-  ;; (visual-line-mode 1)
-  )
+  "Custom Org-mode setup."
+  (org-indent-mode 1))
 
+;; --- Ensure phaf is never loaded ---
+(setq ispell-phaf-enabled nil)
+(when (featurep 'ispell-phaf)
+  (unload-feature 'ispell-phaf t))
 
+;; --- Hunspell setup ---
+(setq ispell-program-name "hunspell")
+(setq ispell-really-hunspell t)
+(setq ispell-personal-dictionary "~/.hunspell_personal")
+
+(setq ispell-local-dictionary-alist
+      '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" t ("-d" "en_US") nil utf-8)
+        ("en_GB" "[[:alpha:]]" "[^[:alpha:]]" "[']" t ("-d" "en_GB") nil utf-8)
+        ("de_CH" "[[:alpha:]]" "[^[:alpha:]]" "[']" t ("-d" "de_CH") nil utf-8)
+        ("multi-de-en" "[[:alpha:]]" "[^[:alpha:]]" "[']" t ("-d" "de_CH,en_GB,en_US") nil utf-8)))
+
+;; Default dictionary for other modes
+(setq ispell-dictionary "en_US")
+
+;; --- Org-mode configuration ---
 (use-package org
   :ensure t
-  :mode (("\\.org$" . org-mode))
+  :mode ("\\.org$" . org-mode)
   :bind (("C-c l" . org-store-link)
-	    ("C-c b" . org-iswitchb))
+         ("C-c b" . org-iswitchb))
   :hook (org-mode . chb/org-mode-setup)
-  :config 
-  ;; Custom functions setup
+  :config
   (chb/org-font-setup)
   (chb/org-mode-setup)
-
-  ;; Org-mode configurations
-  (setq org-ellipsis " ▾")
-  (setq org-log-done 'time)
-  (setq org-log-into-drawer t)
-  (setq org-fast-tag-selection-single-key 'expert)
-  (setq org-agenda-tags-todo-honor-ignore-options t)
-
-  ;; Enable flyspell mode for spell checking
-  (add-hook 'org-mode-hook #'turn-on-flyspell 'append)
-
-  ;; Configure spell checking with multiple dictionaries
-  (with-eval-after-load "ispell"
-    (setenv "LANG" "en_US.UTF-8")
-    (setq ispell-program-name "hunspell")
-    (setq ispell-dictionary "de_CH,en_GB,en_US")
-    (ispell-set-spellchecker-params)
-    (ispell-hunspell-add-multi-dic "de_CH,en_GB,en_US")
-    (setq ispell-personal-dictionary "~/.hunspell_personal"))
-
-  ;; Disable keys in org-mode using :config
-  (setq org-clock-sound "~/.emacs.d/wav/mixkit-slot-machine-win-siren-1929.wav")
+  (setq org-ellipsis " ▾"
+        org-log-done 'time
+        org-log-into-drawer t
+        org-fast-tag-selection-single-key 'expert
+        org-agenda-tags-todo-honor-ignore-options t
+        org-clock-sound "~/.emacs.d/wav/mixkit-slot-machine-win-siren-1929.wav")
   (unbind-key "\C-c[" org-mode-map)
   (unbind-key "\C-c]" org-mode-map)
   (unbind-key "\C-c;" org-mode-map)
   (unbind-key "\C-c\C-x\C-q" org-mode-map))
+
+;; --- Flycheck-Aspell Setup ---
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+
+(use-package flycheck-aspell
+  :ensure t
+  :after flycheck
+  :config
+  ;; Set multi-dictionary for Org/Text/LaTeX
+  (setq flycheck-aspell-dictionary "multi-de-en"))
+
+;; Enable Flycheck-Aspell in Org/Text/LaTeX
+(add-hook 'org-mode-hook #'flycheck-mode)
+(add-hook 'text-mode-hook #'flycheck-mode)
+(add-hook 'latex-mode-hook #'flycheck-mode)
+
+;; Programming modes: English only
+(defun my/prog-mode-flycheck-setup ()
+  "Use English dictionary for programming modes."
+  (when (derived-mode-p 'prog-mode)
+    (setq flycheck-aspell-dictionary "en_US")
+    (flycheck-mode 1)))
+
+(add-hook 'prog-mode-hook #'my/prog-mode-flycheck-setup)
 
 (setq org-hide-emphasis-markers t)
 

@@ -67,7 +67,7 @@ sudo zypper install fira-code-fonts
 sudo zypper in iosevka-etoile-fonts
 sudo zypper install plocate
 sudo zypper install ispell ispell-ngerman ispell-british
-udo zypper install hunspell hunspell-tools
+sudo zypper install hunspell hunspell-tools
 sudo zypper install graphviz
 sudo zypper install plantuml
 # download ditaa to /home/christian/bin/ditaa_09
@@ -358,6 +358,8 @@ You can also use =M-x auto-package-update-now= to update right now!
     :config
       (auto-package-update-at-time "09:00"))
 #+end_src
+
+
 
 * Transient
 #+begin_src emacs-lisp
@@ -1095,54 +1097,142 @@ configuration for Org agendas and capture templates.  There's a lot to unpack in
 here so I'd recommend watching the videos for [[https://youtu.be/VcgjTEa0kU4][Part 5]] and [[https://youtu.be/PNE-mgkZ6HM][Part 6]] for a full
 explanation.
 
- #+begin_src emacs-lisp
-   (defun chb/org-mode-setup ()
-     (org-indent-mode 1)
-     ;; (variable-pitch-mode 1)
-     ;; (visual-line-mode 1)
-     )
+*** Using your Hunspell + Flycheck setup
+**** 1. Automatic spell checking
+- Org/Text/LaTeX: Uses multi-dictionary (`de_CH,en_GB,en_US`) automatically.
+- Programming modes: Uses English-only (`en_US`).
+- Misspelled words are highlighted as you type.
+
+**** 2. Manual spell checking
+- Check the entire buffer:
+  M-x flycheck-buffer
+- Check a region:
+  M-x flycheck-region
+
+**** 3. Correcting words
+- Highlighted word → correct using:
+  M-x flycheck-correct-word
+- Optional: with `flyspell-correct`:
+  - Bind a key, e.g., C-; to `flyspell-correct-wrapper`
+  - Shows an interactive popup menu for corrections
+
+**** 4. Switching dictionaries on the fly
+- Temporarily switch dictionaries:
+  M-x ispell-change-dictionary
+- Example: switch from `multi-de-en` to `en_US`
+
+**** 5. Adding personal words
+- Add frequently accepted words:
+  M-x ispell-add-word-to-personal-dictionary
+- Stored in `~/.hunspell_personal`
+- Automatically recognized in future sessions
+
+**** 6. Debugging / info
+- List dictionaries Hunspell knows:
+  shell> hunspell -D
+- Check current dictionary in Emacs:
+  C-h v ispell-dictionary
+- Run `M-x ispell-buffer` to see spell check in action
+
+**** 7. Tips
+- Multi-dictionary only works with plain Flyspell / Flycheck (phaf disabled)
+- Programming modes remain English-only
+- Keep your `.hunspell_personal` up to date for new words
+- Consider keybindings for quick corrections and dictionary switching
 
 
-   (use-package org
-     :ensure t
-     :mode (("\\.org$" . org-mode))
-     :bind (("C-c l" . org-store-link)
-	    ("C-c b" . org-iswitchb))
-     :hook (org-mode . chb/org-mode-setup)
-     :config 
-     ;; Custom functions setup
-     (chb/org-font-setup)
-     (chb/org-mode-setup)
+***  Configuration
+Enable multiple dictionaries
+#+begin_src emacs-lisp
+;; ------------------------------
+;; Org & Multi-dictionary Hunspell Setup
+;; ------------------------------
 
-     ;; Org-mode configurations
-     (setq org-ellipsis " ▾")
-     (setq org-log-done 'time)
-     (setq org-log-into-drawer t)
-     (setq org-fast-tag-selection-single-key 'expert)
-     (setq org-agenda-tags-todo-honor-ignore-options t)
-
-     ;; Enable flyspell mode for spell checking
-     (add-hook 'org-mode-hook #'turn-on-flyspell 'append)
-
-     ;; Configure spell checking with multiple dictionaries
-     (with-eval-after-load "ispell"
-       (setenv "LANG" "en_US.UTF-8")
-       (setq ispell-program-name "hunspell")
-       (setq ispell-dictionary "de_CH,en_GB,en_US")
-       (ispell-set-spellchecker-params)
-       (ispell-hunspell-add-multi-dic "de_CH,en_GB,en_US")
-       (setq ispell-personal-dictionary "~/.hunspell_personal"))
-
-     ;; Disable keys in org-mode using :config
-     (setq org-clock-sound "~/.emacs.d/wav/mixkit-slot-machine-win-siren-1929.wav")
-     (unbind-key "\C-c[" org-mode-map)
-     (unbind-key "\C-c]" org-mode-map)
-     (unbind-key "\C-c;" org-mode-map)
-     (unbind-key "\C-c\C-x\C-q" org-mode-map))
-
+;; --- Custom Org setup function ---
+(defun chb/org-mode-setup ()
+  "Custom Org-mode setup."
+  (org-indent-mode 1))
 #+end_src
 
-** custom faces for Org emphasis styles
+Disable ispell-phaf
+#+begin_src emacs-lisp
+;; --- Ensure phaf is never loaded ---
+(setq ispell-phaf-enabled nil)
+(when (featurep 'ispell-phaf)
+  (unload-feature 'ispell-phaf t))
+#+end_src
+
+Set Up Hunspell dictionnaries and set hunspell as backend
+#+begin_src emacs-lisp
+;; --- Hunspell setup ---
+(setq ispell-program-name "hunspell")
+(setq ispell-really-hunspell t)
+(setq ispell-personal-dictionary "~/.hunspell_personal")
+
+(setq ispell-local-dictionary-alist
+      '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" t ("-d" "en_US") nil utf-8)
+        ("en_GB" "[[:alpha:]]" "[^[:alpha:]]" "[']" t ("-d" "en_GB") nil utf-8)
+        ("de_CH" "[[:alpha:]]" "[^[:alpha:]]" "[']" t ("-d" "de_CH") nil utf-8)
+        ("multi-de-en" "[[:alpha:]]" "[^[:alpha:]]" "[']" t ("-d" "de_CH,en_GB,en_US") nil utf-8)))
+
+;; Default dictionary for other modes
+(setq ispell-dictionary "en_US")
+#+end_src
+
+Org-Mode Use Package
+#+begin_src emacs-lisp
+;; --- Org-mode configuration ---
+(use-package org
+  :ensure t
+  :mode ("\\.org$" . org-mode)
+  :bind (("C-c l" . org-store-link)
+         ("C-c b" . org-iswitchb))
+  :hook (org-mode . chb/org-mode-setup)
+  :config
+  (chb/org-font-setup)
+  (chb/org-mode-setup)
+  (setq org-ellipsis " ▾"
+        org-log-done 'time
+        org-log-into-drawer t
+        org-fast-tag-selection-single-key 'expert
+        org-agenda-tags-todo-honor-ignore-options t
+        org-clock-sound "~/.emacs.d/wav/mixkit-slot-machine-win-siren-1929.wav")
+  (unbind-key "\C-c[" org-mode-map)
+  (unbind-key "\C-c]" org-mode-map)
+  (unbind-key "\C-c;" org-mode-map)
+  (unbind-key "\C-c\C-x\C-q" org-mode-map))
+#+end_src
+
+Set Flycheck and flycheck-aspell as frontend
+#+begin_src emacs-lisp
+;; --- Flycheck-Aspell Setup ---
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+
+(use-package flycheck-aspell
+  :ensure t
+  :after flycheck
+  :config
+  ;; Set multi-dictionary for Org/Text/LaTeX
+  (setq flycheck-aspell-dictionary "multi-de-en"))
+
+;; Enable Flycheck-Aspell in Org/Text/LaTeX
+(add-hook 'org-mode-hook #'flycheck-mode)
+(add-hook 'text-mode-hook #'flycheck-mode)
+(add-hook 'latex-mode-hook #'flycheck-mode)
+
+;; Programming modes: English only
+(defun my/prog-mode-flycheck-setup ()
+  "Use English dictionary for programming modes."
+  (when (derived-mode-p 'prog-mode)
+    (setq flycheck-aspell-dictionary "en_US")
+    (flycheck-mode 1)))
+
+(add-hook 'prog-mode-hook #'my/prog-mode-flycheck-setup)
+#+end_src
+
+****** custom faces for Org emphasis styles
 
 
 #+begin_src emacs-lisp
@@ -1191,7 +1281,7 @@ explanation.
 
 #+end_src
 
-** Org Custom Agenda View
+****** Org Custom Agenda View
 
 #+begin_src emacs-lisp
   ;;; Package --- Summary: Emacs for notes, tasks, and literate programming
@@ -1343,7 +1433,7 @@ explanation.
     )
 #+end_src
 
-** Org Capture Templates
+****** Org Capture Templates
 
 #+begin_src emacs-lisp
     (use-package org
@@ -1374,7 +1464,7 @@ explanation.
   )
 #+end_src
 
-** Org Screenshot
+****** Org Screenshot
 :PROPERTIES:
 :ATTACH_DIR: /home/christian/.emacs.d/Emacs-att
 :END:
@@ -1390,7 +1480,7 @@ explanation.
 		org-attach-screenshot-command-line "gnome-screenshot -a -f %f"))
 #+end_src
 
-** Org Heading Bullets
+****** Org Heading Bullets
 
 [[https://github.com/sabof/org-bullets][org-bullets]] replaces the heading stars in =org-mode= buffers with nicer
 looking characters that you can control.  Another option for this is
@@ -1405,7 +1495,7 @@ looking characters that you can control.  Another option for this is
 
 #+end_src
 
-** Org Clocking Setup
+****** Org Clocking Setup
 
 #+begin_src emacs-lisp
   ; Clocking Functions
@@ -1503,7 +1593,7 @@ looking characters that you can control.  Another option for this is
 
 #+end_src
 
-** OX-Latex Setup
+****** OX-Latex Setup
 
 #+begin_src emacs-lisp
     (use-package ox-latex
@@ -1649,7 +1739,7 @@ looking characters that you can control.  Another option for this is
       (make-directory (concat temporary-file-directory "org-preview-latex") t))
 #+end_src
 
-** Org Export Latex Headlines
+****** Org Export Latex Headlines
 Colored Format for TODO/DONE Headlines
 
 #+begin_src emacs-lisp 
@@ -1702,7 +1792,7 @@ See `org-latex-format-headline-function' for details."
 (add-hook 'org-export-before-processing-hook #'my-org-set-headline-function-based-on-class)
 #+end_src
 
-** Org Tempo Expand Structure Templates
+****** Org Tempo Expand Structure Templates
 
 Org Mode's [[https://orgmode.org/manual/Structure-Templates.html][structure templates]] feature enables you to quickly insert code blocks
 into your Org files in combination with =org-tempo= by typing =<= followed by
@@ -1739,7 +1829,7 @@ second to contain the name of the language [[https://orgmode.org/worg/org-contri
 #+end_src
 
 
-** Org Auto-tangle Configuration Files
+****** Org Auto-tangle Configuration Files
 
 This snippet adds a hook to =org-mode= buffers so that
 =chb/org-babel-tangle-config= gets executed each time such a buffer gets saved.
@@ -1760,7 +1850,7 @@ the associated output files.
 #+end_src
 
 
-** COMMENT Org Habit
+****** COMMENT Org Habit
 
 #+begin_src emacs-lisp
 (use-package org
@@ -1778,7 +1868,7 @@ the associated output files.
                  (lambda () (setq org-habit-show-habits t)))))
 #+end_src
 
-** Org Contribution
+****** Org Contribution
 
    #+begin_src emacs-lisp 
      (use-package org
@@ -1789,7 +1879,7 @@ the associated output files.
        )   
    #+end_src
 
-** COMMENT Visual Fill Column
+****** COMMENT Visual Fill Column
 
 We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]] to center =org-mode= buffers for a more pleasing
 writing experience as it centers the contents of the buffer horizontally to seem
