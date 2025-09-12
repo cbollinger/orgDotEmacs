@@ -786,11 +786,11 @@
 \\ofoot*{\\today}%%
 }%%
 "
-                   ("\\section{%s}"       . "\\section*{%s}")
-                   ("\\subsection{%s}"    . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}"     . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}"  . "\\subparagraph*{%s}")))
+                   ("\\section{%s}"       . "\\section{%s}")
+                   ("\\subsection{%s}"    . "\\subsection{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                   ("\\paragraph{%s}"     . "\\paragraph{%s}")
+                   ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
 
     ;; duagon Class
     (add-to-list 'org-latex-classes

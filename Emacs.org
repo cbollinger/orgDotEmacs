@@ -73,7 +73,16 @@ sudo zypper install plantuml
 # download ditaa to /home/christian/bin/ditaa_09
 sudo zypper install octave
 sudo zypper install nodejs-common
-sudo zypper install myspell-en_US myspell-en_GB myspell-de_CH 
+sudo zypper install myspell-en_US myspell-en_GB myspell-de_CH
+sudo zypper install texlive-collection-latex
+sudo zypper install texlive-bclogo
+sudo zypper install texlive-lastpage
+sudo zypper install texlive-rotfloat
+sudo zypper install texlive-mathtools
+sudo zypper install texlive-tcolorbox
+sudo zypper install texlive-comment
+sudo zypper install texlive-ht-tikz
+sudo zypper install texlive-titlesec
 #+end_src
 
 
@@ -1682,11 +1691,11 @@ looking characters that you can control.  Another option for this is
   \\ofoot*{\\today}%%
   }%%
   "
-                     ("\\section{%s}"       . "\\section*{%s}")
-                     ("\\subsection{%s}"    . "\\subsection*{%s}")
-                     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                     ("\\paragraph{%s}"     . "\\paragraph*{%s}")
-                     ("\\subparagraph{%s}"  . "\\subparagraph*{%s}")))
+                     ("\\section{%s}"       . "\\section{%s}")
+                     ("\\subsection{%s}"    . "\\subsection{%s}")
+                     ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                     ("\\paragraph{%s}"     . "\\paragraph{%s}")
+                     ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
 
       ;; duagon Class
       (add-to-list 'org-latex-classes
