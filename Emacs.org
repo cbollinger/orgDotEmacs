@@ -1482,7 +1482,7 @@ Set Flycheck and flycheck-aspell as frontend
                    ("w" "org-protocol" entry (file "~/Daten/04-org-system/org-mode/refile/refile.org")
                     "* TODO Review %c\n%U\n" :immediate-finish t)
                    ("m" "Meeting" entry (file "~/Daten/04-org-system/org-mode/refile/meeting.org")
-                    "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
+                    "* MEETING %^{Subject} :MEETING:\n%^{When}t\n:LOGBOOK:\n:END:\n%?" :clock-in t :clock-resume t)
                    ("p" "Phone call" entry (file "~/Daten/04-org-system/org-mode/refile/phone.org")
                     "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
                    ("h" "Habit" entry (file "~/Daten/04-org-system/org-mode/refile/habit.org")
@@ -1674,6 +1674,7 @@ Set Flycheck and flycheck-aspell as frontend
                       "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
   )
 #+end_src
+
 
 
 
