@@ -6,17 +6,42 @@
 
 Issue the following the steps before =emacs= loads =init.el= tangled from this file. 
 
+** Ubuntu
 - clone latex repo into the home directory
 #+begin_src 
 https://gitlab2.duagon.com/tools/docker/latex.git
 #+end_src
 
-- and copy the resources into the desired locations
+- Ubuntu and copy the resources into the desired locations
 #+begin_src sh
 mkdir .fonts
 cp ~/latex/files/latex/fonts ~/.fonts
 cp -r ~/latex/files/latex/texmf .
 #+end_src
+
+** openSUSE Tumbleweed
+*** clone files
+#+begin_src bash
+  cd ~/Work/07-dg-git/
+  git clone https://gitlab2.duagon.com/tools/docker/latex.git 
+#+end_src
+
+*** copy latex files
+#+begin_src sh
+  mkdir -p ~/texmf/tex/xelatex/duagon_public
+  cd ~/Work/07-dg-git/latex/files/latex/texmf/tex/xelatex/duagon_public
+  cp -r * ~/texmf/tex/xelatex/duagon_public
+  mktexlsr ~/texmf
+#+end_src
+
+*** copy fonts
+#+begin_src bash
+  sudo mkdir -p /usr/share/fonts/truetype/duagon
+  cd ~/Work/07-dg-git/latex/files/fonts
+  cp * /usr/share/fonts/truetype/duagon
+  sudo fc-cache -fv
+#+end_src
+
 
 
 ** Call this shell scripts to install all the required system packages
@@ -57,7 +82,7 @@ sudo apt install cmake -y
 sudo apt install libtool-bin
 #+end_src
 
-*** Opensuse Tumbleweed
+*** openSUSE Tumbleweed
 #+begin_src 
 #!/usr/bin/bash
 
@@ -2254,7 +2279,7 @@ and trying different things that you find there.
   (use-package lsp-mode
     :ensure t
     :hook (
-           ((c-mode c++-mode python-mode) . lsp)
+           ((c-mode c++-mode) . lsp)
            ((js-mode js2-mode) . lsp)    
            ((typescript-mode web-mode) . lsp)
            )
@@ -2540,7 +2565,7 @@ There are a number of other language servers for Python so if you find that
 documentation]] to try the others!
 
 
-#+begin_src emacs-lisp 
+#+begin_src
   (use-package python-mode
     :ensure t
     :hook (python-mode . lsp-deferred)
