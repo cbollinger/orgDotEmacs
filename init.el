@@ -465,13 +465,13 @@
 	   (search category-keep)
 	   ))
      
-  (setq org-agenda-files (quote ("~/Daten/04-org-system/org-mode/refile"
-                                 "~/Daten/04-org-system/org-mode/private"
-                                 ;; "~/Daten/04-org-system/org-mode/gnu-software"
-                                 "~/Daten/04-org-system/org-mode/duagon/General"
-                                 ;; "~/Daten/04-org-system/org-mode/duagon/Clients"
-                                 ;; "~/Daten/04-org-system/org-mode/duagon/Products"
-                                 "~/Daten/04-org-system/org-mode/duagon/contracts")))
+
+    (setq org-agenda-files (quote ("~/Daten/04-org-system/01-private"
+				   "~/Daten/04-org-system/02-refile"
+                                   "~/Daten/04-org-system/03-gnu-software"
+				   "~/Daten/04-org-system/04-elfeed"
+				   "~/Daten/04-org-system/05-duagon/contracts")))
+
   (setq org-todo-keywords
         (quote ((sequence "TODO(t)" "ONGOING(o)" "RISK(r)" "MEETING(M)" "|" "DONE(d)" "CANCELLED(C)")
                 (sequence "WP(W)" "WPon(O)" "|" "WPclose(C)")
@@ -500,24 +500,7 @@
                 ("DESIGN"    :foreground "brown"        :weight bold)
                 ("TEST"      :foreground "forest green" :weight bold)
                 ("CLOSING"   :foreground "green"        :weight bold)
-                ("CLOSED"    :foreground "brown"        :weight bold)
-
-                ;; ("WAITING"   :foreground "orange"       :weight bold)
-                ;; ("HOLD"      :foreground "magenta"      :weight bold)
-                ;; ("CANCELLED" :foreground "forest green" :weight bold)
-                ;; ("MEETING"   :foreground "forest green" :weight bold)
-                ;; ("PHONE"     :foreground "forest green" :weight bold)
-                )))
-
-  ;; (setq org-todo-state-tags-triggers
-  ;;       (quote (("CANCELLED" ("CANCELLED" . t))
-  ;;               ("WAITING" ("WAITING" . t))
-  ;;               ("HOLD" ("WAITING") ("HOLD" . t))
-  ;;               ("DONE" ("WAITING") ("HOLD"))
-  ;;               ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
-  ;;               ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
-  ;;               ("ONGOING" ("WAITING") ("CANCELLED") ("HOLD"))
-  ;;               ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
+                ("CLOSED"    :foreground "brown"        :weight bold))))
 
                                         ;Targets include this file and any file contributing to the agenda - up to 9 levels deep
   (setq org-refile-targets (quote ((nil :maxlevel . 9)
@@ -584,27 +567,27 @@
 (use-package org
     :commands org-capture
     :config
-     (setq org-directory "~/Daten/04-org-system/org-mode")
-     (setq org-default-notes-file "~/Daten/04-org-system/org-mode/refile/refile.org")
+     (setq org-directory "~/Daten/04-org-system/")
+     (setq org-default-notes-file "~/Daten/04-org-system/02-refile/refile.org")
 
                                            ;I use C-c c to start capture mode
      (global-set-key (kbd "C-c c") 'org-capture)
      (setq org-capture-templates
-           (quote (("t" "todo" entry (file "~/Daten/04-org-system/org-mode/refile/todo.org")
+           (quote (("t" "todo" entry (file "~/Daten/04-org-system/02-refile/refile.org")
                     "* TODO [#A] %?\n%U\n%a\n" :clock-in t :clock-resume t)
-                   ("r" "respond" entry (file "~/Daten/04-org-system/org-mode/refile/refile.org")
+                   ("r" "respond" entry (file "~/Daten/04-org-system/02-refile/refile.org")
                     "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-                   ("n" "note" entry (file "~/Daten/04-org-system/org-mode/refile/note.org")
+                   ("n" "note" entry (file "~/Daten/04-org-system/02-refile/note.org")
                     "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-                   ("j" "Journal" entry (file+datetree "~/Daten/04-org-system/org-mode/refile/journal.org")
+                   ("j" "Journal" entry (file+datetree "~/Daten/04-org-system/02-refile/journal.org")
                     "* %?\n%U\n" :clock-in t :clock-resume t :tree-type month)
-                   ("w" "org-protocol" entry (file "~/Daten/04-org-system/org-mode/refile/refile.org")
+                   ("w" "org-protocol" entry (file "~/Daten/04-org-system/02-refile/refile.org")
                     "* TODO Review %c\n%U\n" :immediate-finish t)
-                   ("m" "Meeting" entry (file "~/Daten/04-org-system/org-mode/refile/meeting.org")
+                   ("m" "Meeting" entry (file "~/Daten/04-org-system/02-refile/refile.org")
                     "* MEETING %^{Subject} :MEETING:\n%^{When}t\n:LOGBOOK:\n:END:\n%?" :clock-in t :clock-resume t)
-                   ("p" "Phone call" entry (file "~/Daten/04-org-system/org-mode/refile/phone.org")
+                   ("p" "Phone call" entry (file "~/Daten/04-org-system/02-refile/refile.org")
                     "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-                   ("h" "Habit" entry (file "~/Daten/04-org-system/org-mode/refile/habit.org")
+                   ("h" "Habit" entry (file "~/Daten/04-org-system/02-refile/refile.org")
                     "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 )
 
@@ -1257,3 +1240,19 @@ See `org-latex-format-headline-function' for details."
   (ellama-context-header-line-global-mode +1)
   ;; show ellama session id in header line in all buffers
   (ellama-session-header-line-global-mode +1))
+
+;; Configure Elfeed
+(use-package elfeed
+  :ensure t
+  :config
+  (setq elfeed-db-directory (expand-file-name "elfeed" user-emacs-directory)
+        elfeed-show-entry-switch 'display-buffer)
+  :bind
+  ("C-x w" . elfeed ))
+
+(use-package elfeed-org
+  :ensure t
+  :config
+  (elfeed-org)
+  (setq rmh-elfeed-org-files (list "~/Daten/04-org-system/04-elfeed/elfeed.org"))
+)
