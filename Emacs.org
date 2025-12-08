@@ -1124,13 +1124,6 @@ more like we're editing a document in =org-mode=.  We switch back to fixed width
   )
 #+end_src
 
-** Basic Config
-
-This section contains the basic configuration for =org-mode= plus the
-configuration for Org agendas and capture templates.  There's a lot to unpack in
-here so I'd recommend watching the videos for [[https://youtu.be/VcgjTEa0kU4][Part 5]] and [[https://youtu.be/PNE-mgkZ6HM][Part 6]] for a full
-explanation.
-
 ** Using your Hunspell + Flycheck setup
 *** 1. Automatic spell checking
 - Org/Text/LaTeX: Uses multi-dictionary (`de_CH,en_GB,en_US`) automatically.
@@ -1314,7 +1307,6 @@ Set Flycheck and flycheck-aspell as frontend
 
 #+end_src
 
-
 ** Org Custom Agenda View                         :dg_agenda_view:
 
 #+begin_src emacs-lisp
@@ -1366,14 +1358,15 @@ Set Flycheck and flycheck-aspell as frontend
   	   ))
        
 
-      (setq org-agenda-files (quote ("~/Daten/04-org-system/01-private"
+      (setq org-agenda-files (quote (
+  				     "~/Daten/04-org-system/01-private"
   				   "~/Daten/04-org-system/02-refile"
                                      "~/Daten/04-org-system/03-gnu-software"
   				   "~/Daten/04-org-system/04-elfeed"
   				   "~/Daten/04-org-system/05-duagon/contracts")))
 
     (setq org-todo-keywords
-          (quote ((sequence "TODO(t)" "ONGOING(o)" "RISK(r)" "MEETING(M)" "|" "DONE(d)" "CANCELLED(C)")
+          (quote ((sequence "TODO(t)" "CROSS(G)" "ONGOING(o)" "RISK(r)" "MEETING(M)" "|" "DONE(d)" "CANCELLED(C)")
                   (sequence "WP(W)" "WPon(O)" "|" "WPclose(C)")
                   (sequence "RFW(0)" "ROM(1)" "PDP(2)" "REQ(3)" "ARCH(4)" "DESIGN(5)" "TEST(6)" "CLOSING(7)" "|" "CLOSED(8)")
                   ;; (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")
@@ -1381,6 +1374,7 @@ Set Flycheck and flycheck-aspell as frontend
 
     (setq org-todo-keyword-faces
           (quote (("TODO"      :foreground "red"          :weight bold)
+  		("CROSS"     :foreground "forest green" :weight bold)
                   ("MEETING"   :foreground "forest green" :weight bold)
                   ("NEXT"      :foreground "blue"         :weight bold)
                   ("ONGOING"   :foreground "blue"         :weight bold)
@@ -1621,21 +1615,22 @@ Set Flycheck and flycheck-aspell as frontend
 
 
 
-
 ** Org Screenshot
 :PROPERTIES:
 :ATTACH_DIR: /home/christian/.emacs.d/Emacs-att
 :END:
 
+for gnome: org-attach-screenshot-command-line "gnome-screenshot -a -f %f")
 #+begin_src emacs-lisp
-(use-package org-attach-screenshot
-  :bind ("<f6> s" . org-attach-screenshot)
-  :config (setq org-attach-screenshot-dirfunction
-		(lambda () 
-		  (progn (cl-assert (buffer-file-name))
-			 (concat (file-name-sans-extension (buffer-file-name))
-				 "-att")))
-		org-attach-screenshot-command-line "gnome-screenshot -a -f %f"))
+  (use-package org-attach-screenshot
+    :bind ("<f6> s" . org-attach-screenshot)
+    :config (setq org-attach-screenshot-dirfunction
+  		(lambda () 
+  		  (progn (cl-assert (buffer-file-name))
+  			 (concat (file-name-sans-extension (buffer-file-name))
+  				 "-att")))
+  		org-attach-screenshot-command-line "spectacle -r -b -n --output %f"
+  )
 #+end_src
 
 ** Org Heading Bullets
@@ -1779,8 +1774,7 @@ looking characters that you can control.  Another option for this is
     	  ("" "comment"           t ("pdflatex" "lualatex" "xelatex"))
     	  ("" "tcolorbox"            t ("pdflatex" "lualatex" "xelatex"))
     	  ("customcolors" "hf-tikz"  t ("pdflatex" "lualatex" "xelatex"))
-    	  ("headsepline=true,footsepline=true" "scrlayer-scrpage"  t ("pdflatex" "lualatex" "xelatex"))
-              ))
+    	                ))
 
       ;; Use minted for source code blocks
       (setq org-latex-listings 'minted)
@@ -1803,22 +1797,14 @@ looking characters that you can control.  Another option for this is
   \\setlength\\parindent{0pt}%%
   \\setcounter{secnumdepth}{5}%%
   \\setminted{fontsize=\\small,breaklines=true,autogobble=true}%%
-  \\pagestyle{scrheadings}%%
-  \\renewcommand{\\chaptermark}[1]{\\markboth{#1}{}}
-  \\renewcommand{\\sectionmark}[1]{\\markright{#1}}
-  \\ihead{\\leftmark}%%
-  \\ohead{}%%
-  \\ifoot*{Ch. Bollinger}%%
-  \\cfoot*{\\thepage}%%
-  \\ofoot*{\\today}%%
   }%%
   "
-                     ("\\chapter{%s}"       . "\\chapter*{%s}")
-                     ("\\section{%s}"       . "\\section*{%s}")
-                     ("\\subsection{%s}"    . "\\subsection*{%s}")
-                     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                     ("\\paragraph{%s}"     . "\\paragraph*{%s}")
-                     ("\\subparagraph{%s}"  . "\\subparagraph*{%s}")))
+                     ("\\chapter{%s}"       . "\\chapter{%s}")
+                     ("\\section{%s}"       . "\\section{%s}")
+                     ("\\subsection{%s}"    . "\\subsection{%s}")
+                     ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                     ("\\paragraph{%s}"     . "\\paragraph{%s}")
+                     ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
 
       ;; KOMA Article Class
       (add-to-list 'org-latex-classes
@@ -1830,14 +1816,6 @@ looking characters that you can control.  Another option for this is
   \\setlength\\parindent{0pt}%%
   \\setcounter{secnumdepth}{5}%%
   \\setminted{fontsize=\\small,breaklines=true,autogobble=true}%%
-  \\pagestyle{scrheadings}%%
-  \\renewcommand{\\sectionmark}[1]{\\markboth{#1}{}}%%
-  \\renewcommand{\\subsectionmark}[1]{\\markright{#1}}%%
-  \\ihead{\\leftmark}%%
-  \\ohead{\\rightmark}%%
-  \\ifoot*{Ch. Bollinger}%%
-  \\cfoot*{\\thepage}%%
-  \\ofoot*{\\today}%%
   }%%
   "
                      ("\\section{%s}"       . "\\section{%s}")
@@ -2118,7 +2096,7 @@ possible key bindings in the mode of your current buffer.
   ;; (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
   ;; Opensuse
   (setq org-ditaa-jar-path "/home/christian/bin/ditaa0_9/ditaa0_9.jar")
-  (setq org-plantuml-jar-path "/usr/bin/plantuml")
+  (setq org-plantuml-jar-path "/usr/share/java/plantuml.jar")
   ;; Use fundamental mode when editing plantuml blocks with C-c '
   (add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
   (add-to-list 'exec-path "/usr/bin/magick")
@@ -3112,9 +3090,9 @@ modes with Vi-like keybindings for evil-mode.
 #+end_src
 
 
-* COMMENT Presentation
+* Presentation
 
-** Reveal
+** COMMENT Reveal
 
 #+begin_src emacs-lisp
   (unless (package-installed-p 'ox-reveal)
@@ -3125,7 +3103,7 @@ modes with Vi-like keybindings for evil-mode.
   (setq Org-Reveal-title-slide nil)
 #+end_src
 
-** Org-Tree Slides
+** COMMENT Org-Tree Slides
  hide-mode-line hide the modeline to allow to have a clean screen while using
  org-tree-slide-mode
 
@@ -3169,10 +3147,10 @@ Some tweaks to have a better looking while presenting slides
 
 ** Org-Present
 #+begin_src emacs-lisp
-(defun dw/org-present-prepare-slide ()
+  (defun dw/org-present-prepare-slide ()
+  "Prepare current slide: heading only, subtree folded."
   (org-overview)
-  (org-show-entry)
-  (org-show-children))
+  (org-hide-subtree))  ;; everything folded
 
 (defun dw/org-present-hook ()
   (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
@@ -3203,12 +3181,11 @@ Some tweaks to have a better looking while presenting slides
 
 (use-package org-present
   :bind (:map org-present-mode-keymap
-         ("C-c C-j" . dw/org-present-next)
-         ("C-c C-k" . dw/org-present-prev))
+         ("<f7>" . dw/org-present-next)
+         ("<f8>" . dw/org-present-prev))
   :hook ((org-present-mode . dw/org-present-hook)
          (org-present-mode-quit . dw/org-present-quit-hook)))
 #+end_src
-
 
 * COMMENT Applications
 

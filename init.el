@@ -466,14 +466,15 @@
 	   ))
      
 
-    (setq org-agenda-files (quote ("~/Daten/04-org-system/01-private"
+    (setq org-agenda-files (quote (
+				     "~/Daten/04-org-system/01-private"
 				   "~/Daten/04-org-system/02-refile"
                                    "~/Daten/04-org-system/03-gnu-software"
 				   "~/Daten/04-org-system/04-elfeed"
 				   "~/Daten/04-org-system/05-duagon/contracts")))
 
   (setq org-todo-keywords
-        (quote ((sequence "TODO(t)" "ONGOING(o)" "RISK(r)" "MEETING(M)" "|" "DONE(d)" "CANCELLED(C)")
+        (quote ((sequence "TODO(t)" "CROSS(G)" "ONGOING(o)" "RISK(r)" "MEETING(M)" "|" "DONE(d)" "CANCELLED(C)")
                 (sequence "WP(W)" "WPon(O)" "|" "WPclose(C)")
                 (sequence "RFW(0)" "ROM(1)" "PDP(2)" "REQ(3)" "ARCH(4)" "DESIGN(5)" "TEST(6)" "CLOSING(7)" "|" "CLOSED(8)")
                 ;; (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")
@@ -481,6 +482,7 @@
 
   (setq org-todo-keyword-faces
         (quote (("TODO"      :foreground "red"          :weight bold)
+		("CROSS"     :foreground "forest green" :weight bold)
                 ("MEETING"   :foreground "forest green" :weight bold)
                 ("NEXT"      :foreground "blue"         :weight bold)
                 ("ONGOING"   :foreground "blue"         :weight bold)
@@ -598,7 +600,8 @@
 		  (progn (cl-assert (buffer-file-name))
 			 (concat (file-name-sans-extension (buffer-file-name))
 				 "-att")))
-		org-attach-screenshot-command-line "gnome-screenshot -a -f %f"))
+		org-attach-screenshot-command-line "spectacle -r -b -n --output %f"
+))
 
 (use-package org-bullets
   :hook (org-mode . org-bullets-mode)
@@ -723,8 +726,7 @@
   	  ("" "comment"           t ("pdflatex" "lualatex" "xelatex"))
   	  ("" "tcolorbox"            t ("pdflatex" "lualatex" "xelatex"))
   	  ("customcolors" "hf-tikz"  t ("pdflatex" "lualatex" "xelatex"))
-  	  ("headsepline=true,footsepline=true" "scrlayer-scrpage"  t ("pdflatex" "lualatex" "xelatex"))
-            ))
+  	                ))
 
     ;; Use minted for source code blocks
     (setq org-latex-listings 'minted)
@@ -747,22 +749,14 @@
 \\setlength\\parindent{0pt}%%
 \\setcounter{secnumdepth}{5}%%
 \\setminted{fontsize=\\small,breaklines=true,autogobble=true}%%
-\\pagestyle{scrheadings}%%
-\\renewcommand{\\chaptermark}[1]{\\markboth{#1}{}}
-\\renewcommand{\\sectionmark}[1]{\\markright{#1}}
-\\ihead{\\leftmark}%%
-\\ohead{}%%
-\\ifoot*{Ch. Bollinger}%%
-\\cfoot*{\\thepage}%%
-\\ofoot*{\\today}%%
 }%%
 "
-                   ("\\chapter{%s}"       . "\\chapter*{%s}")
-                   ("\\section{%s}"       . "\\section*{%s}")
-                   ("\\subsection{%s}"    . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}"     . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}"  . "\\subparagraph*{%s}")))
+                   ("\\chapter{%s}"       . "\\chapter{%s}")
+                   ("\\section{%s}"       . "\\section{%s}")
+                   ("\\subsection{%s}"    . "\\subsection{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                   ("\\paragraph{%s}"     . "\\paragraph{%s}")
+                   ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
 
     ;; KOMA Article Class
     (add-to-list 'org-latex-classes
@@ -774,14 +768,6 @@
 \\setlength\\parindent{0pt}%%
 \\setcounter{secnumdepth}{5}%%
 \\setminted{fontsize=\\small,breaklines=true,autogobble=true}%%
-\\pagestyle{scrheadings}%%
-\\renewcommand{\\sectionmark}[1]{\\markboth{#1}{}}%%
-\\renewcommand{\\subsectionmark}[1]{\\markright{#1}}%%
-\\ihead{\\leftmark}%%
-\\ohead{\\rightmark}%%
-\\ifoot*{Ch. Bollinger}%%
-\\cfoot*{\\thepage}%%
-\\ofoot*{\\today}%%
 }%%
 "
                    ("\\section{%s}"       . "\\section{%s}")
@@ -959,7 +945,7 @@ See `org-latex-format-headline-function' for details."
 ;; (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
 ;; Opensuse
 (setq org-ditaa-jar-path "/home/christian/bin/ditaa0_9/ditaa0_9.jar")
-(setq org-plantuml-jar-path "/usr/bin/plantuml")
+(setq org-plantuml-jar-path "/usr/share/java/plantuml.jar")
 ;; Use fundamental mode when editing plantuml blocks with C-c '
 (add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
 (add-to-list 'exec-path "/usr/bin/magick")
@@ -1240,6 +1226,45 @@ See `org-latex-format-headline-function' for details."
   (ellama-context-header-line-global-mode +1)
   ;; show ellama session id in header line in all buffers
   (ellama-session-header-line-global-mode +1))
+
+(defun dw/org-present-prepare-slide ()
+  "Prepare current slide: heading only, subtree folded."
+  (org-overview)
+  (org-hide-subtree))  ;; everything folded
+
+(defun dw/org-present-hook ()
+  (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
+                                     (header-line (:height 4.5) variable-pitch)
+                                     (org-code (:height 1.55) org-code)
+                                     (org-verbatim (:height 1.55) org-verbatim)
+                                     (org-block (:height 1.25) org-block)
+                                     (org-block-begin-line (:height 0.7) org-block)))
+  (setq header-line-format " ")
+  (org-display-inline-images)
+  (dw/org-present-prepare-slide))
+
+(defun dw/org-present-quit-hook ()
+  (setq-local face-remapping-alist '((default variable-pitch default)))
+  (setq header-line-format nil)
+  (org-present-small)
+  (org-remove-inline-images))
+
+(defun dw/org-present-prev ()
+  (interactive)
+  (org-present-prev)
+  (dw/org-present-prepare-slide))
+
+(defun dw/org-present-next ()
+  (interactive)
+  (org-present-next)
+  (dw/org-present-prepare-slide))
+
+(use-package org-present
+  :bind (:map org-present-mode-keymap
+         ("<f7>" . dw/org-present-next)
+         ("<f8>" . dw/org-present-prev))
+  :hook ((org-present-mode . dw/org-present-hook)
+         (org-present-mode-quit . dw/org-present-quit-hook)))
 
 ;; Configure Elfeed
 (use-package elfeed
