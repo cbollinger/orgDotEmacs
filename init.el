@@ -465,18 +465,13 @@
 	   (search category-keep)
 	   ))
      
-
-    (setq org-agenda-files (quote ("~/Daten/04-org-system/01-private"
-				   "~/Daten/04-org-system/02-refile"
-                                   "~/Daten/04-org-system/03-gnu-software"
-				   "~/Daten/04-org-system/04-elfeed"
-				   "~/Daten/04-org-system/05-duagon/contracts")))
-
+  (setq org-agenda-files (quote ("~/Daten/04-org-system/01-private"
+			       "~/Daten/04-org-system/02-refile"
+                                 "~/Daten/04-org-system/03-gnu-software"
+				 "~/Daten/04-org-system/04-elfeed")))
   (setq org-todo-keywords
         (quote ((sequence "TODO(t)" "ONGOING(o)" "RISK(r)" "MEETING(M)" "|" "DONE(d)" "CANCELLED(C)")
-                (sequence "WP(W)" "WPon(O)" "|" "WPclose(C)")
-                (sequence "RFW(0)" "ROM(1)" "PDP(2)" "REQ(3)" "ARCH(4)" "DESIGN(5)" "TEST(6)" "CLOSING(7)" "|" "CLOSED(8)")
-                ;; (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")
+                (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")
                 )))
 
   (setq org-todo-keyword-faces
@@ -487,22 +482,9 @@
                 ("RISK"      :foreground "yellow"       :weight bold)
                 ("DONE"      :foreground "forest green" :weight bold)
                 ("CANCELLED" :foreground "forest green" :weight bold)
+                )))
 
-                ("WP"        :foreground "blue"         :weight bold)
-                ("WPon"      :foreground "yellow"       :weight bold)
-                ("WPclose"   :foreground "brown"        :weight bold)
-
-                ("RFW"       :foreground "red"          :weight bold)
-                ("ROM"       :foreground "blue"         :weight bold)
-                ("PDP"       :foreground "magenta"      :weight bold)
-                ("REQ"       :foreground "magenta"      :weight bold)
-                ("ARCH"      :foreground "yellow"       :weight bold)
-                ("DESIGN"    :foreground "brown"        :weight bold)
-                ("TEST"      :foreground "forest green" :weight bold)
-                ("CLOSING"   :foreground "green"        :weight bold)
-                ("CLOSED"    :foreground "brown"        :weight bold))))
-
-                                        ;Targets include this file and any file contributing to the agenda - up to 9 levels deep
+				;Targets include this file and any file contributing to the agenda - up to 9 levels deep
   (setq org-refile-targets (quote ((nil :maxlevel . 9)
                                    (org-agenda-files :maxlevel . 9))))
 
@@ -532,26 +514,14 @@
   (setq org-agenda-custom-commands
         '(
           ("d" "Dashboard" ((agenda "" ((org-deadline-warning-days 1)))
-                            (todo "MEETING"               ((org-agenda-overriding-header "Meeting")))
+                            (todo "MEETING"            ((org-agenda-overriding-header "Upcoming Meetings")))
+			    (todo "TODO"               ((org-agenda-overriding-header "Action Itmes Backlog")))
+			    (todo "PHONE"              ((org-agenda-overriding-header "Upcoming Phone Calls")))
                             (todo "ONGOING"            ((org-agenda-overriding-header "All ongoing Action Items")))
                             (todo "WAITING"            ((org-agenda-overriding-header "Action Items, waiting for external input")))
                             (todo "HOLD"               ((org-agenda-overriding-header "Action Items on hold")))
-                            (todo "TODO"               ((org-agenda-overriding-header "Action Itmes Backlog")))
                             (todo "CANCELLED"          ((org-agenda-overriding-header "Action Item CANCELLED")))
                             (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
-
-          ("c" "EC-Overview" ((agenda "" ((org-deadline-warning-days 1)))
-                              (todo "RISK"                 ((org-agenda-overriding-header "Risk Evaluation")))
-                              (todo "RFW"                  ((org-agenda-overriding-header "RFW: Work Request")))
-                              (todo "ROM"                  ((org-agenda-overriding-header "ROM: Rough Order Magnitude")))
-                              (todo "PDP"                  ((org-agenda-overriding-header "PDP: Product Definition Process")))
-                              (todo "REQ"                  ((org-agenda-overriding-header "REQ: Requirements Definition")))
-                              (todo "ARCH"                 ((org-agenda-overriding-header "ARCH: Architecture Design")))
-                              (todo "DESIGN"               ((org-agenda-overriding-header "DESIGN: Implementation")))
-                              (todo "TEST"                 ((org-agenda-overriding-header "TEST: Type Test")))
-                              (todo "CLOSING"              ((org-agenda-overriding-header "CLOSING: Prepartion Acceptance Protocol")))
-                              (todo "CLOSED"               ((org-agenda-overriding-header "Contract Closed")))
-                              (tags-todo "agenda/ACTIVE"   ((org-agenda-overriding-header "Active Projects")))))
 
           ("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))
 
@@ -598,7 +568,9 @@
 		  (progn (cl-assert (buffer-file-name))
 			 (concat (file-name-sans-extension (buffer-file-name))
 				 "-att")))
-		org-attach-screenshot-command-line "gnome-screenshot -a -f %f"))
+                org-attach-screenshot-command-line "spectacle -r -b -n --output %f")
+
+  )
 
 (use-package org-bullets
   :hook (org-mode . org-bullets-mode)
@@ -699,146 +671,129 @@
 (add-hook 'org-clock-out-hook 'bh/clock-out-maybe 'append)
 
 (use-package ox-latex
-    :ensure nil
-    :after org
-    :config
+  :ensure nil
+  :after org
+  :config
 
-    ;; Default packages for all LaTeX exports (depending on engine)
-    (setq org-latex-default-packages-alist
-          '(("AUTO" "inputenc"      t ("pdflatex"))
-            ("T1" "fontenc"         t ("pdflatex"))
-            ("" "fontspec"          t ("lualatex" "xelatex"))
-            ("" "hyperref"          t ("pdflatex" "lualatex" "xelatex"))
-            ("table, dvipsnames, svgnames" "xcolor"       t ("pdflatex" "lualatex" "xelatex"))
-  	  ("" "pifont"            t ("pdflatex" "lualatex" "xelatex"))
-            ("tikz" "bclogo"        t ("pdflatex" "lualatex" "xelatex"))
-            ("" "lipsum"            t ("pdflatex" "lualatex" "xelatex"))
-            ("" "amssymb"           t ("pdflatex" "lualatex" "xelatex"))
-            ("" "enumitem"          t ("pdflatex" "lualatex" "xelatex"))
-            ("" "lastpage"          t ("pdflatex" "lualatex" "xelatex"))
-            ("" "rotfloat"          t ("pdflatex" "lualatex" "xelatex"))
-  	  ("" "minted"            t ("pdflatex" "lualatex" "xelatex"))
-  	  ("" "mathtools"         t ("pdflatex" "lualatex" "xelatex"))
-  	  ("" "unicode-math"      t ("pdflatex" "lualatex" "xelatex"))
-  	  ("" "comment"           t ("pdflatex" "lualatex" "xelatex"))
-  	  ("" "tcolorbox"            t ("pdflatex" "lualatex" "xelatex"))
-  	  ("customcolors" "hf-tikz"  t ("pdflatex" "lualatex" "xelatex"))
-  	  ("headsepline=true,footsepline=true" "scrlayer-scrpage"  t ("pdflatex" "lualatex" "xelatex"))
-            ))
+  ;; Default packages for all LaTeX exports (depending on engine)
+  (setq org-latex-default-packages-alist
+        '(("AUTO" "inputenc"      t ("pdflatex"))
+          ("T1" "fontenc"         t ("pdflatex"))
+          ("" "fontspec"          t ("lualatex" "xelatex"))
+          ("" "hyperref"          t ("pdflatex" "lualatex" "xelatex"))
+          ("table, dvipsnames, svgnames" "xcolor"       t ("pdflatex" "lualatex" "xelatex"))
+	  ("" "pifont"            t ("pdflatex" "lualatex" "xelatex"))
+          ("tikz" "bclogo"        t ("pdflatex" "lualatex" "xelatex"))
+          ("" "lipsum"            t ("pdflatex" "lualatex" "xelatex"))
+          ("" "amssymb"           t ("pdflatex" "lualatex" "xelatex"))
+          ("" "enumitem"          t ("pdflatex" "lualatex" "xelatex"))
+          ("" "lastpage"          t ("pdflatex" "lualatex" "xelatex"))
+          ("" "rotfloat"          t ("pdflatex" "lualatex" "xelatex"))
+	  ("" "minted"            t ("pdflatex" "lualatex" "xelatex"))
+	  ("" "mathtools"         t ("pdflatex" "lualatex" "xelatex"))
+	  ("" "unicode-math"      t ("pdflatex" "lualatex" "xelatex"))
+	  ("" "comment"           t ("pdflatex" "lualatex" "xelatex"))
+	  ("" "tcolorbox"            t ("pdflatex" "lualatex" "xelatex"))
+	  ("customcolors" "hf-tikz"  t ("pdflatex" "lualatex" "xelatex"))
+	  ))
 
-    ;; Use minted for source code blocks
-    (setq org-latex-listings 'minted)
+  ;; Use minted for source code blocks
+  (setq org-latex-listings 'minted)
 
-    ;; Set default LaTeX compiler to xelatex
-    (setq org-latex-compiler "xelatex")
+  ;; Set default LaTeX compiler to xelatex
+  (setq org-latex-compiler "xelatex")
 
-    ;; Paths & shell escape for minted
-    (add-to-list 'exec-path "/usr/share/texmf")
-    (with-eval-after-load 'tex
-      (add-to-list 'safe-local-variable-values
-                   '(TeX-command-extra-options . "-shell-escape")))
+  ;; Paths & shell escape for minted
+  (add-to-list 'exec-path "/usr/share/texmf")
+  (with-eval-after-load 'tex
+    (add-to-list 'safe-local-variable-values
+                 '(TeX-command-extra-options . "-shell-escape")))
 
-    ;; KOMA Report Class
-    (add-to-list 'org-latex-classes
-                 `("koma-report"
-"%%
-\\documentclass[fontsize=11pt,DIV=12,headings=big]{scrreprt}
-\\AtBeginDocument{%%
-\\setlength\\parindent{0pt}%%
-\\setcounter{secnumdepth}{5}%%
-\\setminted{fontsize=\\small,breaklines=true,autogobble=true}%%
-\\pagestyle{scrheadings}%%
-\\renewcommand{\\chaptermark}[1]{\\markboth{#1}{}}
-\\renewcommand{\\sectionmark}[1]{\\markright{#1}}
-\\ihead{\\leftmark}%%
-\\ohead{}%%
-\\ifoot*{Ch. Bollinger}%%
-\\cfoot*{\\thepage}%%
-\\ofoot*{\\today}%%
-}%%
-"
-                   ("\\chapter{%s}"       . "\\chapter*{%s}")
-                   ("\\section{%s}"       . "\\section*{%s}")
-                   ("\\subsection{%s}"    . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}"     . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}"  . "\\subparagraph*{%s}")))
+  ;; KOMA Report Class
+  (add-to-list 'org-latex-classes
+               `("koma-report"
+                   "%%
+                   \\documentclass[fontsize=11pt,DIV=12,headings=big]{scrreprt}
+                   \\pagestyle{scrheadings}
+                   \\AtBeginDocument{%%
+                     \\setlength\\parindent{0pt}%%
+                     \\setcounter{secnumdepth}{5}%%
+                     \\setminted{fontsize=\\small,breaklines=true,autogobble=true}%%
+                     \\pagestyle{scrheadings}%%
+                     \\renewcommand{\\chaptermark}[1]{\\markboth{#1}{}}
+                     \\renewcommand{\\sectionmark}[1]{\\markright{#1}}
+                     \\ihead{\\leftmark}%%
+                     \\ohead{}%%
+                     \\ifoot*{Ch. Bollinger}%%
+                     \\cfoot*{\\thepage}%%
+                     \\ofoot*{\\today}%%
+                   }%%
+                   "                    
+                 ("\\chapter{%s}"       . "\\chapter*{%s}")
+                 ("\\section{%s}"       . "\\section*{%s}")
+                 ("\\subsection{%s}"    . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}"     . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}"  . "\\subparagraph*{%s}")))
 
-    ;; KOMA Article Class
-    (add-to-list 'org-latex-classes
-                 `("koma-article"
-"%%
-\\documentclass[fontsize=11pt,DIV=12]{scrartcl}\n\
-\\pagestyle{scrheadings}\n\
-\\AtBeginDocument{%%
-\\setlength\\parindent{0pt}%%
-\\setcounter{secnumdepth}{5}%%
-\\setminted{fontsize=\\small,breaklines=true,autogobble=true}%%
-\\pagestyle{scrheadings}%%
-\\renewcommand{\\sectionmark}[1]{\\markboth{#1}{}}%%
-\\renewcommand{\\subsectionmark}[1]{\\markright{#1}}%%
-\\ihead{\\leftmark}%%
-\\ohead{\\rightmark}%%
-\\ifoot*{Ch. Bollinger}%%
-\\cfoot*{\\thepage}%%
-\\ofoot*{\\today}%%
-}%%
-"
-                   ("\\section{%s}"       . "\\section{%s}")
-                   ("\\subsection{%s}"    . "\\subsection{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection{%s}")
-                   ("\\paragraph{%s}"     . "\\paragraph{%s}")
-                   ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
+  ;; KOMA Article Class
+  (add-to-list 'org-latex-classes
+               `("koma-article"
+                   "%%
+                   \\documentclass[fontsize=11pt,DIV=12,headings=big]{scrreprt}
+                   \\pagestyle{scrheadings}
+                   \\AtBeginDocument{%%
+                     \\setlength\\parindent{0pt}%%
+                     \\setcounter{secnumdepth}{5}%%
+                     \\setminted{fontsize=\\small,breaklines=true,autogobble=true}%%
+                     \\pagestyle{scrheadings}%%
+                     \\renewcommand{\\chaptermark}[1]{\\markboth{#1}{}}
+                     \\renewcommand{\\sectionmark}[1]{\\markright{#1}}
+                     \\ihead{\\leftmark}%%
+                     \\ohead{}%%
+                     \\ifoot*{Ch. Bollinger}%%
+                     \\cfoot*{\\thepage}%%
+                     \\ofoot*{\\today}%%
+                   }%%
+                   "
+                 ("\\section{%s}"       . "\\section{%s}")
+                 ("\\subsection{%s}"    . "\\subsection{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                 ("\\paragraph{%s}"     . "\\paragraph{%s}")
+                 ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
 
-    ;; duagon Class
-    (add-to-list 'org-latex-classes
-                 '("dg_public"
-              	 "
-                    \\documentclass{duagon_public}
-                  "
-                   ("\\section{%s}"       . "\\section{%s}")
-                   ("\\subsection{%s}"    . "\\subsection{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection{%s}")
-                   ("\\paragraph{%s}"     . "\\paragraph{%s}")
-                   ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
+  ;; duagon Class
+  (add-to-list 'org-latex-classes
+               '("dg_public"
+            	 "
+                  \\documentclass{duagon_public}
+                "
+                 ("\\section{%s}"       . "\\section{%s}")
+                 ("\\subsection{%s}"    . "\\subsection{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                 ("\\paragraph{%s}"     . "\\paragraph{%s}")
+                 ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
 
-    ;; define the minted format
-    (setq org-latex-header-extra "\\setminted{fontsize=\\\small,breaklines=true,autogobble=true}")
+  ;; PDF export process: use xelatex + shell escape
+  (setq org-latex-pdf-process
+        '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
-    ;; Override Org’s hypersetup so TOC links are blue & clickable
-    (setq org-latex-hyperref-template
-  	"\\hypersetup{
-          pdfauthor={%a},
-          pdftitle={%t},
-          pdfkeywords={%k},
-          pdfsubject={%d},
-          pdfcreator={%c},
-          pdflang={%L},
-          colorlinks=true,
-          linkcolor=blue,
-          urlcolor=blue
-        }")
-    
-    ;; PDF export process: use xelatex + shell escape
-    (setq org-latex-pdf-process
-          '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-            "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+  ;; Preview settings
+  (setq org-preview-latex-default-process 'xelatex)
+  (setq org-preview-latex-process-alist
+        '((xelatex
+           :programs ("xelatex" "dvisvgm")
+           :description "xdv → svg"
+           :message "You need to install: xelatex and dvisvgm."
+           :image-input-type "xdv"
+           :image-output-type "svg"
+           :image-size-adjust (1.7 . 1.5)
+           :latex-compiler ("xelatex -no-pdf -shell-escape -interaction nonstopmode -output-directory %o %f")
+           :image-converter ("dvisvgm %f -n -b transparent -c %S -o %O"))))
 
-    ;; Preview settings
-    (setq org-preview-latex-default-process 'xelatex)
-    (setq org-preview-latex-process-alist
-          '((xelatex
-             :programs ("xelatex" "dvisvgm")
-             :description "xdv → svg"
-             :message "You need to install: xelatex and dvisvgm."
-             :image-input-type "xdv"
-             :image-output-type "svg"
-             :image-size-adjust (1.7 . 1.5)
-             :latex-compiler ("xelatex -no-pdf -shell-escape -interaction nonstopmode -output-directory %o %f")
-             :image-converter ("dvisvgm %f -n -b transparent -c %S -o %O"))))
-
-    ;; Ensure preview temp directory exists
-    (make-directory (concat temporary-file-directory "org-preview-latex") t))
+  ;; Ensure preview temp directory exists
+  (make-directory (concat temporary-file-directory "org-preview-latex") t))
 
 ;; You cannot have *both* active at the same time, because
 ;; `org-latex-format-headline-function` can only hold one function.
@@ -957,9 +912,10 @@ See `org-latex-format-headline-function' for details."
 ;: Ubuntu
 ;; (setq org-ditaa-jar-path "~/usr/share/ditaa/ditaa.jar")
 ;; (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
+                                
 ;; Opensuse
 (setq org-ditaa-jar-path "/home/christian/bin/ditaa0_9/ditaa0_9.jar")
-(setq org-plantuml-jar-path "/usr/bin/plantuml")
+(setq org-plantuml-jar-path "/usr/share/java/plantuml.jar")
 ;; Use fundamental mode when editing plantuml blocks with C-c '
 (add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
 (add-to-list 'exec-path "/usr/bin/magick")
