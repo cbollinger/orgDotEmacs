@@ -465,13 +465,18 @@
 	   (search category-keep)
 	   ))
      
-  (setq org-agenda-files (quote ("~/Daten/04-org-system/01-private"
-			       "~/Daten/04-org-system/02-refile"
-                                 "~/Daten/04-org-system/03-gnu-software"
-				 "~/Daten/04-org-system/04-elfeed")))
+
+    (setq org-agenda-files (quote ( "~/Daten/04-org-system/01-private"
+				   "~/Daten/04-org-system/02-refile"
+                                   "~/Daten/04-org-system/03-gnu-software"
+				   "~/Daten/04-org-system/04-elfeed"
+				   "~/Daten/04-org-system/05-duagon/contracts")))
+
   (setq org-todo-keywords
         (quote ((sequence "TODO(t)" "ONGOING(o)" "RISK(r)" "MEETING(M)" "|" "DONE(d)" "CANCELLED(C)")
-                (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")
+                (sequence "WP(W)" "WPon(O)" "|" "WPclose(C)")
+                (sequence "RFW(0)" "ROM(1)" "PDP(2)" "REQ(3)" "ARCH(4)" "DESIGN(5)" "TEST(6)" "CLOSING(7)" "|" "CLOSED(8)")
+                ;; (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")
                 )))
 
   (setq org-todo-keyword-faces
@@ -482,9 +487,22 @@
                 ("RISK"      :foreground "yellow"       :weight bold)
                 ("DONE"      :foreground "forest green" :weight bold)
                 ("CANCELLED" :foreground "forest green" :weight bold)
-                )))
 
-				;Targets include this file and any file contributing to the agenda - up to 9 levels deep
+                ("WP"        :foreground "blue"         :weight bold)
+                ("WPon"      :foreground "yellow"       :weight bold)
+                ("WPclose"   :foreground "brown"        :weight bold)
+
+                ("RFW"       :foreground "red"          :weight bold)
+                ("ROM"       :foreground "blue"         :weight bold)
+                ("PDP"       :foreground "magenta"      :weight bold)
+                ("REQ"       :foreground "magenta"      :weight bold)
+                ("ARCH"      :foreground "yellow"       :weight bold)
+                ("DESIGN"    :foreground "brown"        :weight bold)
+                ("TEST"      :foreground "forest green" :weight bold)
+                ("CLOSING"   :foreground "green"        :weight bold)
+                ("CLOSED"    :foreground "brown"        :weight bold))))
+
+                                        ;Targets include this file and any file contributing to the agenda - up to 9 levels deep
   (setq org-refile-targets (quote ((nil :maxlevel . 9)
                                    (org-agenda-files :maxlevel . 9))))
 
@@ -514,14 +532,26 @@
   (setq org-agenda-custom-commands
         '(
           ("d" "Dashboard" ((agenda "" ((org-deadline-warning-days 1)))
-                            (todo "MEETING"            ((org-agenda-overriding-header "Upcoming Meetings")))
-			    (todo "TODO"               ((org-agenda-overriding-header "Action Itmes Backlog")))
-			    (todo "PHONE"              ((org-agenda-overriding-header "Upcoming Phone Calls")))
+                            (todo "MEETING"               ((org-agenda-overriding-header "Meeting")))
                             (todo "ONGOING"            ((org-agenda-overriding-header "All ongoing Action Items")))
                             (todo "WAITING"            ((org-agenda-overriding-header "Action Items, waiting for external input")))
                             (todo "HOLD"               ((org-agenda-overriding-header "Action Items on hold")))
+                            (todo "TODO"               ((org-agenda-overriding-header "Action Itmes Backlog")))
                             (todo "CANCELLED"          ((org-agenda-overriding-header "Action Item CANCELLED")))
                             (tags-todo "agenda/ACTIVE" ((org-agenda-overriding-header "Active Projects")))))
+
+          ("c" "EC-Overview" ((agenda "" ((org-deadline-warning-days 1)))
+                              (todo "RISK"                 ((org-agenda-overriding-header "Risk Evaluation")))
+                              (todo "RFW"                  ((org-agenda-overriding-header "RFW: Work Request")))
+                              (todo "ROM"                  ((org-agenda-overriding-header "ROM: Rough Order Magnitude")))
+                              (todo "PDP"                  ((org-agenda-overriding-header "PDP: Product Definition Process")))
+                              (todo "REQ"                  ((org-agenda-overriding-header "REQ: Requirements Definition")))
+                              (todo "ARCH"                 ((org-agenda-overriding-header "ARCH: Architecture Design")))
+                              (todo "DESIGN"               ((org-agenda-overriding-header "DESIGN: Implementation")))
+                              (todo "TEST"                 ((org-agenda-overriding-header "TEST: Type Test")))
+                              (todo "CLOSING"              ((org-agenda-overriding-header "CLOSING: Prepartion Acceptance Protocol")))
+                              (todo "CLOSED"               ((org-agenda-overriding-header "Contract Closed")))
+                              (tags-todo "agenda/ACTIVE"   ((org-agenda-overriding-header "Active Projects")))))
 
           ("n" "Agenda and all TODOs" ((agenda "") (alltodo "")))
 
@@ -1196,19 +1226,3 @@ See `org-latex-format-headline-function' for details."
   (ellama-context-header-line-global-mode +1)
   ;; show ellama session id in header line in all buffers
   (ellama-session-header-line-global-mode +1))
-
-;; Configure Elfeed
-(use-package elfeed
-  :ensure t
-  :config
-  (setq elfeed-db-directory (expand-file-name "elfeed" user-emacs-directory)
-        elfeed-show-entry-switch 'display-buffer)
-  :bind
-  ("C-x w" . elfeed ))
-
-(use-package elfeed-org
-  :ensure t
-  :config
-  (elfeed-org)
-  (setq rmh-elfeed-org-files (list "~/Daten/04-org-system/04-elfeed/elfeed.org"))
-)
