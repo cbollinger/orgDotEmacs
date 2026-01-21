@@ -711,7 +711,6 @@
             ("T1" "fontenc"         t ("pdflatex"))
             ("" "fontspec"          t ("lualatex" "xelatex"))
             ("" "hyperref"          t ("pdflatex" "lualatex" "xelatex"))
-            ("table, dvipsnames, svgnames" "xcolor"       t ("pdflatex" "lualatex" "xelatex"))
   	  ("" "pifont"            t ("pdflatex" "lualatex" "xelatex"))
             ("tikz" "bclogo"        t ("pdflatex" "lualatex" "xelatex"))
             ("" "lipsum"            t ("pdflatex" "lualatex" "xelatex"))
