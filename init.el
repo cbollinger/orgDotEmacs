@@ -773,7 +773,7 @@
 
   ;; Use latexmk + xelatex + shell-escape
   (setq org-latex-pdf-process
-    '("latexmk -pdf -xelatex -shell-escape -interaction=nonstopmode -f -halt-on-error %f"))          '("latexmk -xelatex -shell-escape -interaction=nonstopmode -f -pdf -halt-on-error %f"))
+    '("latexmk -pdf -xelatex -shell-escape -interaction=nonstopmode -f -halt-on-error %f"))
 
   ;; Preview settings
   (setq org-preview-latex-default-process 'xelatex)
