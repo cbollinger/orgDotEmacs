@@ -741,73 +741,39 @@
 
   ;; KOMA Report Class
   (add-to-list 'org-latex-classes
-               `("koma-report"
-                   "%%
-                   \\documentclass[fontsize=11pt,DIV=12,headings=big]{scrreprt}
-                   \\pagestyle{scrheadings}
-                   \\AtBeginDocument{%%
-                     \\setlength\\parindent{0pt}%%
-                     \\setcounter{secnumdepth}{5}%%
-                     \\setminted{fontsize=\\small,breaklines=true,autogobble=true}%%
-                     \\pagestyle{scrheadings}%%
-                     \\renewcommand{\\chaptermark}[1]{\\markboth{#1}{}}
-                     \\renewcommand{\\sectionmark}[1]{\\markright{#1}}
-                     \\ihead{\\leftmark}%%
-                     \\ohead{}%%
-                     \\ifoot*{Ch. Bollinger}%%
-                     \\cfoot*{\\thepage}%%
-                     \\ofoot*{\\today}%%
-                   }%%
-                   "                    
-                 ("\\chapter{%s}"       . "\\chapter*{%s}")
-                 ("\\section{%s}"       . "\\section*{%s}")
-                 ("\\subsection{%s}"    . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}"     . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}"  . "\\subparagraph*{%s}")))
+                 `("koma-report"
+                    "\\documentclass[fontsize=10,DIV=calc]{scrreprt}"                    
+                   ("\\chapter{%s}"       . "\\chapter{%s}")
+                   ("\\section{%s}"       . "\\section{%s}")
+                   ("\\subsection{%s}"    . "\\subsection{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                   ("\\paragraph{%s}"     . "\\paragraph{%s}")
+                   ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
 
   ;; KOMA Article Class
-  (add-to-list 'org-latex-classes
-               `("koma-article"
-                   "%%
-                   \\documentclass[fontsize=11pt,DIV=12,headings=big]{scrreprt}
-                   \\pagestyle{scrheadings}
-                   \\AtBeginDocument{%%
-                     \\setlength\\parindent{0pt}%%
-                     \\setcounter{secnumdepth}{5}%%
-                     \\setminted{fontsize=\\small,breaklines=true,autogobble=true}%%
-                     \\pagestyle{scrheadings}%%
-                     \\renewcommand{\\chaptermark}[1]{\\markboth{#1}{}}
-                     \\renewcommand{\\sectionmark}[1]{\\markright{#1}}
-                     \\ihead{\\leftmark}%%
-                     \\ohead{}%%
-                     \\ifoot*{Ch. Bollinger}%%
-                     \\cfoot*{\\thepage}%%
-                     \\ofoot*{\\today}%%
-                   }%%
-                   "
-                 ("\\section{%s}"       . "\\section{%s}")
-                 ("\\subsection{%s}"    . "\\subsection{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection{%s}")
-                 ("\\paragraph{%s}"     . "\\paragraph{%s}")
-                 ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
+               (add-to-list 'org-latex-classes
+                 `("koma-article"
+                   "\\documentclass[fontsize=10,DIV=calc]{scrartcl}"
+		  ("\\section{%s}"       . "\\section{%s}")
+                  ("\\subsection{%s}"    . "\\subsection{%s}")
+                  ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                  ("\\paragraph{%s}"     . "\\paragraph{%s}")
+                  ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
 
+                    
   ;; duagon Class
   (add-to-list 'org-latex-classes
                '("dg_public"
-            	 "
-                  \\documentclass{duagon_public}
-                "
-                 ("\\section{%s}"       . "\\section{%s}")
-                 ("\\subsection{%s}"    . "\\subsection{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection{%s}")
-                 ("\\paragraph{%s}"     . "\\paragraph{%s}")
-                 ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
+                 "\\documentclass{duagon_public}"
+		   ("\\section{%s}"       . "\\section{%s}")
+                   ("\\subsection{%s}"    . "\\subsection{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                   ("\\paragraph{%s}"     . "\\paragraph{%s}")
+                   ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
 
-  ;; PDF export process: use xelatex + shell escape
+  ;; Use latexmk + xelatex + shell-escape
   (setq org-latex-pdf-process
-        '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-          "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+    '("latexmk -pdf -xelatex -shell-escape -interaction=nonstopmode -f -halt-on-error %f"))          '("latexmk -xelatex -shell-escape -interaction=nonstopmode -f -pdf -halt-on-error %f"))
 
   ;; Preview settings
   (setq org-preview-latex-default-process 'xelatex)
