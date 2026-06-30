@@ -378,6 +378,10 @@
 
 (add-hook 'prog-mode-hook #'my/prog-mode-flycheck-setup)
 
+;; org-lint intermittently fails on first save with "Wrong type argument: number-or-marker-p"
+;; — a known org-mode bug. Disable it globally from flycheck.
+(setq-default flycheck-disabled-checkers '(org-lint))
+
 (setq org-hide-emphasis-markers t)
 
 (defface my-org-emphasis-bold
@@ -701,81 +705,82 @@
 
   (add-hook 'org-clock-out-hook 'bh/clock-out-maybe 'append)
 
-      (use-package ox-latex
-        :ensure nil
-        :after org
-        :config
+        (use-package ox-latex
+          :ensure nil
+          :after org
+          :config
 
-    ;; Default packages for all LaTeX exports (depending on engine)
-    (setq org-latex-default-packages-alist
-          '(("AUTO" "inputenc"      t ("pdflatex"))
-            ("T1" "fontenc"         t ("pdflatex"))
-            ("" "fontspec"          t ("lualatex" "xelatex"))
-            ("" "hyperref"          t ("pdflatex" "lualatex" "xelatex"))
-  	      ("" "pifont"            t ("pdflatex" "lualatex" "xelatex"))
-            ("table" "xcolor"        t ("pdflatex" "lualatex" "xelatex"))
-	        ("tikz" "bclogo"        t ("pdflatex" "lualatex" "xelatex"))
-            ("" "lipsum"            t ("pdflatex" "lualatex" "xelatex"))
-            ("" "amssymb"           t ("pdflatex" "lualatex" "xelatex"))
-            ("" "enumitem"          t ("pdflatex" "lualatex" "xelatex"))
-            ("" "lastpage"          t ("pdflatex" "lualatex" "xelatex"))
-            ("" "rotfloat"          t ("pdflatex" "lualatex" "xelatex"))
-  	  ("" "minted"            t ("pdflatex" "lualatex" "xelatex"))
-  	  ("" "mathtools"         t ("pdflatex" "lualatex" "xelatex"))
-  	  ("" "unicode-math"      t ("pdflatex" "lualatex" "xelatex"))
-  	  ("" "comment"           t ("pdflatex" "lualatex" "xelatex"))
-  	  ("" "tcolorbox"            t ("pdflatex" "lualatex" "xelatex"))
-  	  ("customcolors" "hf-tikz"  t ("pdflatex" "lualatex" "xelatex"))
-  	  ))
+          ;; Default packages for all LaTeX exports (depending on engine)
+          (setq org-latex-default-packages-alist
+                '(("AUTO" "inputenc"      t ("pdflatex"))
+                  ("T1" "fontenc"         t ("pdflatex"))
+                  ("" "fontspec"          t ("lualatex" "xelatex"))
+                  ("" "hyperref"          t ("pdflatex" "lualatex" "xelatex"))
+        	      ("" "pifont"            t ("pdflatex" "lualatex" "xelatex"))
+                  ("table" "xcolor"        t ("pdflatex" "lualatex" "xelatex"))
+  	        ("table" "xcolor"        t ("pdflatex" "lualatex" "xelatex"))
+  	        ("tikz" "bclogo"        t ("pdflatex" "lualatex" "xelatex"))
+                  ("" "lipsum"            t ("pdflatex" "lualatex" "xelatex"))
+                  ("" "amssymb"           t ("pdflatex" "lualatex" "xelatex"))
+                  ("" "enumitem"          t ("pdflatex" "lualatex" "xelatex"))
+                  ("" "lastpage"          t ("pdflatex" "lualatex" "xelatex"))
+                  ("" "rotfloat"          t ("pdflatex" "lualatex" "xelatex"))
+        	  ("" "minted"            t ("pdflatex" "lualatex" "xelatex"))
+        	  ("" "mathtools"         t ("pdflatex" "lualatex" "xelatex"))
+        	  ("" "unicode-math"      t ("pdflatex" "lualatex" "xelatex"))
+        	  ("" "comment"           t ("pdflatex" "lualatex" "xelatex"))
+        	  ("" "tcolorbox"            t ("pdflatex" "lualatex" "xelatex"))
+        	  ("customcolors" "hf-tikz"  t ("pdflatex" "lualatex" "xelatex"))
+        	  ))
 
-        ;; Use minted for source code blocks
-        (setq org-latex-listings 'minted)
+          ;; Use minted for source code blocks
+          (setq org-latex-listings 'minted)
 
-        ;; Set default LaTeX compiler to xelatex
-        (setq org-latex-compiler "xelatex")
+          ;; Set default LaTeX compiler to xelatex
+          (setq org-latex-compiler "xelatex")
 
-        ;; Paths & shell escape for minted
-        (add-to-list 'exec-path "/usr/share/texmf")
-        (with-eval-after-load 'tex
-          (add-to-list 'safe-local-variable-values
-                       '(TeX-command-extra-options . "-shell-escape")))
+          ;; Paths & shell escape for minted
+          (add-to-list 'exec-path "/usr/share/texmf")
+          (with-eval-after-load 'tex
+            (add-to-list 'safe-local-variable-values
+                         '(TeX-command-extra-options . "-shell-escape")))
 
-        ;; KOMA Report Class
-        (add-to-list 'org-latex-classes
-                       `("koma-report"
-                          "\\documentclass[fontsize=10,DIV=calc]{scrreprt}"                    
-                         ("\\chapter{%s}"       . "\\chapter{%s}")
-                         ("\\section{%s}"       . "\\section{%s}")
-                         ("\\subsection{%s}"    . "\\subsection{%s}")
-                         ("\\subsubsection{%s}" . "\\subsubsection{%s}")
-                         ("\\paragraph{%s}"     . "\\paragraph{%s}")
-                         ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
+          ;; KOMA Report Class
+          (add-to-list 'org-latex-classes
+                         `("koma-report"
+                            "\\documentclass[fontsize=10,DIV=calc]{scrreprt}"                    
+                           ("\\chapter{%s}"       . "\\chapter{%s}")
+                           ("\\section{%s}"       . "\\section{%s}")
+                           ("\\subsection{%s}"    . "\\subsection{%s}")
+                           ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                           ("\\paragraph{%s}"     . "\\paragraph{%s}")
+                           ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
 
-        ;; KOMA Article Class
-                     (add-to-list 'org-latex-classes
-                       `("koma-article"
-                         "\\documentclass[fontsize=10,DIV=calc]{scrartcl}"
-      		  ("\\section{%s}"       . "\\section{%s}")
-                        ("\\subsection{%s}"    . "\\subsection{%s}")
-                        ("\\subsubsection{%s}" . "\\subsubsection{%s}")
-                        ("\\paragraph{%s}"     . "\\paragraph{%s}")
-                        ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
+          ;; KOMA Article Class
+                       (add-to-list 'org-latex-classes
+                         `("koma-article"
+                           "\\documentclass[fontsize=10,DIV=calc]{scrartcl}"
+        		  ("\\section{%s}"       . "\\section{%s}")
+                          ("\\subsection{%s}"    . "\\subsection{%s}")
+                          ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                          ("\\paragraph{%s}"     . "\\paragraph{%s}")
+                          ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
 
-                          
-        ;; duagon Class
-        (add-to-list 'org-latex-classes
-                     '("dg_public"
-                       "\\documentclass{duagon_public}"
-      		   ("\\section{%s}"       . "\\section{%s}")
-                         ("\\subsection{%s}"    . "\\subsection{%s}")
-                         ("\\subsubsection{%s}" . "\\subsubsection{%s}")
-                         ("\\paragraph{%s}"     . "\\paragraph{%s}")
-                         ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
+                            
+          ;; duagon Class
+          (add-to-list 'org-latex-classes
+                       '("dg_public"
+                         "\\documentclass{duagon_public}"
+        		   ("\\section{%s}"       . "\\section{%s}")
+                           ("\\subsection{%s}"    . "\\subsection{%s}")
+                           ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+                           ("\\paragraph{%s}"     . "\\paragraph{%s}")
+                           ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
 
 
-        ;; define the minted format
-        (setq org-latex-header-extra
-  	    "\\setminted{fontsize=\\\small,breaklines=true,autogobble=true}")
+          ;; define the minted format
+          (setq org-latex-header-extra
+    	    "\\setminted{fontsize=\\\small,breaklines=true,autogobble=true}")
 
         ;; Override Org's hypersetup so TOC links are blue & clickable.
         ;; pdfpagelabels=false suppresses hyperref's /PageLabels rerun request,
@@ -799,21 +804,21 @@
         (setq org-latex-pdf-process
           '("latexmk -xelatex -halt-on-error %f"))
 
-        ;; Preview settings
-        (setq org-preview-latex-default-process 'xelatex)
-        (setq org-preview-latex-process-alist
-              '((xelatex
-                 :programs ("xelatex" "dvisvgm")
-                 :description "xdv → svg"
-                 :message "You need to install: xelatex and dvisvgm."
-                 :image-input-type "xdv"
-                 :image-output-type "svg"
-                 :image-size-adjust (1.7 . 1.5)
-                 :latex-compiler ("xelatex -no-pdf -shell-escape -interaction nonstopmode -output-directory %o %f")
-                 :image-converter ("dvisvgm %f -n -b transparent -c %S -o %O"))))
+          ;; Preview settings
+          (setq org-preview-latex-default-process 'xelatex)
+          (setq org-preview-latex-process-alist
+                '((xelatex
+                   :programs ("xelatex" "dvisvgm")
+                   :description "xdv → svg"
+                   :message "You need to install: xelatex and dvisvgm."
+                   :image-input-type "xdv"
+                   :image-output-type "svg"
+                   :image-size-adjust (1.7 . 1.5)
+                   :latex-compiler ("xelatex -no-pdf -shell-escape -interaction nonstopmode -output-directory %o %f")
+                   :image-converter ("dvisvgm %f -n -b transparent -c %S -o %O"))))
 
-        ;; Ensure preview temp directory exists
-        (make-directory (concat temporary-file-directory "org-preview-latex") t))
+          ;; Ensure preview temp directory exists
+          (make-directory (concat temporary-file-directory "org-preview-latex") t))
 
 ;; You cannot have *both* active at the same time, because
 ;; `org-latex-format-headline-function` can only hold one function.

@@ -1264,6 +1264,10 @@ Set Flycheck and flycheck-aspell as frontend
     (flycheck-mode 1)))
 
 (add-hook 'prog-mode-hook #'my/prog-mode-flycheck-setup)
+
+;; org-lint intermittently fails on first save with "Wrong type argument: number-or-marker-p"
+;; — a known org-mode bug. Disable it globally from flycheck.
+(setq-default flycheck-disabled-checkers '(org-lint))
 #+end_src
 
 ** custom faces for Org emphasis styles
@@ -1897,6 +1901,9 @@ $max_repeat = 3;
 
 # Remove intermediate xdv and synctex files on latexmk -c
 $clean_ext = 'xdv synctex.gz';
+
+# Upgrade PDF output to 1.7 so included PDFs (logos, images) don't trigger version mismatch warnings
+$xdvipdfmx = 'xdvipdfmx -V 7 %O -o %D %S';
 #+end_src
 
 ** Org Export Latex Headlines
