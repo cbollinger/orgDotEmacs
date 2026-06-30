@@ -1241,7 +1241,8 @@ Set Flycheck and flycheck-aspell as frontend
 ;; --- Flycheck-Aspell Setup ---
 (use-package flycheck
   :ensure t
-  :init (global-flycheck-mode))
+  :init (global-flycheck-mode)
+  :hook (lsp-mode . flycheck-mode))
 
 (use-package flycheck-aspell
   :ensure t
@@ -1614,10 +1615,12 @@ Set Flycheck and flycheck-aspell as frontend
                     "* MEETING %^{Subject} :MEETING:\n%^{When}t\n:LOGBOOK:\n:END:\n%?" :clock-in t :clock-resume t)
                    ("p" "Phone call" entry (file "~/Daten/04-org-system/02-refile/refile.org")
                     "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-                   ("h" "Habit" entry (file "~/Daten/04-org-system/02-refile/refile.org")
+		   ("h" "Habit" entry (file "~/Daten/04-org-system/02-refile/refile.org")
                     "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 )
 #+end_src
+
+
 
 
 
@@ -1771,6 +1774,7 @@ looking characters that you can control.  Another option for this is
                   ("" "hyperref"          t ("pdflatex" "lualatex" "xelatex"))
         	      ("" "pifont"            t ("pdflatex" "lualatex" "xelatex"))
                   ("table" "xcolor"        t ("pdflatex" "lualatex" "xelatex"))
+  	        ("table" "xcolor"        t ("pdflatex" "lualatex" "xelatex"))
   	        ("tikz" "bclogo"        t ("pdflatex" "lualatex" "xelatex"))
                   ("" "lipsum"            t ("pdflatex" "lualatex" "xelatex"))
                   ("" "amssymb"           t ("pdflatex" "lualatex" "xelatex"))
@@ -1834,23 +1838,27 @@ looking characters that you can control.  Another option for this is
           (setq org-latex-header-extra
     	    "\\setminted{fontsize=\\\small,breaklines=true,autogobble=true}")
 
-          ;; Override Org’s hypersetup so TOC links are blue & clickable
-           (setq org-latex-hyperref-template
-              "\\hypersetup{
-                  pdfauthor={%a},
-                  pdftitle={%t},
-                  pdfkeywords={%k},
-                  pdfsubject={%d},
-                  pdfcreator={%c},
-                  pdflang={%L},
-                  colorlinks=true,
-                  linkcolor=blue,
-                  urlcolor=blue
-              }")
+        ;; Override Org's hypersetup so TOC links are blue & clickable.
+        ;; pdfpagelabels=false suppresses hyperref's /PageLabels rerun request,
+        ;; saving one xelatex pass on every build.
+         (setq org-latex-hyperref-template
+            "\\hypersetup{
+                pdfauthor={%a},
+                pdftitle={%t},
+                pdfkeywords={%k},
+                pdfsubject={%d},
+                pdfcreator={%c},
+                pdflang={%L},
+                colorlinks=true,
+                linkcolor=blue,
+                urlcolor=blue,
+                pdfpagelabels=false
+            }")
 
-      ;; Use latexmk + xelatex + shell-escape
-          (setq org-latex-pdf-process
-            '("latexmk -pdf -xelatex -shell-escape -interaction=nonstopmode -f -halt-on-error %f"))
+    ;; Use latexmk + xelatex. Shell-escape and interaction flags are defined
+    ;; in ~/.latexmkrc to keep a single source of truth.
+        (setq org-latex-pdf-process
+          '("latexmk -xelatex -halt-on-error %f"))
 
           ;; Preview settings
           (setq org-preview-latex-default-process 'xelatex)
@@ -1867,6 +1875,28 @@ looking characters that you can control.  Another option for this is
 
           ;; Ensure preview temp directory exists
           (make-directory (concat temporary-file-directory "org-preview-latex") t))
+#+end_src
+
+** Latexmk Configuration
+
+Global latexmk settings, tangles to =~/.latexmkrc=.
+The shell-escape flag is required by =minted= for syntax highlighting.
+=max_repeat= is capped at 3 (default is 5) — enough for =hyperref= + =lastpage= + =scrlayer-scrpage= to converge, while avoiding slow extra passes on documents with many code blocks.
+
+#+begin_src conf :tangle ~/.latexmkrc :mkdirp yes
+# Global latexmk configuration — managed via Emacs.org
+
+# Include -shell-escape so minted can call Pygments; halt on error for fast feedback
+$xelatex   = 'xelatex   -shell-escape -interaction=nonstopmode -halt-on-error %O %S';
+$lualatex  = 'lualatex  -shell-escape -interaction=nonstopmode -halt-on-error %O %S';
+$pdflatex  = 'pdflatex  -shell-escape -interaction=nonstopmode -halt-on-error %O %S';
+
+# Limit reruns to 3 (default is 5).
+# With lastpage+scrlayer-scrpage+hyperref, 2-3 passes are always enough.
+$max_repeat = 3;
+
+# Remove intermediate xdv and synctex files on latexmk -c
+$clean_ext = 'xdv synctex.gz';
 #+end_src
 
 ** Org Export Latex Headlines
@@ -1978,7 +2008,6 @@ the associated output files.
   (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'chb/org-babel-tangle-config)))
 #+end_src
 
-
 ** COMMENT Org Habit
 
 #+begin_src emacs-lisp
@@ -2002,7 +2031,7 @@ the associated output files.
    #+begin_src emacs-lisp 
      (use-package org
        :ensure org-contrib
-       :after ox-taskjugger
+       :after ox-taskjuggler
        :config
        (add-to-list 'org-export-backends 'ox-taskjuggler)
        )   
@@ -2053,6 +2082,7 @@ possible key bindings in the mode of your current buffer.
 
 
 * Babel 
+
 ** Statup Settings
 #+begin_src emacs-lisp
   (require 'ox-latex)
@@ -2076,6 +2106,12 @@ possible key bindings in the mode of your current buffer.
         (org-display-inline-images)
       (error nil)))
 #+end_src
+
+** Python
+
+#+begin_src emacs-lisp
+#+end_src
+
 ** Minted
 #+begin_src
    ;; Highlight coloring export of source code block export
@@ -2083,6 +2119,7 @@ possible key bindings in the mode of your current buffer.
   (setq org-latex-listings 'minted)
   (setq org-src-fontify-natively t)
 #+end_src
+
 ** Utils Ditaa, Planuml, imagemagick 
 #+begin_src emacs-lisp
   ;: Ubuntu
@@ -2099,39 +2136,40 @@ possible key bindings in the mode of your current buffer.
     :init
   )
 #+end_src
+
 ** Languages
 To execute or export code in =org-mode= code blocks, you'll need to set up
 =org-babel-load-languages= for each language you'd like to use.  [[https://orgmode.org/worg/org-contrib/babel/languages.html][This page]]
 documents all of the languages that you can use with =org-babel=.
 
 #+begin_src emacs-lisp
-    (with-eval-after-load 'org
-      (org-babel-do-load-languages
-       'org-babel-load-languages
-       '((emacs-lisp . t)    ; 
-         (C          . t)    ; C, C++, D
-         (js         . t)    ; JavaScript
-         (org        , t)    ;
-         (ditaa      . t)    ; ditaa
-         (shell      . t)    ; shell, bash
-         (lisp       . t)    ; lisp
-         (latex      . t)    ; latex
-         (octave     . t)    ; octave
-         (gnuplot    . t)    ; gnuplot
-         (python     . t)    ; pyhon
-         (plantuml   . t)))  ; this line activate plantuml
-
-      (push '("conf-unix" . conf-unix) org-src-lang-modes))
-
-    ;; Use python lexer for ipython blocks
-;;  (ipython     . t)   ; pyhon
-(setq python-shell-interpreter "python3")
-;;  (add-to-list 'org-latex-minted-langs '(ipython "python"))  
+  (with-eval-after-load 'org
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((emacs-lisp . t)    ; 
+       (C          . t)    ; C, C++, D
+       (js         . t)    ; JavaScript
+       (org        , t)    ;
+       (ditaa      . t)    ; ditaa
+       (shell      . t)    ; shell, bash
+       (lisp       . t)    ; lisp
+       (latex      . t)    ; latex
+       (octave     . t)    ; octave
+       (gnuplot    . t)    ; gnuplot
+       (python     . t)    ; pyhon
+       (plantuml   . t)))  ; this line activate plantuml
+    (push '("conf-unix" . conf-unix) org-src-lang-modes))
 
   ;; Do not prompt to confirm evaluation
   ;; This may be dangerous - make sure you understand the consequences
   ;; of setting this -- see the docstring for details
-  (setq org-confirm-babel-evaluate nil)
+
+
+  (setq org-confirm-babel-evaluate nil)     ;; no security check
+  (setq org-src-preserve-indentation t)     ;; start at column 0
+  (setq org-edit-src-content-indentation 0) 
+  (setq python-indent-offset 4)             ;; offset for python 4 
+  (setq python-shell-interpreter "python3") ;; set python shell interpreter
 #+end_src
 
 
@@ -2412,19 +2450,6 @@ package.
 #+end_src
 
  
-#+begin_src emacs-lisp
-  (use-package js2-refactor
-    :ensure t
-    :after js2-mode
-    :config
-    ;; Bind js2-refactor keybindings
-    (js2r-add-keybindings-with-prefix "C-c C-r"))
-
-  ;; For example, unbind M-. in js-mode
-  (add-hook 'js2-mode-hook (lambda ()
-     (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
-#+end_src
-
 
 *** Source Map
 #+begin_src emacs-lisp
@@ -2579,16 +2604,7 @@ not pop up immediately!!!!
 
 ** Flycheck - Syntax Checking
 
-[[https://www.flycheck.org/en/latest/][Flycheck]] Syntax checking for GNU Emacs
-
-#+begin_src emacs-lisp
-  (use-package flycheck
-    :ensure t
-    :init (global-flycheck-mode)
-    :hook (lsp-mode . flycheck-mode)
-    )
-#+end_src
-
+[[https://www.flycheck.org/en/latest/][Flycheck]] Syntax checking for GNU Emacs — configured in the Spell Checking section above.
 
 ** Projectile - Project Management Library
 
