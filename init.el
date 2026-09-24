@@ -715,22 +715,13 @@
                 '(("AUTO" "inputenc"      t ("pdflatex"))
                   ("T1" "fontenc"         t ("pdflatex"))
                   ("" "fontspec"          t ("lualatex" "xelatex"))
-                  ("" "hyperref"          t ("pdflatex" "lualatex" "xelatex"))
-        	      ("" "pifont"            t ("pdflatex" "lualatex" "xelatex"))
-                  ("table" "xcolor"        t ("pdflatex" "lualatex" "xelatex"))
-  	        ("table" "xcolor"        t ("pdflatex" "lualatex" "xelatex"))
-  	        ("tikz" "bclogo"        t ("pdflatex" "lualatex" "xelatex"))
-                  ("" "lipsum"            t ("pdflatex" "lualatex" "xelatex"))
+		  ("table,svgnames" "xcolor"       t ("pdflatex" "lualatex" "xelatex"))
+		  ("" "hyperref"          t ("pdflatex" "lualatex" "xelatex"))
                   ("" "amssymb"           t ("pdflatex" "lualatex" "xelatex"))
-                  ("" "enumitem"          t ("pdflatex" "lualatex" "xelatex"))
-                  ("" "lastpage"          t ("pdflatex" "lualatex" "xelatex"))
                   ("" "rotfloat"          t ("pdflatex" "lualatex" "xelatex"))
-        	  ("" "minted"            t ("pdflatex" "lualatex" "xelatex"))
-        	  ("" "mathtools"         t ("pdflatex" "lualatex" "xelatex"))
-        	  ("" "unicode-math"      t ("pdflatex" "lualatex" "xelatex"))
-        	  ("" "comment"           t ("pdflatex" "lualatex" "xelatex"))
-        	  ("" "tcolorbox"            t ("pdflatex" "lualatex" "xelatex"))
-        	  ("customcolors" "hf-tikz"  t ("pdflatex" "lualatex" "xelatex"))
+		  ("" "float"             t ("pdflatex" "lualatex" "xelatex"))
+        	      ("newfloat" "minted"    t ("pdflatex" "lualatex" "xelatex"))
+		  ("" "tcolorbox"         t ("pdflatex" "lualatex" "xelatex"))
         	  ))
 
           ;; Use minted for source code blocks
@@ -956,7 +947,7 @@ See `org-latex-format-headline-function' for details."
      '((emacs-lisp . t)    ; 
        (C          . t)    ; C, C++, D
        (js         . t)    ; JavaScript
-       (org        , t)    ;
+       (org        . t)    ;
        (ditaa      . t)    ; ditaa
        (shell      . t)    ; shell, bash
        (lisp       . t)    ; lisp
@@ -987,26 +978,34 @@ See `org-latex-format-headline-function' for details."
         ;; Suppress cl package obsolete warnings
         (setq byte-compile-warnings '(not cl-functions obsolete)))
 
-  (use-package lsp-mode
-    :ensure t
-    :hook (
-           ((c-mode c++-mode) . lsp)
-           ((js-mode js2-mode) . lsp)    
-           ((typescript-mode web-mode) . lsp)
-           )
-    :commands lsp
-    :commands (lsp lsp-deferred)
-    :init (setq lsp-keymap-prefix "C-p p"
-                lsp-enable-file-watchers nil
-                lsp-enable-on-type-formatting nil
-                lsp-enable-snippet nil
-                lsp-lens-enable t)
-    :config
-    (setq lsp-prefer-flymake nil) ;; Use flycheck instead of flymake
-  )
+(setq lsp-clangd-binary-path "/usr/bin/clangd-22")
+
+(use-package lsp-clangd
+    :ensure lsp-mode
+    )
+
+;; Use Tree-sitter modes for C/C++.
+(add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
+(add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+
+(use-package lsp-mode
+  :ensure t
+  :hook (((c-mode c++-mode c-ts-mode c++-ts-mode) . lsp)
+         ((js-mode js2-mode) . lsp)
+         ((typescript-mode web-mode) . lsp))
+  :commands (lsp lsp-deferred)
+  :init
+  (setq lsp-keymap-prefix "C-p p"
+        lsp-enable-file-watchers nil
+        lsp-enable-on-type-formatting nil
+        lsp-enable-snippet t
+        lsp-lens-enable t)
+  :config
+  (setq lsp-prefer-flymake nil))
 
 (use-package lsp-ui
   :ensure t
+  :hook (lsp-mode . lsp-ui-mode)
   :commands lsp-ui-mode
   :config
   (setq lsp-ui-doc-enable t
@@ -1015,6 +1014,22 @@ See `org-latex-format-headline-function' for details."
         lsp-ui-doc-include-signature t
         lsp-ui-sideline-enable t
         lsp-ui-sideline-ignore-duplicate t))
+
+  (use-package lsp-ivy
+    :ensure t
+    :after lsp-mode)
+
+  (setq c-default-style "linux")
+  (setq c-basic-offset 4)
+
+;; Optional: Web mode for HTML and embedded JavaScript
+(use-package web-mode
+  :ensure t
+  :mode ("\\.html\\'")
+  :config
+  (add-hook 'web-mode-hook (lambda ()
+                             (when (string-equal "jsx" (file-name-extension buffer-file-name))
+                               (setup-tide-mode)))))
 
   ;; Indium -- JavaScript: Debugging Mode and REPL
   (use-package indium
@@ -1073,34 +1088,27 @@ See `org-latex-format-headline-function' for details."
     :config
     (pyvenv-mode 1))
 
-  (setq c-default-style "linux")
-  (setq c-basic-offset 4)
-
-  (use-package lsp-clangd
-    :ensure lsp-mode
-    :hook ((c-mode . (lambda () (require 'lsp-clangd) (lsp)))
-           (c++-mode . (lambda () (require 'lsp-clangd) (lsp))))
-    )
-
-;; Optional: Web mode for HTML and embedded JavaScript
-(use-package web-mode
+(use-package yasnippet
   :ensure t
-  :mode ("\\.html\\'")
+  :hook ((prog-mode . yas-minor-mode)
+         (org-mode . yas-minor-mode))
   :config
-  (add-hook 'web-mode-hook (lambda ()
-                             (when (string-equal "jsx" (file-name-extension buffer-file-name))
-                               (setup-tide-mode)))))
+  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets"))
+
+(use-package yasnippet-snippets
+  :ensure t
+  :after yasnippet)
 
   (use-package company
     :ensure t
     :hook (lsp-mode . company-mode)
     :config
     (setq company-minimum-prefix-length 1
-          company-idle-delay 0.0)
-    (global-company-mode t))
+          company-idle-delay 0.0))
 
   (use-package company-box
-  :hook (company-mode . company-box-mode))
+    :ensure t
+    :hook (company-mode . company-box-mode))
 
   (use-package projectile
     :ensure t
@@ -1129,18 +1137,13 @@ See `org-latex-format-headline-function' for details."
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
-(unless (package-installed-p 'yasnippet)
-  (package-install 'yasnippet))
-(require 'yasnippet)
-
-(unless (package-installed-p 'yasnippet-snippets)
-  (package-install 'yasnippet-snippets))
-(require 'yasnippet-snippets)
-
-(setq yas-snippet-dirs
-      '("~/.emacs.d/snippets"                 ;; personal snippets
-        ))
-(yas-global-mode 1)
+(setq treesit-language-source-alist
+      '((cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"
+                "v0.23.4"
+                "src"))
+        (c . ("https://github.com/tree-sitter/tree-sitter-c"
+              "v0.23.4"
+              "src"))))
 
   (use-package term
     :commands term
