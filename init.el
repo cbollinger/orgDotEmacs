@@ -478,7 +478,7 @@
     				   "~/Daten/04-org-system/05-duagon/contracts")))
 
       (setq org-todo-keywords
-            (quote ((sequence "TODO(t)" "ONGOING(o)" "RISK(r)" "MEETING(M)" "|" "DONE(d)" "CANCELLED(C)")
+            (quote ((sequence "TODO(t)" "ONGOING(o)" "HOLD(h)" "RISK(r)" "MEETING(M)" "|" "DONE(d)" "CANCELLED(C)")
                     (sequence "WP(W)" "WPon(O)" "|" "WPclose(C)")
                     (sequence "RFW(0)" "ROM(1)" "PDP(2)" "REQ(3)" "ARCH(4)" "DESIGN(5)" "TEST(6)" "CLOSING(7)" "|" "CLOSED(8)")
                     ;; (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING")
@@ -486,12 +486,13 @@
 
       (setq org-todo-keyword-faces
             (quote (("TODO"      :foreground "red"          :weight bold)
-                    ("MEETING"   :foreground "forest green" :weight bold)
-                    ("NEXT"      :foreground "blue"         :weight bold)
+                    ("MEETING"   :foreground "dark green" :weight bold)
+                    ("NEXT"      :foreground "dark violet"  :weight bold)
                     ("ONGOING"   :foreground "blue"         :weight bold)
-                    ("RISK"      :foreground "yellow"       :weight bold)
+                    ("HOLD"      :foreground "orchid3"    :weight bold)
+		    ("RISK"      :foreground "yellow"       :weight bold)
                     ("DONE"      :foreground "forest green" :weight bold)
-                    ("CANCELLED" :foreground "forest green" :weight bold)
+                    ("CANCELLED" :foreground "burlywood3" :weight bold)
 
                     ("WP"        :foreground "blue"         :weight bold)
                     ("WPon"      :foreground "yellow"       :weight bold)
