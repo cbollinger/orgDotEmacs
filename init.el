@@ -979,6 +979,9 @@ See `org-latex-format-headline-function' for details."
         (setq byte-compile-warnings '(not cl-functions obsolete)))
 
 (setq lsp-clangd-binary-path "/usr/bin/clangd-22")
+(setq lsp-clients-clangd-executable "clangd-22")
+(setq clang-format-executable "clang-format-22")
+
 
 (use-package lsp-clangd
     :ensure lsp-mode
@@ -990,7 +993,7 @@ See `org-latex-format-headline-function' for details."
 
 (use-package lsp-mode
   :ensure t
-  :hook (((c-mode c++-mode c-ts-mode c++-ts-mode) . lsp)
+  :hook (((c-ts-mode c++-ts-mode) . lsp)
          ((js-mode js2-mode) . lsp)
          ((typescript-mode web-mode) . lsp))
   :commands (lsp lsp-deferred)
@@ -1110,6 +1113,19 @@ See `org-latex-format-headline-function' for details."
     :ensure t
     :hook (company-mode . company-box-mode))
 
+(use-package clang-format
+  :ensure t
+  :commands (clang-format-buffer clang-format-region)
+  :config
+  (setq clang-format-executable "/usr/bin/clang-format-22"))
+
+(defun my/clang-format-on-save ()
+  "Format the current C/C++ buffer with clang-format before saving."
+  (when (derived-mode-p 'c++-ts-mode 'c-ts-mode)
+    (clang-format-buffer)))
+
+(add-hook 'before-save-hook #'my/clang-format-on-save)
+
   (use-package projectile
     :ensure t
     :config
@@ -1209,3 +1225,27 @@ See `org-latex-format-headline-function' for details."
   (ellama-context-header-line-global-mode +1)
   ;; show ellama session id in header line in all buffers
   (ellama-session-header-line-global-mode +1))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(all-the-icons-dired auto-package-update clang-format
+			 command-log-mode company-box company-tabnine
+			 counsel-projectile dired-hide-dotfiles
+			 dired-open doom-modeline doom-themes ellama
+			 eshell-git-prompt eterm-256color
+			 flycheck-aspell forge gnuplot helpful htmlize
+			 indium ivy-prescient ivy-youtube lsp-ivy
+			 lsp-treemacs lsp-ui no-littering
+			 org-attach-screenshot org-bullets org-contrib
+			 pyvenv rainbow-delimiters sourcemap treemacs
+			 typescript-mode undo-tree vertico vterm
+			 web-mode xref-js2 yasnippet-snippets)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

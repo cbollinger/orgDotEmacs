@@ -1,4 +1,4 @@
-#+title: Flexible Emacs Configuration
+$#+title: Flexible Emacs Configuration
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 #+CALL: checkout-submodules()
 
@@ -2190,6 +2190,9 @@ documents all of the languages that you can use with =org-babel=.
 ** clangd
 #+begin_src emacs-lisp
 (setq lsp-clangd-binary-path "/usr/bin/clangd-22")
+(setq lsp-clients-clangd-executable "clangd-22")
+(setq clang-format-executable "clang-format-22")
+
 
 (use-package lsp-clangd
     :ensure lsp-mode
@@ -2235,7 +2238,7 @@ and trying different things that you find there.
 
 (use-package lsp-mode
   :ensure t
-  :hook (((c-mode c++-mode c-ts-mode c++-ts-mode) . lsp)
+  :hook (((c-ts-mode c++-ts-mode) . lsp)
          ((js-mode js2-mode) . lsp)
          ((typescript-mode web-mode) . lsp))
   :commands (lsp lsp-deferred)
@@ -2656,6 +2659,24 @@ not pop up immediately!!!!
 
 [[https://www.flycheck.org/en/latest/][Flycheck]] Syntax checking for GNU Emacs — configured in the Spell Checking section above.
 
+
+** clang-format
+#+begin_src emacs-lisp
+(use-package clang-format
+  :ensure t
+  :commands (clang-format-buffer clang-format-region)
+  :config
+  (setq clang-format-executable "/usr/bin/clang-format-22"))
+#+end_src
+
+#+begin_src emacs-lisp
+(defun my/clang-format-on-save ()
+  "Format the current C/C++ buffer with clang-format before saving."
+  (when (derived-mode-p 'c++-ts-mode 'c-ts-mode)
+    (clang-format-buffer)))
+
+(add-hook 'before-save-hook #'my/clang-format-on-save)
+#+end_src
 
 ** Projectile - Project Management Library
 
