@@ -2747,7 +2747,9 @@ them yourself.
 #+begin_src emacs-lisp
 
 (use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
+  :hook ((c++-mode . rainbow-delimiters-mode)
+	 (c++-ts-mode . rainbow-delimiters-mode))
+  )
 
 #+end_src
 
@@ -3010,6 +3012,31 @@ For more thoughts on Eshell, check out these articles by Pierre Neidhardt:
 
 * Artificial Inelligence
 
+
+** Copilot
+
+- Then run M-x copilot-install-server and M-x copilot-login. That's it!
+- Use package:vc for Emacs 30+
+#+begin_src emacs-lisp
+(use-package copilot
+  :vc (:url "https://github.com/copilot-emacs/copilot.el"
+            :rev :newest
+            :branch "main")
+  :ensure t
+  :hook ((c++-mode . copilot-mode)
+	 (c++-ts-mode . copilot-mode))
+  :bind (:map copilot-completion-map
+              ("<tab>" . copilot-accept-completion)
+              ("TAB" . copilot-accept-completion)
+              ("C-<tab>" . copilot-accept-completion-by-word)
+              ("C-TAB" . copilot-accept-completion-by-word)
+              ("C-n" . copilot-next-completion)
+              ("C-p" . copilot-previous-completion)))
+#+end_src
+
+
+
+** COMMENT Ellama
 =Ellama= is a tool for interacting with large language models from
 Emacs. It allows you to ask questions and receive responses from the
 LLMs. Ellama can perform various tasks such as translation, code

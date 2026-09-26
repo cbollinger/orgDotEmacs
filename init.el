@@ -1151,7 +1151,9 @@ See `org-latex-format-headline-function' for details."
     :after magit)
 
 (use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
+  :hook ((c++-mode . rainbow-delimiters-mode)
+	 (c++-ts-mode . rainbow-delimiters-mode))
+  )
 
 (setq treesit-language-source-alist
       '((cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"
@@ -1214,35 +1216,40 @@ See `org-latex-format-headline-function' for details."
 
     (eshell-git-prompt-use-theme 'powerline))
 
-(use-package ellama
+(use-package copilot
+  :vc (:url "https://github.com/copilot-emacs/copilot.el"
+            :rev :newest
+            :branch "main")
   :ensure t
-  :bind ("C-c e" . ellama)
-  ;; send last message in chat buffer with C-c C-c
-  :hook (org-ctrl-c-ctrl-c-final . ellama-chat-send-last-message)
-  :init (setopt ellama-auto-scroll t)
-  :config
-  ;; show ellama context in header line in all buffers
-  (ellama-context-header-line-global-mode +1)
-  ;; show ellama session id in header line in all buffers
-  (ellama-session-header-line-global-mode +1))
+  :hook ((c++-mode . copilot-mode)
+	 (c++-ts-mode . copilot-mode))
+  :bind (:map copilot-completion-map
+              ("<tab>" . copilot-accept-completion)
+              ("TAB" . copilot-accept-completion)
+              ("C-<tab>" . copilot-accept-completion-by-word)
+              ("C-TAB" . copilot-accept-completion-by-word)
+              ("C-n" . copilot-next-completion)
+              ("C-p" . copilot-previous-completion)))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(copilot-max-char 250000)
  '(package-selected-packages
-   '(all-the-icons-dired auto-package-update clang-format
+   '(all-the-icons-dired auto-package-update buttercup clang-format
 			 command-log-mode company-box company-tabnine
-			 counsel-projectile dired-hide-dotfiles
-			 dired-open doom-modeline doom-themes ellama
-			 eshell-git-prompt eterm-256color
-			 flycheck-aspell forge gnuplot helpful htmlize
-			 indium ivy-prescient ivy-youtube lsp-ivy
-			 lsp-treemacs lsp-ui no-littering
-			 org-attach-screenshot org-bullets org-contrib
-			 pyvenv rainbow-delimiters sourcemap treemacs
-			 typescript-mode undo-tree vertico vterm
-			 web-mode xref-js2 yasnippet-snippets)))
+			 copilot counsel-projectile
+			 dired-hide-dotfiles dired-open doom-modeline
+			 doom-themes ellama eshell-git-prompt
+			 eterm-256color flycheck-aspell forge gnuplot
+			 helpful htmlize indium ivy-prescient
+			 ivy-youtube lsp-ivy lsp-treemacs lsp-ui
+			 no-littering org-attach-screenshot
+			 org-bullets org-contrib pyvenv
+			 rainbow-delimiters sourcemap typescript-mode
+			 undo-tree vertico vterm web-mode xref-js2
+			 yasnippet-snippets)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
