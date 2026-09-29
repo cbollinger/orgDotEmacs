@@ -1,4 +1,4 @@
-$#+title: Flexible Emacs Configuration
+$$#+title: Flexible Emacs Configuration
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 #+CALL: checkout-submodules()
 
@@ -3012,11 +3012,12 @@ For more thoughts on Eshell, check out these articles by Pierre Neidhardt:
 
 * Artificial Inelligence
 
-
 ** Copilot
 
 - Then run M-x copilot-install-server and M-x copilot-login. That's it!
 - Use package:vc for Emacs 30+
+- tips and trick [[https://metaredux.com/posts/2026/06/26/copilot-el-0-7.html][from Metaredux.com]]
+
 #+begin_src emacs-lisp
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el"
@@ -3024,14 +3025,35 @@ For more thoughts on Eshell, check out these articles by Pierre Neidhardt:
             :branch "main")
   :ensure t
   :hook ((c++-mode . copilot-mode)
-	 (c++-ts-mode . copilot-mode))
+         (c++-ts-mode . copilot-mode))
+  :config
+  (setq copilot-chat-use-agent-mode t)
+  (setq copilot-chat-preview-tool-edits t)
+  (setopt copilot-chat-enable-semantic-search t))
+#+end_src
+
+#+begin_src 
+(use-package copilot
+  :vc (:url "https://github.com/copilot-emacs/copilot.el"
+            :rev :newest
+            :branch "main")		;
+  :ensure t
+  :hook ((c++-mode . copilot-mode)
+         (c++-ts-mode . copilot-mode))
   :bind (:map copilot-completion-map
               ("<tab>" . copilot-accept-completion)
               ("TAB" . copilot-accept-completion)
               ("C-<tab>" . copilot-accept-completion-by-word)
-              ("C-TAB" . copilot-accept-completion-by-word)
-              ("C-n" . copilot-next-completion)
-              ("C-p" . copilot-previous-completion)))
+              ("C-TAB" . copilot-accept-completion-by-word))
+  :config
+  ;; 1. Aktiviert den Agent-Modus für den Chat (erlaubt Datei-Edits und Shell-Befehle)
+  (setq copilot-chat-use-agent-mode t)
+
+  ;; 2. Zeigt vor Dateiänderungen durch Tools eine Diff-Vorschau zur Bestätigung an
+  (setq copilot-chat-preview-tool-edits t)
+
+  ;; 3. Aktiviert die semantische Indizierung für codebase-weite Fragen (@workspace)
+  (setopt copilot-chat-enable-semantic-search t))
 #+end_src
 
 

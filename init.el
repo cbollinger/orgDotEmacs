@@ -1222,37 +1222,8 @@ See `org-latex-format-headline-function' for details."
             :branch "main")
   :ensure t
   :hook ((c++-mode . copilot-mode)
-	 (c++-ts-mode . copilot-mode))
-  :bind (:map copilot-completion-map
-              ("<tab>" . copilot-accept-completion)
-              ("TAB" . copilot-accept-completion)
-              ("C-<tab>" . copilot-accept-completion-by-word)
-              ("C-TAB" . copilot-accept-completion-by-word)
-              ("C-n" . copilot-next-completion)
-              ("C-p" . copilot-previous-completion)))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(copilot-max-char 250000)
- '(package-selected-packages
-   '(all-the-icons-dired auto-package-update buttercup clang-format
-			 command-log-mode company-box company-tabnine
-			 copilot counsel-projectile
-			 dired-hide-dotfiles dired-open doom-modeline
-			 doom-themes ellama eshell-git-prompt
-			 eterm-256color flycheck-aspell forge gnuplot
-			 helpful htmlize indium ivy-prescient
-			 ivy-youtube lsp-ivy lsp-treemacs lsp-ui
-			 no-littering org-attach-screenshot
-			 org-bullets org-contrib pyvenv
-			 rainbow-delimiters sourcemap typescript-mode
-			 undo-tree vertico vterm web-mode xref-js2
-			 yasnippet-snippets)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+         (c++-ts-mode . copilot-mode))
+  :config
+  (setq copilot-chat-use-agent-mode t)
+  (setq copilot-chat-preview-tool-edits t)
+  (setopt copilot-chat-enable-semantic-search t))
