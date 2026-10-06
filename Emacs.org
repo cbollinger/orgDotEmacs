@@ -1319,7 +1319,6 @@ Set Flycheck and flycheck-aspell as frontend
 
 #+end_src
 
-
 ** Org Custom Agenda View                         :business_view:
 
 #+begin_src emacs-lisp
@@ -1628,8 +1627,6 @@ Set Flycheck and flycheck-aspell as frontend
 
 
 
-
-
 ** Org Screenshot
 :PROPERTIES:
 :ATTACH_DIR: /home/christian/.emacs.d/Emacs-att
@@ -1798,35 +1795,34 @@ looking characters that you can control.  Another option for this is
 
           ;; KOMA Report Class
           (add-to-list 'org-latex-classes
-                         `("koma-report"
-                            "\\documentclass[fontsize=10,DIV=calc]{scrreprt}"                    
-                           ("\\chapter{%s}"       . "\\chapter{%s}")
-                           ("\\section{%s}"       . "\\section{%s}")
-                           ("\\subsection{%s}"    . "\\subsection{%s}")
-                           ("\\subsubsection{%s}" . "\\subsubsection{%s}")
-                           ("\\paragraph{%s}"     . "\\paragraph{%s}")
-                           ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
+                       '("koma-report"
+                         "\\documentclass[fontsize=10pt,DIV=calc]{scrreprt}"                    
+                         ("\\chapter{%s}"       . "\\chapter*{%s}")
+                         ("\\section{%s}"       . "\\section*{%s}")
+                         ("\\subsection{%s}"    . "\\subsection*{%s}")
+                         ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                         ("\\paragraph{%s}"     . "\\paragraph*{%s}")
+                         ("\\subparagraph{%s}"  . "\\subparagraph*{%s}")))
 
           ;; KOMA Article Class
-                       (add-to-list 'org-latex-classes
-                         `("koma-article"
-                           "\\documentclass[fontsize=10,DIV=calc]{scrartcl}"
-        		  ("\\section{%s}"       . "\\section{%s}")
-                          ("\\subsection{%s}"    . "\\subsection{%s}")
-                          ("\\subsubsection{%s}" . "\\subsubsection{%s}")
-                          ("\\paragraph{%s}"     . "\\paragraph{%s}")
-                          ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
-
+          (add-to-list 'org-latex-classes
+                       '("koma-article"
+                         "\\documentclass[fontsize=10pt,DIV=calc]{scrartcl}"
+                         ("\\section{%s}"       . "\\section*{%s}")
+                         ("\\subsection{%s}"    . "\\subsection*{%s}")
+                         ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                         ("\\paragraph{%s}"     . "\\paragraph*{%s}")
+                         ("\\subparagraph{%s}"  . "\\subparagraph*{%s}")))
                             
-          ;; duagon Class
+	  ;; duagon Class
           (add-to-list 'org-latex-classes
                        '("dg_public"
                          "\\documentclass{duagon_public}"
-        		   ("\\section{%s}"       . "\\section{%s}")
-                           ("\\subsection{%s}"    . "\\subsection{%s}")
-                           ("\\subsubsection{%s}" . "\\subsubsection{%s}")
-                           ("\\paragraph{%s}"     . "\\paragraph{%s}")
-                           ("\\subparagraph{%s}"  . "\\subparagraph{%s}")))
+                         ("\\section{%s}"       . "\\section*{%s}")
+                         ("\\subsection{%s}"    . "\\subsection*{%s}")
+                         ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                         ("\\paragraph{%s}"     . "\\paragraph*{%s}")
+                         ("\\subparagraph{%s}"  . "\\subparagraph*{%s}")))
 
 
           ;; define the minted format
