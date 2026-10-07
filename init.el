@@ -302,40 +302,19 @@
 
   )
 
-;; ------------------------------
-;; Org & Multi-dictionary Hunspell Setup
-;; ------------------------------
-
-;; --- Custom Org setup function ---
 (defun chb/org-mode-setup ()
   "Custom Org-mode setup."
   (org-indent-mode 1))
-
-;; --- Ensure phaf is never loaded ---
-(setq ispell-phaf-enabled nil)
-(when (featurep 'ispell-phaf)
-  (unload-feature 'ispell-phaf t))
-
-;; --- Hunspell setup ---
-(setq ispell-program-name "hunspell")
-(setq ispell-really-hunspell t)
-(setq ispell-personal-dictionary "~/.hunspell_personal")
-
-(setq ispell-local-dictionary-alist
-      '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" t ("-d" "en_US") nil utf-8)
-        ("en_GB" "[[:alpha:]]" "[^[:alpha:]]" "[']" t ("-d" "en_GB") nil utf-8)
-        ("de_CH" "[[:alpha:]]" "[^[:alpha:]]" "[']" t ("-d" "de_CH") nil utf-8)
-        ("multi-de-en" "[[:alpha:]]" "[^[:alpha:]]" "[']" t ("-d" "de_CH,en_GB,en_US") nil utf-8)))
-
-;; Default dictionary for other modes
-(setq ispell-dictionary "en_US")
 
 ;; --- Org-mode configuration ---
 (use-package org
   :ensure t
   :mode ("\\.org$" . org-mode)
   :bind (("C-c l" . org-store-link)
-         ("C-c b" . org-iswitchb))
+         ("C-c b" . org-iswitchb)
+         ("C-c a" . org-agenda)
+         ("C-c c" . org-capture))
+  :commands (org-agenda org-capture)
   :hook (org-mode . chb/org-mode-setup)
   :config
   (chb/org-font-setup)
@@ -350,6 +329,40 @@
   (unbind-key "\C-c]" org-mode-map)
   (unbind-key "\C-c;" org-mode-map)
   (unbind-key "\C-c\C-x\C-q" org-mode-map))
+
+;; ------------------------------
+;; Org & Multi-dictionary Hunspell Setup
+;; ------------------------------
+
+;; --- Ensure phaf is never loaded ---
+(setq ispell-phaf-enabled nil)
+(when (featurep 'ispell-phaf)
+  (unload-feature 'ispell-phaf t))
+
+;; --- Hunspell setup ---
+(setq ispell-program-name "hunspell"
+      ispell-really-hunspell t
+      ispell-personal-dictionary "~/.hunspell_personal"
+      ispell-local-dictionary-alist
+      '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" t ("-d" "en_US") nil utf-8)
+        ("en_GB" "[[:alpha:]]" "[^[:alpha:]]" "[']" t ("-d" "en_GB") nil utf-8)
+        ("de_CH" "[[:alpha:]]" "[^[:alpha:]]" "[']" t ("-d" "de_CH") nil utf-8)
+        ("multi-de-en" "[[:alpha:]]" "[^[:alpha:]]" "[']" t ("-d" "de_CH,en_GB,en_US") nil utf-8))
+      ;; Default dictionary for other modes.
+      ispell-dictionary "en_US")
+
+(defun my-org-hide-blocks-in-subtree (state)
+  "Hide block beginnings when the current Org subtree is folded."
+  (when (eq state 'subtree)
+    (save-excursion
+      (org-back-to-heading t)
+      (let ((end (save-excursion (org-end-of-subtree t))))
+        (while (re-search-forward
+                "^[ \t]*#\\+begin_"
+                end t)
+          (org-fold-hide-block-toggle t))))))
+
+(add-hook 'org-cycle-hook #'my-org-hide-blocks-in-subtree)
 
 ;; --- Flycheck-Aspell Setup ---
 (use-package flycheck
@@ -382,8 +395,6 @@
 ;; — a known org-mode bug. Disable it globally from flycheck.
 (setq-default flycheck-disabled-checkers '(org-lint))
 
-(setq org-hide-emphasis-markers t)
-
 (defface my-org-emphasis-bold
   '((default :inherit bold)
     (((class color) (min-colors 88) (background light))
@@ -415,7 +426,8 @@
      :strike-through "#ef8b50" :foreground "#a8a8a8"))
   "My strike-through emphasis for Org.")
 
-(setq org-emphasis-alist
+(setq org-hide-emphasis-markers t
+      org-emphasis-alist
       '(("*" my-org-emphasis-bold)
         ("/" my-org-emphasis-italic)
         ("_" my-org-emphasis-underline)
@@ -423,20 +435,15 @@
         ("~" org-code verbatim)
         ("+" (:strike-through t))))
 
-    (use-package org
-      :bind ("\C-ca" . org-agenda)  
-      :commands org-agenda
-      :config
-      (setq org-agenda-start-with-log-mode nil)                          
-      (setq org-agenda-window-setup (quote current-window))              ;; open agenda in current window
-      (setq org-deadline-warning-days 1)                                 ;; warn me of any deadlines in next 7 days
-      (setq org-agenda-span (quote week))                                ;; show me tasks scheduled or due in next week, fortnight
-      (setq org-agenda-skip-scheduled-if-deadline-is-shown t)            ;; don't show tasks as scheduled if they are already shown as a deadline
-      (setq org-agenda-skip-deadline-prewarning-if-scheduled             ;; don't give awarning colour to tasks with impending deadlines
-            (quote pre-scheduled))                                       ;; if they are scheduled to be done
-
-      (setq org-agenda-todo-ignore-deadlines (quote all))                ;; don't show tasks that are scheduled or have deadlines in the
-      (setq org-agenda-todo-ignore-scheduled (quote all))                ;; normal todo list
+    (with-eval-after-load 'org
+      (setq org-agenda-start-with-log-mode nil
+            org-agenda-window-setup 'current-window
+            org-deadline-warning-days 1
+            org-agenda-span 'week
+            org-agenda-skip-scheduled-if-deadline-is-shown t
+            org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled
+            org-agenda-todo-ignore-deadlines 'all
+            org-agenda-todo-ignore-scheduled 'all)
 
       (add-hook 'org-finalize-agenda-hook 'place-agenda-tags)            ;; Place tags close to the right-hand side of the window
       (defun place-agenda-tags ()
@@ -569,11 +576,9 @@
                  '(todo-state-down effort-up category-keep))))
               )))
 
-  (use-package org
-    :commands org-capture
-    :config
-     (setq org-directory "~/Daten/04-org-system/")
-     (setq org-default-notes-file "~/Daten/04-org-system/02-refile/refile.org")
+  (with-eval-after-load 'org
+     (setq org-directory "~/Daten/04-org-system/"
+           org-default-notes-file "~/Daten/04-org-system/02-refile/refile.org")
 
                                            ;I use C-c c to start capture mode
      (global-set-key (kbd "C-c c") 'org-capture)
@@ -595,22 +600,6 @@
 		   ("h" "Habit" entry (file "~/Daten/04-org-system/02-refile/refile.org")
                     "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 )
-
-    (use-package org-attach-screenshot
-      :bind ("<f6> s" . org-attach-screenshot)
-      :config (setq org-attach-screenshot-dirfunction
-    		(lambda () 
-    		  (progn (cl-assert (buffer-file-name))
-    			 (concat (file-name-sans-extension (buffer-file-name))
-    				 "-att")))
-                    org-attach-screenshot-command-line "spectacle -r -b -n --output %f")
-
-      )
-
-  (use-package org-bullets
-    :hook (org-mode . org-bullets-mode)
-    :custom
-    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
   ; Clocking Functions
 
@@ -704,6 +693,22 @@
 
 
   (add-hook 'org-clock-out-hook 'bh/clock-out-maybe 'append)
+
+    (use-package org-attach-screenshot
+      :bind ("<f6> s" . org-attach-screenshot)
+      :config (setq org-attach-screenshot-dirfunction
+    		(lambda () 
+    		  (progn (cl-assert (buffer-file-name))
+    			 (concat (file-name-sans-extension (buffer-file-name))
+    				 "-att")))
+                    org-attach-screenshot-command-line "spectacle -r -b -n --output %f")
+
+      )
+
+  (use-package org-bullets
+    :hook (org-mode . org-bullets-mode)
+    :custom
+    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
         (use-package ox-latex
           :ensure nil
@@ -858,9 +863,7 @@ See `org-latex-format-headline-function' for details."
 
 (add-hook 'org-export-before-processing-hook #'my-org-set-headline-function-based-on-class)
 
-      (use-package org
-        :ensure t
-        :config
+      (with-eval-after-load 'org
         ;; Load org-tempo for structure template expansion
         (require 'org-tempo)
 
@@ -872,8 +875,8 @@ See `org-latex-format-headline-function' for details."
         (add-to-list 'org-structure-template-alist '("js" . "src javascript"))
 
         ;; Other Org-mode configurations
-        (setq org-src-tab-acts-natively t)
-        (setq org-confirm-babel-evaluate nil)
+        (setq org-src-tab-acts-natively t
+              org-confirm-babel-evaluate nil)
 
         ;; Set up org-tempo when entering org-mode
         (add-hook 'org-mode-hook
@@ -889,12 +892,11 @@ See `org-latex-format-headline-function' for details."
         (org-babel-tangle))))
   (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'chb/org-babel-tangle-config)))
 
-     (use-package org
-       :ensure org-contrib
-       :after ox-taskjuggler
+     (use-package org-contrib
+       :ensure t
+       :after (org ox-taskjuggler)
        :config
-       (add-to-list 'org-export-backends 'ox-taskjuggler)
-       )
+       (add-to-list 'org-export-backends 'ox-taskjuggler))
 
   (use-package which-key
     :defer 
