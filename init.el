@@ -936,9 +936,12 @@ See `org-latex-format-headline-function' for details."
   ;; (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
                                   
   ;; Opensuse
-  (setq org-ditaa-jar-path "/home/christian/bin/ditaa0_9/ditaa0_9.jar")
-  (setq org-plantuml-jar-path "/usr/share/java/plantuml.jar")
-  ;; Use fundamental mode when editing plantuml blocks with C-c '
+(setq org-ditaa-jar-path "/home/christian/bin/ditaa0_9/ditaa0_9.jar")
+(setq org-plantuml-jar-path "/home/christian/bin/plantuml.jar")
+
+;; (setq org-plantuml-jar-path "/usr/share/java/plantuml.jar")
+
+;; Use fundamental mode when editing plantuml blocks with C-c '
   (add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
   (add-to-list 'exec-path "/usr/bin/magick")
   (use-package gnuplot
