@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t; -*-
+
   ;; NOTE: init.el is now generated from Emacs.org.  Please edit that file
   ;;       in Emacs and init.el will be generated automatically!
 
@@ -83,8 +85,9 @@
   ;; (use-package dired-single
   ;;   :commands (dired dired-jump))
 
-  (use-package all-the-icons-dired
-    :hook (dired-mode . all-the-icons-dired-mode))
+
+  (use-package nerd-icons-dired
+     :hook (dired-mode . nerd-icons-dired-mode))
 
   (use-package dired-open
     :commands (dired dired-jump)
@@ -979,9 +982,9 @@ See `org-latex-format-headline-function' for details."
         ;; Suppress cl package obsolete warnings
         (setq byte-compile-warnings '(not cl-functions obsolete)))
 
-(setq lsp-clangd-binary-path "/usr/bin/clangd-22")
-(setq lsp-clients-clangd-executable "clangd-22")
-(setq clang-format-executable "clang-format-22")
+(setq lsp-clangd-binary-path "/usr/bin/clangd")
+(setq lsp-clients-clangd-executable "clangd")
+(setq clang-format-executable "clang-format")
 
 
 (use-package lsp-clangd

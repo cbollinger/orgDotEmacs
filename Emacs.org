@@ -1,4 +1,4 @@
-$$#+title: Flexible Emacs Configuration
+#+title: Flexible Emacs Configuration
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 #+CALL: checkout-submodules()
 
@@ -108,6 +108,8 @@ sudo zypper install texlive-tcolorbox
 sudo zypper install texlive-comment
 sudo zypper install texlive-ht-tikz
 sudo zypper install texlive-titlesec
+sudo zypper install clang
+#
 #+end_src
 
 
@@ -282,6 +284,28 @@ setsid emacs
 #+end_src
 
 
+* Tipps for Use
+
+In this document I've added links in many places that lead you to documentation
+for the various packages we use.  If you're looking at this file in Emacs, you
+can put your cursor on a link and press =C-c C-o= or run =M-x org-open-at-point=
+to open the link in your web browser.
+
+
+
+
+
+* Lexical Binding
+
+This string shall be at the very begining of a file announcing Lexical binding warning.
+
+The issue is described here [[https://forums.opensuse.org/t/updated-emacs-spews-lexical-binding-warnings/195790][OpenSuse Forum]]
+
+#+begin_src emacs-lisp
+;; -*- lexical-binding: t; -*-
+#+end_src
+
+
 * Default appearance
 
 The following variables are used to tweak some of the configuration pieces for
@@ -302,13 +326,6 @@ if you try to use this configuration directly.
 
 #+end_src
 
-
-* Tipps for Use
-
-In this document I've added links in many places that lead you to documentation
-for the various packages we use.  If you're looking at this file in Emacs, you
-can put your cursor on a link and press =C-c C-o= or run =M-x org-open-at-point=
-to open the link in your web browser.
 
 
 * Startup Performance
@@ -395,11 +412,13 @@ You can also use =M-x auto-package-update-now= to update right now!
 
 
 
+
 * Transient
 #+begin_src emacs-lisp
 (use-package transient
     :defer t)
 #+end_src
+
 
 
 
@@ -414,6 +433,7 @@ arrow key's.
   (setq undo-tree-auto-save-history nil)
 )
 #+end_src
+
 
 
 * Dired
@@ -485,6 +505,7 @@ Here are some key bindings you should try out:
 - =L= - Load an Emacs Lisp file into Emacs
 
 
+
 ** Configuration
 
 #+begin_src emacs-lisp
@@ -502,8 +523,9 @@ Here are some key bindings you should try out:
   ;; (use-package dired-single
   ;;   :commands (dired dired-jump))
 
-  (use-package all-the-icons-dired
-    :hook (dired-mode . all-the-icons-dired-mode))
+
+  (use-package nerd-icons-dired
+     :hook (dired-mode . nerd-icons-dired-mode))
 
   (use-package dired-open
     :commands (dired dired-jump)
@@ -520,6 +542,7 @@ Here are some key bindings you should try out:
     ;;   "H" 'dired-hide-dotfiles-mode)
     )
 #+end_src
+
 
 
 
@@ -2182,9 +2205,9 @@ documents all of the languages that you can use with =org-babel=.
 
 ** clangd
 #+begin_src emacs-lisp
-(setq lsp-clangd-binary-path "/usr/bin/clangd-22")
-(setq lsp-clients-clangd-executable "clangd-22")
-(setq clang-format-executable "clang-format-22")
+(setq lsp-clangd-binary-path "/usr/bin/clangd")
+(setq lsp-clients-clangd-executable "clangd")
+(setq clang-format-executable "clang-format")
 
 
 (use-package lsp-clangd
