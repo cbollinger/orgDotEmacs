@@ -117,12 +117,15 @@
 
   (setq inhibit-startup-message t)
 
+;; srcroll-bar-mode and set-fringe-mode 
+;; not available in console mode
+(when (display-graphic-p)
   (scroll-bar-mode -1)        ; Disable visible scrollbar
+  (set-fringe-mode 50))       ; Give some breathing room
+  
   (tool-bar-mode -1)          ; Disable the toolbar
   (tooltip-mode -1)           ; Disable tooltips
-  (set-fringe-mode 50)        ; Give some breathing room
-
-  (menu-bar-mode -1)            ; Disable the menu bar
+  (menu-bar-mode -1)          ; Disable the menu bar
 
   ;; Set up the visible bell
   (setq visible-bell t)
@@ -985,9 +988,9 @@ See `org-latex-format-headline-function' for details."
         ;; Suppress cl package obsolete warnings
         (setq byte-compile-warnings '(not cl-functions obsolete)))
 
-(setq lsp-clangd-binary-path "/usr/bin/clangd")
-(setq lsp-clients-clangd-executable "clangd")
-(setq clang-format-executable "clang-format")
+(setq lsp-clangd-binary-path "/usr/bin/clangd-23")
+(setq lsp-clients-clangd-executable "/usr/bin/clangd-23")
+(setq clang-format-executable "/usr/bin/clang-format-23")
 
 
 (use-package lsp-clangd
