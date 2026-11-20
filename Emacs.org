@@ -690,8 +690,8 @@ correctly.
 #+end_src
 
 
-* Completion and More
 
+* Completion and More
 
 ** Command Log Mode
 
@@ -1082,6 +1082,7 @@ You can press any other key (or =f= specifically) to exit the transient key map.
 #+end_src
 
  
+
 
 * Org Mode
 
@@ -2150,18 +2151,17 @@ possible key bindings in the mode of your current buffer.
   ;; (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
                                   
   ;; Opensuse
-(setq org-ditaa-jar-path "/home/christian/bin/ditaa0_9/ditaa0_9.jar")
-(setq org-plantuml-jar-path "/home/christian/bin/plantuml.jar")
-
-;; (setq org-plantuml-jar-path "/usr/share/java/plantuml.jar")
-
-;; Use fundamental mode when editing plantuml blocks with C-c '
+  (setq org-ditaa-jar-path "/usr/bin/ditaa")
+  (setq org-plantuml-jar-path "/usr/bin/plantuml")
+  ;; Use fundamental mode when editing plantuml blocks with C-c '
   (add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
   (add-to-list 'exec-path "/usr/bin/magick")
   (use-package gnuplot
     :init
   )
 #+end_src
+
+#+RESULTS:
 
 ** Languages
 To execute or export code in =org-mode= code blocks, you'll need to set up
@@ -2218,8 +2218,8 @@ documents all of the languages that you can use with =org-babel=.
 ** clangd
 #+begin_src emacs-lisp
 (setq lsp-clangd-binary-path "/usr/bin/clangd-23")
-(setq lsp-clients-clangd-executable "/usr/bin/clangd-23")
-(setq clang-format-executable "/usr/bin/clang-format-23")
+(setq lsp-clients-clangd-executable "clangd-23")
+(setq clang-format-executable "clang-format-23")
 
 
 (use-package lsp-clangd
@@ -3084,6 +3084,7 @@ For more thoughts on Eshell, check out these articles by Pierre Neidhardt:
   ;; 3. Aktiviert die semantische Indizierung für codebase-weite Fragen (@workspace)
   (setopt copilot-chat-enable-semantic-search t))
 #+end_src
+
 
 
 

@@ -945,12 +945,9 @@ See `org-latex-format-headline-function' for details."
   ;; (setq org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar")
                                   
   ;; Opensuse
-(setq org-ditaa-jar-path "/home/christian/bin/ditaa0_9/ditaa0_9.jar")
-(setq org-plantuml-jar-path "/home/christian/bin/plantuml.jar")
-
-;; (setq org-plantuml-jar-path "/usr/share/java/plantuml.jar")
-
-;; Use fundamental mode when editing plantuml blocks with C-c '
+  (setq org-ditaa-jar-path "/usr/bin/ditaa")
+  (setq org-plantuml-jar-path "/usr/bin/plantuml")
+  ;; Use fundamental mode when editing plantuml blocks with C-c '
   (add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
   (add-to-list 'exec-path "/usr/bin/magick")
   (use-package gnuplot
@@ -995,8 +992,8 @@ See `org-latex-format-headline-function' for details."
         (setq byte-compile-warnings '(not cl-functions obsolete)))
 
 (setq lsp-clangd-binary-path "/usr/bin/clangd-23")
-(setq lsp-clients-clangd-executable "/usr/bin/clangd-23")
-(setq clang-format-executable "/usr/bin/clang-format-23")
+(setq lsp-clients-clangd-executable "clangd-23")
+(setq clang-format-executable "clang-format-23")
 
 
 (use-package lsp-clangd
