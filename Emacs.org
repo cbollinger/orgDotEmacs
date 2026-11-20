@@ -2260,15 +2260,17 @@ should be able to learn a lot just by pressing =C-c l= in a =lsp-mode= buffer
 and trying different things that you find there.
 
 #+begin_src emacs-lisp
-;; Use Tree-sitter modes for C/C++.
+;; Remap standard modes to Tree-sitter modes
 (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
 (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+(add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
+(add-to-list 'major-mode-remap-alist '(javascript-mode . js-ts-mode))
 
 (use-package lsp-mode
   :ensure t
-  :hook (((c-ts-mode c++-ts-mode) . lsp)
-         ((js-mode js2-mode) . lsp)
-         ((typescript-mode web-mode) . lsp))
+  :hook (((c-ts-mode c++-ts-mode) . lsp-deferred)
+         ((js-mode js2-mode js-ts-mode) . lsp-deferred)
+         ((typescript-mode typescript-ts-mode web-mode) . lsp-deferred))
   :commands (lsp lsp-deferred)
   :init
   (setq lsp-keymap-prefix "C-p p"
