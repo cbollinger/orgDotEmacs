@@ -778,6 +778,12 @@
                          ("\\paragraph{%s}"     . "\\paragraph*{%s}")
                          ("\\subparagraph{%s}"  . "\\subparagraph*{%s}")))
 
+	  ;; baposter
+          (add-to-list 'org-latex-classes
+                       '("xebaposter"
+                         "\\documentclass{xebaposter}"))
+
+
 
           ;; define the minted format
           (setq org-latex-header-extra
